@@ -3,7 +3,7 @@ const app = require("express")();
 const userSchema = require("./models/user");
 // GraphQL
 const { graphqlHTTP } = require("express-graphql");
-const schema = require("./graphQL/schema");
+const schema = require("./graphQl/schema");
 // Mongoose Setup
 const mongoose = require("mongoose");
 const uri =
