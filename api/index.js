@@ -3,7 +3,7 @@ const app = require("express")();
 const userSchema = require("./models/user");
 // GraphQL
 const { graphqlHTTP } = require("express-graphql");
-const schema = require("./graphQL/schema");
+// const schema = require("./graphQL/schema");
 // Mongoose Setup
 const mongoose = require("mongoose");
 const uri =
@@ -14,14 +14,17 @@ mongoose
         useUnifiedTopology: true,
     })
     .then(async () => {
-        app.use("/", graphqlHTTP({ schema, graphiql: true })); // here disable graphial = false
+        // app.use("/", graphqlHTTP({ schema, graphiql: true })); // here disable graphial = false
     });
 // Routs
 app.get("/lala", async (req, res) => {
-    let i = await userSchema.find();
+    // let i = await userSchema.find();
     // console.log(i);
-    res.json({
-        msg: i,
+    const fs = require("fs");
+    fs.readdir(".", (err, files) => {
+        res.json({
+            msg: files,
+        });
     });
 });
 // Exports

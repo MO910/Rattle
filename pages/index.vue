@@ -1,6 +1,6 @@
 <template lang="pug">
     v-container
-        |hello
+        |hello ooooooooooo
 </template>
 
 <script>
