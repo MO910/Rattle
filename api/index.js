@@ -1,6 +1,6 @@
 const app = require("express")();
 // mongoose models
-const userSchema = require("./models/user");
+const StudentsSchema = require("./models/Students/Students");
 // GraphQL
 const { graphqlHTTP } = require("express-graphql");
 const schema = require("./graphQl/schema");
@@ -14,11 +14,11 @@ mongoose
         useUnifiedTopology: true,
     })
     .then(async () => {
-        app.use("/", graphqlHTTP({ schema /*graphiql: true*/ })); // here disable graphial = false
+        app.use("/", graphqlHTTP({ schema, graphiql: true })); // here disable graphial = false
     });
 // Routs
 app.get("/lala", async (req, res) => {
-    let i = await userSchema.find();
+    let i = await StudentsSchema.find();
     console.log(i);
     const fs = require("fs");
     // fs.readdir(".", (err, files) => {});

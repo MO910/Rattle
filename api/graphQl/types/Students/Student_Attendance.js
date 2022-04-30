@@ -2,14 +2,15 @@ const {
     GraphQLObjectType,
     GraphQLString,
     GraphQLID,
+    GraphQLInt,
     GraphQLList,
     GraphQLBoolean,
 } = require("graphql");
 // User Type
 module.exports = new GraphQLObjectType({
-    name: "user",
+    name: "Student_Attendance",
     fields: () => ({
         id: { type: GraphQLID },
-        name: { type: GraphQLString },
+        attended: { type: GraphQLBoolean },
     }),
 });
