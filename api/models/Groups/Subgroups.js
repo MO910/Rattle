@@ -2,8 +2,9 @@ const mongoose = require("mongoose"),
     Schema = mongoose.Schema;
 const Subgroups = new Schema(
     {
-        name: String,
-        group_id: mongoose.ObjectId,
+        title: String,
+        channel_id: mongoose.ObjectId,
+        student_ids: Array,
     },
     { timestamps: true, collection: "Subgroups" }
 );

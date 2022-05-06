@@ -1,6 +1,10 @@
 import colors from "vuetify/es5/util/colors";
+// translation
+import en from "./lang/en";
+import ar from "./lang/ar";
+//
 const local = "http://localhost:3000",
-    publicH = "https://f620-156-205-120-35.ngrok.io",
+    publicHost = "https://rattel.herokuapp.com",
     host = local;
 export default {
     // Global page headers: https://go.nuxtjs.dev/config-head
@@ -17,6 +21,14 @@ export default {
             { name: "format-detection", content: "telephone=no" },
         ],
         link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
+        script: [
+            {
+                src: "@/js/progressLine.js",
+            },
+            {
+                src: "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.2.6/gsap.min.js",
+            },
+        ],
     },
 
     // Global CSS: https://go.nuxtjs.dev/config-css
@@ -52,7 +64,12 @@ export default {
 
     // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
     vuetify: {
-        customVariables: ["~/assets/variables.scss"],
+        customVariables: ["~/assets/variables.sass"],
+        rtl: true,
+        lang: {
+            current: "ar",
+            locales: { en, ar },
+        },
         theme: {
             dark: true,
             themes: {

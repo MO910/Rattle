@@ -6,32 +6,41 @@ const {
     GraphQLSchema,
 } = require("graphql");
 const // user
-    Student_type = require("./types/Students/Student"),
-    Students_schema = require("../models/Students/Students");
-const // parent
-    Parent_type = require("./types/Students/Parent"),
-    Parents_schema = require("../models/Students/Parents");
+    User_type = require("./types/Users/User"),
+    Users_schema = require("../models/Users/Users"),
+    Rules_schema = require("../models/Users/Rules"),
+    // group
+    Group_type = require("./types/Groups/Group"),
+    Groups_schema = require("../models/Groups/Groups");
+// mutations
+const updateAdvancementsHistory = require("./mutations/Advancements/updateHistory");
 //
 const query = new GraphQLObjectType({
-    name: "RootQueryType",
-    fields: {
-        // get student info
-        student: {
-            type: Student_type,
-            args: { id: { type: GraphQLID } },
-            async resolve(_, { id }) {
-                return await Students_Schema.findById(id);
+        name: "RootQueryType",
+        fields: {
+            // get student info
+            user: {
+                type: User_type,
+                args: {
+                    id: { type: GraphQLID },
+                    channel_id: { type: GraphQLID },
+                },
+                async resolve(_, { id }) {
+                    return await Users_schema.findById(id);
+                },
+            },
+            groups: {
+                type: new GraphQLList(Group_type),
+                args: { userId: { type: GraphQLID } },
+                async resolve(_, { userId }) {
+                    return await Groups_schema.find({ teacher_id: userId });
+                },
             },
         },
-        // get parent info
-        parent: {
-            type: Parent_type,
-            args: { id: { type: GraphQLID } },
-            async resolve(_, { id }) {
-                return await Parents_schema.findById(id);
-            },
-        },
-    },
-});
+    }),
+    mutation = new GraphQLObjectType({
+        name: "mutation",
+        fields: { updateAdvancementsHistory },
+    });
 // exports
-module.exports = new GraphQLSchema({ query });
+module.exports = new GraphQLSchema({ query, mutation });

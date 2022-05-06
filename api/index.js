@@ -1,6 +1,6 @@
 const app = require("express")();
 // mongoose models
-const StudentsSchema = require("./models/Students/Students");
+const StudentsSchema = require("./models/Users/Users");
 // GraphQL
 const { graphqlHTTP } = require("express-graphql");
 const schema = require("./graphQl/schema");
