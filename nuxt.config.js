@@ -5,7 +5,7 @@ import ar from "./lang/ar";
 //
 const local = "http://localhost:3000",
     publicHost = "https://rattel.herokuapp.com",
-    host = local;
+    host = publicHost;
 export default {
     // Global page headers: https://go.nuxtjs.dev/config-head
     static: {
