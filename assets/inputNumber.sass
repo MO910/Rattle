@@ -1,0 +1,48 @@
+$transition_duration: .5s
+.inputNumber
+    font-weight: bold
+    .v-icon
+        cursor: pointer
+    &.max .v-icon.increase,
+    &.min .v-icon.decrease
+        opacity: .5
+        cursor: auto
+    .v-tooltip
+        user-select: none
+    .content
+        width: 1.5em
+        border-radius: 0.3em
+        padding: .5em .2em
+        overflow: hidden
+        text-align: center
+        box-sizing: content-box
+        user-select: none
+        cursor: grab
+        transition-duration: $transition_duration
+        position: relative
+        &:active, &:target
+            cursor: grabbing
+        &:focus
+            user-select: auto
+            cursor: auto
+        &::before, &::after
+            width: 100%
+            position: absolute
+        &::before
+            content: attr(data-before)
+            left: -100%
+        &::after
+            content: attr(data-after)
+            right: -100%
+        div
+            width: 100%
+            height: 100%
+            display: inline-block
+        &.decrease
+            div, &::before
+                transition: transform $transition_duration ease-in-out
+                transform: translateX(100%)
+        &.increase
+            div, &::after
+                transition: transform $transition_duration ease-in-out
+                transform: translateX(-100%)

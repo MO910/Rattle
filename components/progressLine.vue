@@ -19,7 +19,7 @@
 <script>
 import { mapState, mapActions } from "vuex";
 export default {
-    props: ["totalAyahs", "action", "advancement_id"],
+    props: ["totalAyahs", "action", "user_id", "goal_id"],
     mounted() {
         const progress = document.querySelector(".progress"),
             curser = document.querySelector("#curser"),
@@ -45,9 +45,11 @@ export default {
             const progress =
                 this.tooltipText.ayah - this.totalAyahs.current.ayah;
             holding = this.tooltip = false;
+            console.log(this.goal_id);
             if (progress)
-                this.updateAdvancementsHistory({
-                    advancement_id: this.advancement_id,
+                this.updateGoalsHistory({
+                    user_id: this.user_id,
+                    goal_id: this.goal_id,
                     progress,
                 });
             wasDown = false;
@@ -101,7 +103,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions(["updateAdvancementsHistory"]),
+        ...mapActions(["updateGoalsHistory"]),
         formatPoint(point) {
             if (!point) return;
             const surah = this.surah.data.filter(

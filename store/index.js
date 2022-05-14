@@ -1,20 +1,39 @@
 import surah from "./parts/surah";
+// authentication
+import login from "./parts/actions/authentication/login";
+import logout from "./parts/actions/authentication/logout";
 // fetch
 import getUserData from "./parts/actions/fetch/getUserData";
 import getGroups from "./parts/actions/fetch/getGroups";
 // Advancements
-import updateAdvancementsHistory from "./parts/actions/Advancements/updateHistory";
+import updateGoalsHistory from "./parts/actions/Goals/updateHistory";
+import addGoal from "./parts/actions/Goals/addGoal";
 // export
 export default {
     state: () => ({
-        user: null,
-        groups: null,
+        user: {},
+        groups: {},
         surah,
+        // login
+        loginForm: {
+            valid: false,
+            username: "",
+            password: "",
+            error: "",
+            showPassword: false,
+            loading: false,
+        },
     }),
     actions: {
+        // authentication
+        login,
+        logout,
+        // fetch
         getUserData,
         getGroups,
-        updateAdvancementsHistory,
+        // Advancements
+        addGoal,
+        updateGoalsHistory,
     },
     mutations: {
         updateModel(state, [obj, value]) {

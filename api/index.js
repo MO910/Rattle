@@ -1,6 +1,7 @@
-const app = require("express")();
-// mongoose models
-const StudentsSchema = require("./models/Users/Users");
+const express = require("express"),
+    app = express(),
+    bodyParser = require("body-parser"),
+    authAPIRout = require("./routes/users");
 // GraphQL
 const { graphqlHTTP } = require("express-graphql");
 const schema = require("./graphQl/schema");
@@ -16,15 +17,14 @@ mongoose
     .then(async () => {
         app.use("/", graphqlHTTP({ schema, graphiql: true })); // here disable graphial = false
     });
+// bodyParser
+app.use(express.json());
+// app.use(
+//     express.urlencoded({
+//         extended: true,
+//     })
+// );
 // Routs
-app.get("/lala", async (req, res) => {
-    let i = await StudentsSchema.find();
-    console.log(i);
-    const fs = require("fs");
-    // fs.readdir(".", (err, files) => {});
-    res.json({
-        msg: i,
-    });
-});
+app.use("/auth", authAPIRout);
 // Exports
 module.exports = app;

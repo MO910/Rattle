@@ -2,6 +2,8 @@ const mongoose = require("mongoose"),
     Schema = mongoose.Schema;
 const Users = new Schema(
     {
+        username: String,
+        password: String,
         name: String,
         rule_ids: Array,
         parent_id: mongoose.ObjectId,

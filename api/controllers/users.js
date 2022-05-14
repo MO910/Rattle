@@ -1,4 +1,4 @@
-const usersSchema = require("../models/user"),
+const usersSchema = require("../models/Users/Users"),
     jwt = require("jsonwebtoken");
 // SECRET_KEY
 const SECRET_KEY = process.env.SECRET_KEY;
@@ -17,7 +17,6 @@ const login = async (req, res) => {
                 {
                     user: {
                         _id: auth._id,
-                        role: auth.role,
                         name: auth.name,
                     },
                 },
@@ -26,6 +25,17 @@ const login = async (req, res) => {
         });
     } else res.sendStatus(403);
 };
+
+// login
+const signup = async (req, res) => {
+    const newUser = await usersSchema.create({
+        name: req.body.name,
+        username: req.body.username,
+        password: req.body.password,
+    });
+    res.json(newUser);
+};
+
 // verification
 const verification = (req, res, next) => {
     const bearerHeader = req.headers.authorization;
@@ -50,4 +60,4 @@ const logout = (req, res) => {
     });
 };
 // Export
-module.exports = { login, verification, user, logout };
+module.exports = { login, signup, verification, user, logout };

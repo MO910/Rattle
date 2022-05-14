@@ -1,8 +1,8 @@
 <template lang="pug">
-    v-container
-        v-row.mt-8
-            v-col(cols='3' v-for='rule in user.rules' :key='rule.title')
-                folder(:folder='rule' :router='ruleRouter(rule.title)')
+v-container
+    v-row.mt-8
+        v-col(cols='3' v-for='rule in user.rules' :key='rule.title')
+            folder(:folder='rule' :router='ruleRouter(rule.title)')
 </template>
 
 <script>

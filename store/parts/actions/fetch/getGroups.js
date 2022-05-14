@@ -14,6 +14,19 @@ export default async function ({ commit }) {
                     groups(userId: "626d45dd2e600ed075c196ca") {
                         id
                         title
+                        students {
+                            id
+                            name
+                            attendances {
+                                id
+                                attended
+                            }
+                            goals_history {
+                                id
+                                goal_id
+                                point
+                            }
+                        }
                         courses {
                             id
                             title
@@ -23,6 +36,12 @@ export default async function ({ commit }) {
                                 subgroups {
                                     id
                                     title
+                                    goals {
+                                        id
+                                        chapter
+                                        from
+                                        to
+                                    }
                                     students {
                                         id
                                         name
@@ -30,38 +49,13 @@ export default async function ({ commit }) {
                                             id
                                             attended
                                         }
-                                        advancements {
+                                        goals_history {
                                             id
-                                            chapter
-                                            to
-                                            from
-                                            history {
-                                                point
-                                            }
-                                            note
-                                            date
+                                            goal_id
+                                            point
                                         }
                                     }
                                 }
-                            }
-                        }
-                        students {
-                            id
-                            name
-                            attendances {
-                                id
-                                attended
-                            }
-                            advancements {
-                                id
-                                chapter
-                                to
-                                from
-                                history {
-                                    point
-                                }
-                                note
-                                date
                             }
                         }
                     }

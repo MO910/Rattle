@@ -1,7 +1,7 @@
 // Dependencies
 import gql from "graphql-tag";
 // function
-export default async function ({ commit }, { advancement_id, progress }) {
+export default async function ({ commit }, { user_id, goal_id, progress }) {
     // if (this.$auth.loggedIn && this.$auth.user && !state.user.id) {
     // state.userId = this.$auth.user._id;
     // GraphQl request
@@ -9,14 +9,14 @@ export default async function ({ commit }, { advancement_id, progress }) {
         { data } = await client.mutate({
             mutation: gql`
                 mutation {
-                    updateAdvancementsHistory(
-                        advancement_id: "${advancement_id}"
+                    updateGoalsHistory(
+                        user_id: "${user_id}"
+                        goal_id: "${goal_id}"
                         point: ${progress}
                     )
                 }
             `,
         });
-    console.log(data);
     // update store
     // commit("updateModel", ["groups", groups]);
     // }

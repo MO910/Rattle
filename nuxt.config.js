@@ -8,6 +8,9 @@ const local = "http://localhost:3000",
     host = local;
 export default {
     // Global page headers: https://go.nuxtjs.dev/config-head
+    static: {
+        prefix: false,
+    },
     head: {
         titleTemplate: "%s - rattel",
         title: "rattel",
@@ -23,10 +26,19 @@ export default {
         link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
         script: [
             {
-                src: "@/js/progressLine.js",
+                src: "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js",
+            },
+            {
+                src: "https://cdnjs.cloudflare.com/ajax/libs/jquery.nicescroll/3.7.6/jquery.nicescroll.min.js",
             },
             {
                 src: "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.2.6/gsap.min.js",
+            },
+            {
+                src: "/js/progressLine.js",
+            },
+            {
+                src: "/js/inputNumber.js",
             },
         ],
     },

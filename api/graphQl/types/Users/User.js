@@ -15,8 +15,9 @@ const // Users
     Rule_type = require("./Rule"),
     Rules_schema = require("../../../models/Users/Rules"),
     // Advancements
-    Advancement_type = require("../Courses/Advancements/Advancement"),
-    Advancements_schema = require("../../../models/Courses/Advancements/Advancements");
+    Goal_History_type = require("../Goals/History"),
+    Goals_schema = require("../../../models/Courses/Goals/Goals"),
+    Goals_History_schema = require("../../../models/Courses/Goals/History");
 const parentRuleId = "626d35d32e600ed075c196c5";
 // User Type
 const User_type = new GraphQLObjectType({
@@ -41,10 +42,10 @@ const User_type = new GraphQLObjectType({
                 return await Attendances_schema.find({ user_id });
             },
         },
-        advancements: {
-            type: new GraphQLList(Advancement_type),
+        goals_history: {
+            type: new GraphQLList(Goal_History_type),
             async resolve({ id: user_id }) {
-                return await Advancements_schema.find({ user_id });
+                return await Goals_History_schema.find({ user_id });
             },
         },
         children: {

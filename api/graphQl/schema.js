@@ -13,7 +13,9 @@ const // user
     Group_type = require("./types/Groups/Group"),
     Groups_schema = require("../models/Groups/Groups");
 // mutations
-const updateAdvancementsHistory = require("./mutations/Advancements/updateHistory");
+const // Goals
+    addGoal = require("./mutations/Goals/addGoal"),
+    updateGoalsHistory = require("./mutations/Goals/updateHistory");
 //
 const query = new GraphQLObjectType({
         name: "RootQueryType",
@@ -40,7 +42,7 @@ const query = new GraphQLObjectType({
     }),
     mutation = new GraphQLObjectType({
         name: "mutation",
-        fields: { updateAdvancementsHistory },
+        fields: { addGoal, updateGoalsHistory },
     });
 // exports
 module.exports = new GraphQLSchema({ query, mutation });

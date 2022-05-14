@@ -1,25 +1,41 @@
 <template lang="pug">
-    v-app
-        //- noise
-        #noise
-        .menu.d-flex.align-center(@click='openMenu')
-            .icon
-                include ../static/img/menu.pug
-            .list
-                //- .listItem settings
-        //- main view
-        v-main
-            .frameContainer.grey.lighten-1.px-6.py-5
-                client-only(placeholder="Loading...")
-                    nuxt
-        //- script(src="~/js/menu.js")
+v-app
+    //- noise
+    #noise
+    .menu.d-flex.align-center(@click='openMenu')
+        .icon
+            include ../static/img/menu.pug
+        .list
+            //- .listItem settings
+    //- main view
+    v-main
+        .frameContainer.grey.lighten-1.px-6.py-5
+            div(v-if="$auth.loggedIn")
+                | {{ $auth.user }}
+                v-btn(
+                    color="error"
+                    outlined
+                    small
+                    router
+                    to="/login"
+                    @click="logout()"
+                ) logout
+                //- notifications list
+                //- notificationsCenter
+            div(v-else)
+                v-btn(color="success" outlined small router to="/login") login
+            //- client-only(placeholder="Loading...")
+            nuxt
+    //- script(src="~/js/menu.js")
 </template>
 
 <script>
+import { mapActions } from "vuex";
 export default {
     middleware: ["fetchUser"],
     data: () => ({}),
     methods: {
+        ...mapActions(["logout"]),
         openMenu() {
             const menu = document.querySelector(".menu");
             menu.classList.add("open");

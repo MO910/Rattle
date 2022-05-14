@@ -1,8 +1,8 @@
 <template lang="pug">
-    v-container
-        v-row.mt-8
-            v-col(cols='3' v-for='folder in folders' :key='folder.title')
-                folder(:folder='folder' :translation='true' :router='folderRouter(folder.to)')
+v-container
+    v-row.mt-8
+        v-col(cols='3' v-for='folder in folders' :key='folder.title')
+            folder(:folder='folder' :translation='true' :router='folderRouter(folder.to)')
 </template>
 
 <script>

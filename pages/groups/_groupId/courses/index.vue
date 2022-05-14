@@ -1,25 +1,25 @@
 <template lang="pug" key="index">
-    v-container
-        .text-h3 المقررات
-        v-row.pt-10
-            v-col.mb-5.col-lg-4.col-md-6.col-xs-12.col-sm-12(
-                cols='12'
-                v-for='item in courses'
-                :key='item.id'
+v-container
+    .text-h3 المقررات
+    v-row.pt-10
+        v-col.mb-5.col-lg-4.col-md-6.col-xs-12.col-sm-12(
+            cols='12'
+            v-for='item in courses'
+            :key='item.id'
+        )
+            v-card.px-10.items(
+                :class='item.color'
+                rounded :href='courseRouter(item.id)'
+                v-ripple="{ class: item.ripple}"
             )
-                v-card.px-10.items(
-                    :class='item.color'
-                    rounded :href='courseRouter(item.id)'
-                    v-ripple="{ class: item.ripple}"
-                )
-                    .card-icon.d-flex.py-4
-                        //- include ../../../static/img/quran.pug
-                        //- v-icon.mr-5(:color='item.color' large) mdi-{{item.icon}}
-                    v-card-title.text-capitalize.pt-6 {{$vuetify.lang.t(item.title)}}
-                    v-card-text(
-                        v-for='channel in item.channels'
-                        :key='channel.id'
-                    ) {{channel.title}}
+                .card-icon.d-flex.py-4
+                    //- include ../../../static/img/quran.pug
+                    //- v-icon.mr-5(:color='item.color' large) mdi-{{item.icon}}
+                v-card-title.text-capitalize.pt-6 {{$vuetify.lang.t(item.title)}}
+                v-card-text(
+                    v-for='channel in item.channels'
+                    :key='channel.id'
+                ) {{channel.title}}
 </template>
 <script>
 import { mapState } from "vuex";
