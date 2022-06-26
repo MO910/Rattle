@@ -5,7 +5,7 @@ import ar from "./lang/ar";
 //
 const local = "http://localhost:3000",
     publicHost = "https://rattel.herokuapp.com",
-    host = publicHost;
+    host = local;
 export default {
     // Global page headers: https://go.nuxtjs.dev/config-head
     static: {
@@ -66,8 +66,17 @@ export default {
         // https://go.nuxtjs.dev/pwa
         "@nuxtjs/pwa",
         "@nuxtjs/auth-next",
+        // "nuxt-socket-io",
     ],
-
+    io: {
+        // module options
+        sockets: [
+            {
+                name: "main",
+                url: host,
+            },
+        ],
+    },
     // Axios module configuration: https://go.nuxtjs.dev/config-axios
     axios: {
         // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308

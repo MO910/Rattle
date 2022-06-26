@@ -1,13 +1,23 @@
 import surah from "./parts/surah";
-// authentication
+// Authentication
 import login from "./parts/actions/authentication/login";
 import logout from "./parts/actions/authentication/logout";
-// fetch
+// Fetch
 import getUserData from "./parts/actions/fetch/getUserData";
 import getGroups from "./parts/actions/fetch/getGroups";
+import getOrganization from "./parts/actions/fetch/getOrganization";
+import getTeachers from "./parts/actions/fetch/getTeachers";
+import getStudents from "./parts/actions/fetch/getStudents";
 // Advancements
-import updateGoalsHistory from "./parts/actions/Goals/updateHistory";
 import addGoal from "./parts/actions/Goals/addGoal";
+import removeGoal from "./parts/actions/Goals/removeGoal";
+import updateGoalsHistory from "./parts/actions/Goals/updateHistory";
+// User
+import createUser from "./parts/actions/Users/createUser";
+// Organizations
+import createOrganization from "./parts/actions/createOrganization";
+// Center
+import createCenter from "./parts/actions/createCenter";
 // export
 export default {
     state: () => ({
@@ -17,11 +27,17 @@ export default {
         // login
         loginForm: {
             valid: false,
-            username: "",
+            email: "",
             password: "",
             error: "",
             showPassword: false,
             loading: false,
+        },
+        addCenterForm: {
+            dialog: false,
+        },
+        addUserForm: {
+            dialog: false,
         },
     }),
     actions: {
@@ -31,14 +47,46 @@ export default {
         // fetch
         getUserData,
         getGroups,
+        getOrganization,
+        getTeachers,
+        getStudents,
         // Advancements
         addGoal,
+        removeGoal,
         updateGoalsHistory,
+        // User
+        createUser,
+        // Organizations
+        createOrganization,
+        // Center
+        createCenter,
     },
     mutations: {
         updateModel(state, [obj, value]) {
             // console.log(obj, value);
             eval(`state.${obj} = value`);
+        },
+        refreshObj(state, obj) {
+            // console.log(obj, value);
+            const isArray = Array.isArray(eval(`state.${obj}`));
+            console.log(
+                `state.${obj} = ${isArray ? "[" : "{"}...state.${obj}${
+                    isArray ? "]" : "}"
+                }`
+            );
+            eval(
+                `state.${obj} = ${isArray ? "[" : "{"}...state.${obj}${
+                    isArray ? "]" : "}"
+                }`
+            );
+        },
+        push(state, [obj, value, method = "push"]) {
+            const target = eval(`state.${obj}`);
+            target[method](value);
+        },
+        remove(state, [obj, index]) {
+            const target = eval(`state.${obj}`);
+            target.splice(index, 1);
         },
     },
 };

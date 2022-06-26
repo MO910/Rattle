@@ -1,7 +1,7 @@
 <template lang="pug">
-    v-card.folder(:class='folder.color' router :to='router')
-        v-icon {{folder.icon || icon}}
-        .folderTitle.text-center(:class='folder.title_color') {{title}}
+v-card.folder(:class='folder.color' router :to='router')
+    v-icon {{folder.icon || icon}}
+    .folderTitle.text-center(:class='folder.title_color') {{title}}
 </template>
 <script>
 import { mapState, mapActions } from "vuex";
@@ -11,7 +11,7 @@ export default {
     computed: {
         title() {
             const { title, name } = this.folder;
-            const val = title || name;
+            const val = title || name || this.folder;
             if (this.translation) return this.$vuetify.lang.t(val);
             return val;
         },
@@ -25,6 +25,7 @@ export default {
     aspect-ratio: 1/1
     display: block
     margin: auto
+    margin-bottom: 6em
     background: red
     border-radius: 15% !important
     text-decoration: none

@@ -5,24 +5,24 @@ v-container
             v-col(cols="12" sm="6")
                 v-row.text-h1
                     v-text-field(
-                        :value="loginForm.username"
-                        @input="updateModel(['loginForm.username', $event])"
+                        :value="loginForm.email"
+                        @input="updateModel(['loginForm.email', $event])"
                         :rules="[requiredRole]"
                         name="email"
-                        autocomplete="username"
-                        label="username"
+                        autocomplete="email"
+                        label="email"
                     )
                 v-row
                     v-text-field(
                         :value="loginForm.password"
                         @input="updateModel(['loginForm.password', $event])"
-                        :append-icon="loginForm.showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                        :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                         :rules="[requiredRole]"
-                        :type="loginForm.showPassword ? 'text' : 'password'"
+                        :type="showPassword ? 'text' : 'password'"
                         autocomplete="password"
                         name="password"
                         label="password"
-                        @click:append="loginForm.showPassword = !loginForm.showPassword"
+                        @click:append="showPassword = !showPassword"
                     )
                 v-row
                     v-btn(
@@ -46,6 +46,7 @@ import { mapState, mapActions, mapMutations } from "vuex";
 export default {
     data: () => ({
         emailRules: [(v) => /(.+@.+)|SHARK/.test(v) || "E-mail must be valid"],
+        showPassword: false,
         requiredRole: (v) => !!v || "this field is required",
     }),
     computed: mapState(["loginForm"]),

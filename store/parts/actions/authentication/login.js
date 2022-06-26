@@ -5,7 +5,7 @@ export default async function ({ state, commit, dispatch }) {
         try {
             let { data } = await this.$auth.loginWith("local", {
                 data: {
-                    username: state.loginForm.username,
+                    username: state.loginForm.email,
                     password: state.loginForm.password,
                 },
             });
@@ -19,7 +19,7 @@ export default async function ({ state, commit, dispatch }) {
         } catch (err) {
             commit("updateModel", [
                 "loginForm.error",
-                "username or password is wrong",
+                "email or password is wrong",
             ]);
         }
         commit("updateModel", ["loginForm.loading", false]);

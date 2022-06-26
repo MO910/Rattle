@@ -36,7 +36,15 @@ v-container
         template(v-slot:divider)
             v-icon mdi-chevron-right
     .text-h3 {{subgroup.title}} > {{courses.channels[0].title}}
-    p(v-for='adv in goalsFormatted' :key='adv') {{adv}}
+    //- goals
+    p(
+        v-for='adv in goalsFormatted'
+        :key='adv.id'
+        :id='adv.id'
+        v-show='!adv.hide'
+        @click='removeGoal({id: adv.id})'
+    ) {{adv.text}}
+    //- 
     v-btn(@click='addDialog.model = true') add goal
     .text-h3 الطلاب
     v-row.py-10
@@ -131,7 +139,11 @@ export default {
                     (s) => s.englishName == subgroupPlan.chapter
                 )[0];
                 const { from, to } = subgroupPlan;
-                out.push(`${surah?.name}  من آية ${from} الى آاية ${to}`);
+                out.push({
+                    id: goal?.id,
+                    hide: goal.hide,
+                    text: `${surah?.name}  من آية ${from} الى آاية ${to}`,
+                });
             });
             return out;
         },
@@ -147,7 +159,7 @@ export default {
         },
     },
     methods: {
-        ...mapActions(["addGoal"]),
+        ...mapActions(["addGoal", "removeGoal"]),
         subgroupRouter(subgroupId) {
             return `${this.$router.currentRoute.path}/${subgroupId}`;
         },
@@ -200,12 +212,11 @@ export default {
             // add 'to' ayahs
             addSurahs(range.to);
             //
-            const historyProgress = student.goals_history?.reduce(
-                (acc, current) => {
+            const historyProgress = student.goals_history
+                ?.filter((h) => h.goal_id == adv.id)
+                ?.reduce((acc, current) => {
                     return acc + current.point;
-                },
-                0
-            );
+                }, 0);
             // return
             return {
                 ayahsList,

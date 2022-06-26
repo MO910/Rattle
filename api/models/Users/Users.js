@@ -2,12 +2,13 @@ const mongoose = require("mongoose"),
     Schema = mongoose.Schema;
 const Users = new Schema(
     {
-        username: String,
+        organization_id: mongoose.ObjectId,
+        parent_id: mongoose.ObjectId,
+        group_id: mongoose.ObjectId,
+        email: String,
         password: String,
         name: String,
         rule_ids: Array,
-        parent_id: mongoose.ObjectId,
-        group_id: mongoose.ObjectId,
         birth_day: Date,
         gender: String,
         phone: String,

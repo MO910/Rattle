@@ -12,8 +12,19 @@ export default {
     computed: mapState(["user"]),
     methods: {
         ruleRouter(rule) {
-            if (rule == "teacher") return "/groups";
-            return "/";
+            switch (rule.toLowerCase()) {
+                case "teacher":
+                    return "/groups";
+                    break;
+                case "owner":
+                    return "/admin";
+                    break;
+                case "parent":
+                    return "/children";
+                    break;
+                default:
+                    return "/";
+            }
         },
     },
 };

@@ -1,7 +1,8 @@
 // Dependencies
 import gql from "graphql-tag";
+import treeFinder from "../functions/treeFinder";
 // function
-export default async function ({ commit }) {
+export default async function ({ state, commit }) {
     // if (this.$auth.loggedIn && this.$auth.user && !state.user.id) {
     // state.userId = this.$auth.user._id;
     // GraphQl request

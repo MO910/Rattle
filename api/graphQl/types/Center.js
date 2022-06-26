@@ -8,10 +8,11 @@ const {
 } = require("graphql");
 // User Type
 module.exports = new GraphQLObjectType({
-    name: "Rule",
+    name: "Center",
     fields: () => ({
         id: { type: GraphQLID },
-        title: { type: GraphQLString },
-        permissions: { type: GraphQLString },
+        organization_id: { type: GraphQLID },
+        admin_id: { type: GraphQLID },
+        name: { type: GraphQLString },
     }),
 });

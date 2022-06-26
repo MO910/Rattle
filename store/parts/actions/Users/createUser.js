@@ -1,24 +1,30 @@
 // Dependencies
 import gql from "graphql-tag";
+import randomPassword from "../functions/randomPassword";
 import Optimistic from "../functions/Optimistic";
 // function
 export default async function (
     { state, commit },
-    { subgroup_id, chapter, from, to, due, note }
+    { email, password, name, phone, rule, nodePath }
 ) {
     // if (this.$auth.loggedIn && this.$auth.user && !state.user.id) {
     // state.userId = this.$auth.user._id;
+    const organization_id = state.organization?.id;
+    // generate a random password if there is null passed
+    password ||= randomPassword();
     // GraphQl request
     const request = async () => {
         const client = this.app.apolloProvider.defaultClient,
             { data } = await client.mutate({
                 mutation: gql`
                     mutation {
-                        addGoal(
-                            subgroup_id: "${subgroup_id}"
-                            chapter: "${chapter}"
-                            from: ${from}
-                            to: ${to}
+                        createUser(
+                            email: "${email}"
+                            password: "${password}"
+                            name: "${name}"
+                            ${phone ? `phone: "${phone}"` : ""}
+                            rules: ${JSON.stringify(rule)}
+                            organization_id: "${organization_id}"
                         ){
                             id
                         }
@@ -32,18 +38,17 @@ export default async function (
         state,
         commit,
         request,
-        dataKey: "addGoal",
+        dataKey: "createUser",
     });
     optimistic.add({
-        id: subgroup_id,
         requestData: {
-            subgroup_id,
-            chapter,
-            from,
-            to,
+            organization_id,
+            name,
+            email,
+            phone,
+            rule_ids: [rule],
         },
-        tree: ["groups", "courses", "channels", "subgroups"],
-        targetArray: "goals",
+        nodePath,
     });
     // }
 }

@@ -98,7 +98,9 @@ export default {
                 )
                     current = i;
             });
-            let present = (current * 100) / this.totalAyahs.ayahsList.length;
+            let present =
+                (current * 100) / (this.totalAyahs.ayahsList.length - 1);
+            console.log(current, this.totalAyahs.ayahsList.length - 1, present);
             return `${100 - present}%`;
         },
     },
@@ -109,7 +111,7 @@ export default {
             const surah = this.surah.data.filter(
                 (s) => s.englishName == point.surah
             )[0];
-            return `${surah.name} آيه ${point.ayah}`;
+            return `${surah?.name} آيه ${point.ayah}`;
         },
     },
 };
