@@ -10,7 +10,7 @@ const Goal_type = require("../../types/Goals/Goal"),
 module.exports = {
     type: Goal_type,
     args: {
-        subgroup_id: { type: GraphQLID },
+        group_id: { type: GraphQLID },
         chapter: { type: GraphQLString },
         from: { type: GraphQLInt },
         to: { type: GraphQLInt },

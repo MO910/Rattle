@@ -60,6 +60,18 @@ v-container
                 :goal_id='adv.id'
                 :totalAyahs='fillAyahsArray(adv, student)'
             )
+
+    v-data-table(
+        :headers="headers"
+        :items="table"
+        :items-per-page="5"
+        class="elevation-1"
+    )
+        template(v-slot:item.goals="{ item }")
+            v-chip(
+                :color="getColor(item.calories)"
+                dark
+            ) {{ fillAyahsArray(goals[0], item).current.ayah }}
     //- floatingButton
 </template>
 <script>
@@ -68,6 +80,28 @@ export default {
     middleware: ["fetchGroups"],
     mounted() {},
     data: () => ({
+        headers: [
+            { text: "name", value: "name" },
+            { text: "goals", value: "goals" },
+        ],
+        desserts: [
+            {
+                name: "Frozen Yogurt",
+                calories: 159,
+                fat: 6.0,
+                carbs: 24,
+                protein: 4.0,
+                iron: "1%",
+            },
+            {
+                name: "Ice cream sandwich",
+                calories: 237,
+                fat: 9.0,
+                carbs: 37,
+                protein: 4.3,
+                iron: "1%",
+            },
+        ],
         min: 1,
         max: 90,
         range: [1, 70],
@@ -102,6 +136,10 @@ export default {
     }),
     computed: {
         ...mapState(["groups", "surah"]),
+        table() {
+            console.log(this.subgroup);
+            return this.subgroup.students;
+        },
         subjects() {
             return this.groups?.filter((g) => g.id == this.$route.params.id)[0]
                 ?.subjects;
@@ -238,6 +276,12 @@ export default {
                 to,
             });
             this.addDialog.model = false;
+        },
+
+        getColor(calories) {
+            if (calories > 400) return "red";
+            else if (calories > 200) return "orange";
+            else return "green";
         },
     },
 };

@@ -19,14 +19,14 @@ module.exports = new GraphQLObjectType({
     fields: () => ({
         id: { type: GraphQLID },
         title: { type: GraphQLString },
-        goals: {
-            type: new GraphQLList(Goal_type),
-            async resolve({ id: subgroup_id }) {
-                return await Goals_schema.find({
-                    subgroup_id,
-                });
-            },
-        },
+        // goals: {
+        //     type: new GraphQLList(Goal_type),
+        //     async resolve({ id: subgroup_id }) {
+        //         return await Goals_schema.find({
+        //             subgroup_id,
+        //         });
+        //     },
+        // },
         students: {
             type: new GraphQLList(User_type),
             async resolve({ student_ids }) {

@@ -28,6 +28,12 @@ export default async function ({ state, commit }) {
                                 point
                             }
                         }
+                        goals {
+                            id
+                            chapter
+                            from
+                            to
+                        }
                         courses {
                             id
                             title
@@ -37,12 +43,6 @@ export default async function ({ state, commit }) {
                                 subgroups {
                                     id
                                     title
-                                    goals {
-                                        id
-                                        chapter
-                                        from
-                                        to
-                                    }
                                     students {
                                         id
                                         name

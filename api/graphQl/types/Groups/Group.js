@@ -9,6 +9,9 @@ const {
 //
 const User_type = require("../Users/User"),
     Users_schema = require("../../../models/Users/Users"),
+    // Goals
+    Goal_type = require("../Goals/Goal"),
+    Goals_schema = require("../../../models/Courses/Goals/Goals"),
     // courses
     Course_type = require("../Courses/Course"),
     Courses_schema = require("../../../models/Courses/Courses");
@@ -19,6 +22,14 @@ module.exports = new GraphQLObjectType({
         id: { type: GraphQLID },
         title: { type: GraphQLString },
         student_ids: { type: GraphQLID },
+        goals: {
+            type: new GraphQLList(Goal_type),
+            async resolve({ id: group_id }) {
+                return await Goals_schema.find({
+                    group_id,
+                });
+            },
+        },
         students: {
             type: new GraphQLList(User_type),
             async resolve({ student_ids }) {

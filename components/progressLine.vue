@@ -21,6 +21,7 @@ import { mapState, mapActions } from "vuex";
 export default {
     props: ["totalAyahs", "action", "user_id", "goal_id"],
     mounted() {
+        console.log(this.totalAyahs);
         const progress = document.querySelector(".progress"),
             curser = document.querySelector("#curser"),
             progressClip = document.querySelector("#progressClip rect");

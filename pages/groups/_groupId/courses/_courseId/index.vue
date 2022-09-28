@@ -1,52 +1,139 @@
 <template lang="pug" key="index">
 v-container
-    .text-h3 المجموعات الفرعية
-    v-row.pt-10
-        v-col(
-            cols='12'
-            v-for='item in courses.channels[0].subgroups'
-            :key='item.id'
-        )
-            v-card.items.px-10(
-                :class='item.color'
-                rounded router :to='subgroupRouter(item.id)'
-                v-ripple="{ class: item.ripple}"
-            )
-                .card-icon.d-flex.py-4
-                    //- include ../../../static/img/quran.pug
-                    //- v-icon.mr-5(:color='item.color' large) mdi-{{item.icon}}
-                v-card-title.text-capitalize.pt-6 {{$vuetify.lang.t(item.title)}}
-                v-card-text 15 of 20
-                v-row
-                    v-col(cols='3' v-for='student in item.students' :key='student.id')
-                        folder(:folder='student' icon='mdi-account')
-        v-col(cols='3' v-for='student in group.students' :key='student.id')
-            folder(:folder='student' icon='mdi-account')
+    p(
+        v-for='adv in goalsFormatted'
+        :key='adv.id'
+        :id='adv.id'
+        v-show='!adv.hide'
+    ) {{adv.text}}
+    //- @click='removeGoal({id: adv.id})'
+    v-dialog(v-model="addDialog.model" width="600")
+        v-card
+            v-card-title fsafdsa
+            v-card-text
+                v-container
+                    v-col(cols='12')
+                        v-select(
+                            label="سورة"
+                            v-model='selectedSurah'
+                            :items='surahSearchResults'
+                        )
+                            template(v-slot:prepend-item)
+                                v-list-item
+                                    v-text-field.d-block(
+                                        v-model="surahSearch"
+                                        name="email"
+                                        label="بحث"
+                                    )
+                                v-divider
+                    v-col(cols='12')
+                        .text-h6 {{selectedSurah}} من {{range[0]}} الى {{range[1]}}
+                    v-col(cols='12')
+                        v-range-slider.align-center(v-model='range' :max='max' :min='min' hide-details)
+                            template(v-slot:thumb-label="props")
+                                |{{props.value}}
+                    v-btn(color='primary' @click='addAGoal') add
+    v-btn(@click='addDialog.model = true') add goal
+    v-data-table(
+        :headers="headers"
+        :items="table"
+        :items-per-page="itemsPerPage"
+        :search="search"
+        :single-select='false'
+        :page.sync="page"
+        item-key="id"
+        @page-count="pageCount = $event"
+        :show-select='false'
+        hide-default-footer
+        loading-text="Loading... Please wait"
+        color='red'
+        class="elevation-1"
+    )           
 </template>
 <script>
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 export default {
     middleware: ["fetchGroups"],
-    mounted() {},
-    data: () => ({}),
+    mounted() {
+        console.log("groups", this.groups);
+        console.log(this.group.students);
+    },
+    data: () => ({
+        page: 1,
+        pageCount: 2,
+        itemsPerPage: 10,
+        search: "",
+        headers: [
+            { text: "name", value: "name" },
+            { text: "Goals", value: "goals" },
+        ],
+        addDialog: {
+            model: false,
+            selected: null,
+        },
+        surahSearch: "",
+        totalAyahs: [],
+        min: 1,
+        max: 90,
+        range: [1, 70],
+        selectedSurah: "",
+    }),
     computed: {
+        ...mapState(["groups", "surah", "goals"]),
         group() {
             const { groupId } = this.$route.params;
-            const group = this.groups?.filter((g) => g.id == groupId)?.[0];
+            const group = this.groups?.filter((g) => g.id == groupId)[0];
             return group;
         },
-        courses() {
-            const { courseId } = this.$route.params;
-            const group = this.group;
-            const course = group?.courses?.filter((s) => s.id == courseId)?.[0];
-
-            return course;
+        table() {
+            return this.group.students.map((student) => ({
+                name: student.name,
+                goals: JSON.stringify(this.goalsFormatted.map((g) => g.text)),
+            }));
         },
-        ...mapState(["groups"]),
+        surahSearchResults() {
+            const searchForReg = new RegExp(
+                this.surahSearch.replace(/\s/g, "")
+            );
+            const cleanReg = new RegExp("[^\u0621-\u063A^\u0641-\u064A]", "g");
+            const results = this.surah.data.filter((s) =>
+                s.name.replace(cleanReg, "").match(searchForReg)
+            );
+            return results.map((r) => r.name);
+        },
+        goalsFormatted() {
+            if (!this.group.goals) return;
+            let out = [];
+            this.group.goals.forEach((goal) => {
+                const subgroupPlan = goal;
+                // if (!subgroupPlan) return;
+                const surah = this.surah.data.filter(
+                    (s) => s.englishName == subgroupPlan.chapter
+                )[0];
+                const { from, to } = subgroupPlan;
+                out.push({
+                    id: goal?.id,
+                    hide: goal.hide,
+                    text: `${surah?.name}  من آية ${from} الى آاية ${to}`,
+                });
+            });
+            return out;
+        },
     },
     methods: {
-        subgroupRouter(subgroupId) {
-            return `${this.$router.currentRoute.path}/${subgroupId}`;
+        ...mapActions(["addGoal", "removeGoal"]),
+        async addAGoal() {
+            const chapter = this.surah.data.filter(
+                (s) => s.name == this.selectedSurah
+            )[0]?.englishName;
+            const [from, to] = this.range;
+            await this.addGoal({
+                group_id: this.$route.params.groupId,
+                chapter,
+                from,
+                to,
+            });
+            this.addDialog.model = false;
         },
     },
 };
@@ -68,4 +155,6 @@ export default {
         font-size: 1.2rem !important
 .folder .folderTitle
     font-size: 1.5em !important
+.col
+    position: relative
 </style>
