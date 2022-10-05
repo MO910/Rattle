@@ -2,10 +2,11 @@ const mongoose = require("mongoose"),
     Schema = mongoose.Schema;
 const Centers = new Schema(
     {
-        name: String,
         organization_id: mongoose.ObjectId,
-        admin_id: mongoose.ObjectId,
-        address: String,
+        admin_ids: Array,
+        name: String,
+        working_days: String, // encode like [sat, sun, mon, tue, wed, thu, fri]
+        description: String,
     },
     { timestamps: true, collection: "Centers" }
 );

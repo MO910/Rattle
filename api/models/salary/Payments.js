@@ -2,9 +2,11 @@ const mongoose = require("mongoose"),
     Schema = mongoose.Schema;
 const Payments = new Schema(
     {
-        name: String,
-        staff_members_id: mongoose.ObjectId,
-        adjust: Number,
+        const_salary_id: mongoose.ObjectId,
+        updated_by: mongoose.ObjectId,
+        adjustment: Number,
+        date: Date,
+        note: String,
     },
     { timestamps: true, collection: "Payments" }
 );

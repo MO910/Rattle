@@ -1,4 +1,5 @@
-import surah from "./parts/surah";
+import surahAdj from "./parts/surahAdj";
+import versesPerPage from "./parts/versesPerPage";
 // Authentication
 import login from "./parts/actions/authentication/login";
 import logout from "./parts/actions/authentication/logout";
@@ -9,9 +10,9 @@ import getOrganization from "./parts/actions/fetch/getOrganization";
 import getTeachers from "./parts/actions/fetch/getTeachers";
 import getStudents from "./parts/actions/fetch/getStudents";
 // Advancements
-import addGoal from "./parts/actions/Goals/addGoal";
-import removeGoal from "./parts/actions/Goals/removeGoal";
-import updateGoalsHistory from "./parts/actions/Goals/updateHistory";
+// import addGoal from "./parts/actions/Goals/addGoal";
+// import removeGoal from "./parts/actions/Goals/removeGoal";
+// import updateGoalsHistory from "./parts/actions/Goals/updateHistory";
 // User
 import createUser from "./parts/actions/Users/createUser";
 // Organizations
@@ -23,7 +24,8 @@ export default {
     state: () => ({
         user: {},
         groups: {},
-        surah,
+        versesPerPage,
+        surahAdj,
         // login
         loginForm: {
             valid: false,
@@ -39,6 +41,11 @@ export default {
         addUserForm: {
             dialog: false,
         },
+        addPlanForm: {
+            ayahValue: 1,
+            pagesValue: 1,
+            rabtPagesValue: 1,
+        },
     }),
     actions: {
         // authentication
@@ -51,9 +58,9 @@ export default {
         getTeachers,
         getStudents,
         // Advancements
-        addGoal,
-        removeGoal,
-        updateGoalsHistory,
+        // addGoal,
+        // removeGoal,
+        // updateGoalsHistory,
         // User
         createUser,
         // Organizations

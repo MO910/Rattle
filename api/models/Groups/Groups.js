@@ -2,12 +2,12 @@ const mongoose = require("mongoose"),
     Schema = mongoose.Schema;
 const Groups = new Schema(
     {
-        title: String,
-        center_id: Date,
-        teacher_id: mongoose.ObjectId,
         admin_id: mongoose.ObjectId,
-        student_ids: Array,
-        times: Array,
+        center_id: mongoose.ObjectId,
+        teacher_ids: Array,
+        title: String,
+        working_days: Array,
+        description: String,
     },
     { timestamps: true, collection: "Groups" }
 );

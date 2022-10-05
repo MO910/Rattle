@@ -24,4 +24,6 @@ export default {
     teachers: "teachers",
     students: "students",
     centers: "centers",
+    //
+    weekDays: '["sun", "mon", "tue", "wed", "thu", "fri", "sat"]',
 };

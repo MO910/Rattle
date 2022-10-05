@@ -86,9 +86,9 @@ export default {
     // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
     vuetify: {
         customVariables: ["~/assets/variables.sass"],
-        rtl: true,
+        // rtl: true,
         lang: {
-            current: "ar",
+            current: "en",
             locales: { en, ar },
         },
         theme: {

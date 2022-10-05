@@ -4,13 +4,12 @@ const Users = new Schema(
     {
         organization_id: mongoose.ObjectId,
         parent_id: mongoose.ObjectId,
-        group_id: mongoose.ObjectId,
+        name: String,
         email: String,
         password: String,
-        name: String,
         rule_ids: Array,
         birth_day: Date,
-        gender: String,
+        gender: Boolean,
         phone: String,
     },
     { timestamps: true, collection: "Users" }

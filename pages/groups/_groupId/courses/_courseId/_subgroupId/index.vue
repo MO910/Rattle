@@ -1,308 +1,150 @@
 <template lang="pug" key="index">
-v-container
-    v-dialog(v-model="dialog.model" width="500")
-        v-card 
-            v-row
-                v-col(cols='3')
-                    folder(:folder='dialog.selected' icon='mdi-account')
-    v-dialog(v-model="addDialog.model" width="600")
-        v-card
-            v-card-title fsafdsa
-            v-card-text
-                v-container
-                    v-col(cols='12')
-                        v-select(
-                            label="سورة"
-                            v-model='selectedSurah'
-                            :items='surahSearchResults'
-                        )
-                            template(v-slot:prepend-item)
-                                v-list-item
-                                    v-text-field.d-block(
-                                        v-model="surahSearch"
-                                        name="email"
-                                        label="بحث"
-                                    )
-                                v-divider
-                    v-col(cols='12')
-                        .text-h6 {{selectedSurah}} من {{range[0]}} الى {{range[1]}}
-                    v-col(cols='12')
-                        v-range-slider.align-center(v-model='range' :max='max' :min='min' hide-details)
-                            template(v-slot:thumb-label="props")
-                                |{{props.value}}
-                    v-btn(color='primary' @click='addAGoal') add
-
-    v-breadcrumbs(:items="items")
-        template(v-slot:divider)
-            v-icon mdi-chevron-right
-    .text-h3 {{subgroup.title}} > {{courses.channels[0].title}}
-    //- goals
-    p(
-        v-for='adv in goalsFormatted'
-        :key='adv.id'
-        :id='adv.id'
-        v-show='!adv.hide'
-        @click='removeGoal({id: adv.id})'
-    ) {{adv.text}}
-    //- 
-    v-btn(@click='addDialog.model = true') add goal
-    .text-h3 الطلاب
-    v-row.py-10
-        v-col.pa-0(
-            v-for='student in subgroup.students' :key='student.id'
-            cols='3' @click='openDialog(student)'
+v-container 
+    .text-h3 {{ subgroup.title }}
+    .text-h4 {{ dateStyled }}
+    p(v-for='plan in plansOfDate')
+        |{{toString(plan.title, plan.days[0], true)}}
+        |{{plan.title}}
+        //- p(v-for='d in toString(plan.title, plan.days[0], true)')
+            v-chip(class="ma-2" color="primary") {{d}}
+            //- |{{d.str}}
+    addPlan(:default_days='groupWorkingDays')
+    | {{subgroup.students}}
+    v-row.pt-10
+        v-col(
+            cols='12'
+            v-for='student in subgroup.students'
+            :key='student.id'
         )
-            folder(:folder='student' icon='mdi-account')
-            progressLine(
-                v-for='adv in goals'
-                :key='adv.id'
-                :user_id='student.id'
-                :goal_id='adv.id'
-                :totalAyahs='fillAyahsArray(adv, student)'
-            )
-
-    v-data-table(
-        :headers="headers"
-        :items="table"
-        :items-per-page="5"
-        class="elevation-1"
-    )
-        template(v-slot:item.goals="{ item }")
-            v-chip(
-                :color="getColor(item.calories)"
-                dark
-            ) {{ fillAyahsArray(goals[0], item).current.ayah }}
-    //- floatingButton
+            v-card.items.px-10.py-5
+                v-card-title.text-capitalize.text-h4.pt-6 {{student.name}}
+                advantage
+    plan-table(:plansToTables='plansToTables' :weekDays='weekDays')
 </template>
 <script>
 import { mapState, mapActions } from "vuex";
+import { planTable } from "~/static/js/planTable";
 export default {
     middleware: ["fetchGroups"],
-    mounted() {},
     data: () => ({
-        headers: [
-            { text: "name", value: "name" },
-            { text: "goals", value: "goals" },
-        ],
-        desserts: [
-            {
-                name: "Frozen Yogurt",
-                calories: 159,
-                fat: 6.0,
-                carbs: 24,
-                protein: 4.0,
-                iron: "1%",
-            },
-            {
-                name: "Ice cream sandwich",
-                calories: 237,
-                fat: 9.0,
-                carbs: 37,
-                protein: 4.3,
-                iron: "1%",
-            },
-        ],
-        min: 1,
-        max: 90,
-        range: [1, 70],
-        selectedSurah: "",
-        dialog: {
-            model: false,
-            selected: null,
-        },
-        addDialog: {
-            model: false,
-            selected: null,
-        },
-        surahSearch: "",
-        totalAyahs: [],
-        items: [
-            {
-                text: "Dashboard",
-                disabled: false,
-                href: "breadcrumbs_dashboard",
-            },
-            {
-                text: "Link 1",
-                disabled: false,
-                href: "breadcrumbs_link_1",
-            },
-            {
-                text: "Link 2",
-                disabled: true,
-                href: "breadcrumbs_link_2",
-            },
-        ],
+        plans: [],
+        plansToTables: [],
+        selectedDate: new Date(1664878909852),
     }),
+    mounted() {
+        const { plans, plansToTables } = planTable({
+            group: this.group,
+            subgroup: this.subgroup,
+            weekDays: this.weekDays,
+            toString: this.toString,
+        });
+        this.plansToTables = plansToTables;
+        this.plans = plans;
+        // marge all plans to one block
+        plansToTables.slice(1).forEach((plan) => {
+            plan.forEach((week, wi) => {
+                // console.log(week);
+                for (let day in week) {
+                    // console.log(plansToTables[0][wi]);
+                    plansToTables[0][wi][day] += `\n${week[day]}`;
+                }
+            });
+        });
+        //
+        this.plansOfDate.forEach((plan) => {
+            console.log(this.toString(plan.title, plan.days[0]));
+        });
+        //
+        console.log(this.versesPerPage);
+    },
     computed: {
-        ...mapState(["groups", "surah"]),
-        table() {
-            console.log(this.subgroup);
-            return this.subgroup.students;
-        },
-        subjects() {
-            return this.groups?.filter((g) => g.id == this.$route.params.id)[0]
-                ?.subjects;
-        },
+        ...mapState(["groups", "versesPerPage"]),
         group() {
             const { groupId } = this.$route.params;
-            const group = this.groups?.filter((g) => g.id == groupId)[0];
-            return group;
+            return this.groups.filter((g) => g.id == groupId)?.[0];
         },
-        courses() {
+        course() {
             const { courseId } = this.$route.params;
-            const group = this.group;
-            const course = group?.courses?.filter((s) => s.id == courseId)[0];
-            return course;
+            if (this.group)
+                return this.group.courses.filter((c) => c.id == courseId)?.[0];
         },
         subgroup() {
             const { subgroupId } = this.$route.params;
-            const subgroups = this.courses?.channels?.[0]?.subgroups;
-            const subgroup = subgroups?.filter((s) => s.id == subgroupId)[0];
-            return subgroup;
+            if (this.course)
+                return this.course.subgroups.filter(
+                    (s) => s.id == subgroupId
+                )?.[0];
         },
-        goals() {
-            let adv = this.subgroup?.goals;
-            // adv[0].current = adv?.[0]?.history?.[adv.length - 1]?.point;
-            // adv[0].current = adv.current?.replace(/\D/g, "");
-            return adv;
-        },
-        goalsFormatted() {
-            if (!this.goals) return;
-            let out = [];
-            this.goals.forEach((goal) => {
-                const subgroupPlan = goal;
-                // if (!subgroupPlan) return;
-                const surah = this.surah.data.filter(
-                    (s) => s.englishName == subgroupPlan.chapter
-                )[0];
-                const { from, to } = subgroupPlan;
-                out.push({
-                    id: goal?.id,
-                    hide: goal.hide,
-                    text: `${surah?.name}  من آية ${from} الى آاية ${to}`,
-                });
-            });
-            return out;
-        },
-        surahSearchResults() {
-            const searchForReg = new RegExp(
-                this.surahSearch.replace(/\s/g, "")
+        weekDays() {
+            let weekDays = JSON.parse(
+                this.$vuetify.lang.t("$vuetify.weekDays")
             );
-            const cleanReg = new RegExp("[^\u0621-\u063A^\u0641-\u064A]", "g");
-            const results = this.surah.data.filter((s) =>
-                s.name.replace(cleanReg, "").match(searchForReg)
-            );
-            return results.map((r) => r.name);
+            return this.group.working_days.map((di) => weekDays[di]);
+        },
+        groupWorkingDays() {
+            return this.group?.working_days;
+        },
+        // rating
+        plansOfDate() {
+            return this.plans
+                .map((p) => {
+                    let pClone = { ...p };
+                    pClone.days = pClone.days.filter(
+                        (d) =>
+                            this.zeroClock(d.date).getTime() ==
+                            this.zeroClock(this.selectedDate).getTime()
+                    );
+                    return pClone;
+                })
+                .filter((plan) => plan.days.length);
+        },
+        dateStyled() {
+            if (!this.plansOfDate.length) return;
+            const options = { dateStyle: "full" },
+                formatter = new Intl.DateTimeFormat("en-GB", options);
+            return formatter.format(this.selectedDate);
         },
     },
     methods: {
-        ...mapActions(["addGoal", "removeGoal"]),
-        subgroupRouter(subgroupId) {
-            return `${this.$router.currentRoute.path}/${subgroupId}`;
-        },
-        openDialog(selected) {
-            this.dialog.model = true;
-            this.dialog.selected = selected;
-        },
-        fillAyahsArray(adv, student) {
-            let ayahsList = [];
-            let range = { from: {}, to: {} };
-            range.from.englishName = range.to.englishName = adv.chapter;
-            range.from.numberOfAyahs = adv.from;
-            range.to.numberOfAyahs = adv.to;
-            // filter surahs
-            let filterFrom = this.surah.data.filter((SDB) =>
-                SDB.englishName.match(range.from.englishName)
-            );
-            let filterTo = this.surah.data.filter((SDB) =>
-                SDB.englishName.match(range.to.englishName)
-            );
-            // add from ayahs
-            let sameSurah = range.from.englishName == range.to.englishName;
-            let fromLim = sameSurah
-                ? range.to.numberOfAyahs
-                : filterFrom[0].numberOfAyahs;
-            for (let i = range.from.numberOfAyahs; i <= fromLim; i++)
-                ayahsList.push({ surah: range.from.englishName, ayah: i });
-            // function to add from beginning of surah
-            const addSurahs = (surah) => {
-                if (sameSurah) return;
-                for (let i = 1; i <= surah.numberOfAyahs; i++) {
-                    ayahsList.push({ surah: surah.englishName, ayah: i });
-                }
-            };
-            // sum 'middle' surahs
-            let direction = Math.sign(
-                filterTo[0].number - filterFrom[0].number
-            );
-            for (let i = filterFrom[0].number + direction; ; i += direction) {
-                // break conditions
-                let directionCondition =
-                    direction > 0
-                        ? i < filterTo[0].number
-                        : i > filterTo[0].number;
-                if (!directionCondition || sameSurah) break;
-                //
-                let middleSurah = this.surah.data[i - 1];
-                addSurahs(middleSurah);
-            }
-            // add 'to' ayahs
-            addSurahs(range.to);
+        toString(planTitle, obj, details) {
             //
-            const historyProgress = student.goals_history
-                ?.filter((h) => h.goal_id == adv.id)
-                ?.reduce((acc, current) => {
-                    return acc + current.point;
-                }, 0);
-            // return
-            return {
-                ayahsList,
-                current: {
-                    surah: adv.chapter,
-                    ayah: adv.from + historyProgress,
-                },
-            };
+            if (this.course.title.toLowerCase() === "qur0an") {
+                return `${planTitle}: from page ${obj.from} to ${obj.to}`;
+            } // normal book
+            else {
+                let de = [];
+                let str = `${planTitle}: from page ${obj.from} to ${obj.to}\n`;
+                // details
+                if (!details) str = `${planTitle}: ${str}`;
+                else de.push({ title: planTitle, str });
+                // rabt
+                if (obj.rabt_from) {
+                    if (!details) str = `${planTitle} rabt: `;
+                    str += `from page ${obj.rabt_from} to ${Math.max(
+                        obj.from - 1,
+                        1
+                    )}`;
+                    if (details) de.push({ title: `${planTitle} rabt`, str });
+                }
+                return details ? de : str;
+            }
         },
-        async addAGoal() {
-            const chapter = this.surah.data.filter(
-                (s) => s.name == this.selectedSurah
-            )[0]?.englishName;
-            const [from, to] = this.range;
-            await this.addGoal({
-                subgroup_id: this.$route.params.subgroupId,
-                chapter,
-                from,
-                to,
-            });
-            this.addDialog.model = false;
-        },
-
-        getColor(calories) {
-            if (calories > 400) return "red";
-            else if (calories > 200) return "orange";
-            else return "green";
+        //
+        zeroClock(date) {
+            date = new Date(date);
+            date.setHours(0);
+            date.setMinutes(0);
+            date.setSeconds(0);
+            date.setMilliseconds(0);
+            return date;
         },
     },
 };
 </script>
 
 <style lang="sass">
-.items
-    padding-bottom: 4em
-    border-radius: 10px !important
-    box-shadow: 0px 0px 34px -20px rgb(0 0 0 / 50%) !important
-    .card-icon > svg
-        margin: auto
-    .v-card__title
-        font-size: clamp(2rem, 3vw, 2.5rem) !important
-    &.items
-        .v-card__title
-            font-size: clamp(2rem, 3vw, 2.5rem) !important
-    .v-card__text
-        font-size: 1.2rem !important
-.folder .folderTitle
-    font-size: 1.5em !important
-.col
-    position: relative
+.v-rating
+    width: 100%
+    .v-icon
+        padding: 0 !important
 </style>

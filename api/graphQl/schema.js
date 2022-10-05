@@ -20,7 +20,8 @@ const // user
     Centers_schema = require("../models/Centers");
 // mutations
 const // Goals
-    addGoal = require("./mutations/Goals/addGoal"),
+    addPlan = require("./mutations/Plans/addPlan");
+/*
     removeGoal = require("./mutations/Goals/removeGoal"),
     updateGoalsHistory = require("./mutations/Goals/updateHistory"),
     // Users
@@ -31,6 +32,7 @@ const // Goals
     createCenter = require("./mutations/createCenter"),
     // rule convert function
     rulesConverter = require("./types/shared/rulesConverter");
+*/
 //
 const query = new GraphQLObjectType({
         name: "RootQueryType",
@@ -77,12 +79,10 @@ const query = new GraphQLObjectType({
     mutation = new GraphQLObjectType({
         name: "mutation",
         fields: {
-            addGoal,
-            removeGoal,
-            updateGoalsHistory,
-            createUser,
-            createOrganization,
-            createCenter,
+            //         createUser,
+            //         createOrganization,
+            //         createCenter,
+            addPlan,
         },
     });
 // exports

@@ -9,6 +9,9 @@ v-container
 import { mapState } from "vuex";
 export default {
     data: () => ({}),
+    mounted() {
+        console.log(this.user);
+    },
     computed: mapState(["user"]),
     methods: {
         ruleRouter(rule) {

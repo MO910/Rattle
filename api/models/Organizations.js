@@ -2,8 +2,9 @@ const mongoose = require("mongoose"),
     Schema = mongoose.Schema;
 const Organizations = new Schema(
     {
-        name: String,
         owner_id: mongoose.ObjectId,
+        name: String,
+        description: String,
     },
     { timestamps: true, collection: "Organizations" }
 );

@@ -6,7 +6,9 @@ const {
     GraphQLList,
     GraphQLBoolean,
 } = require("graphql");
-const // Users
+const // shared function
+    getGroupFromStudentId = require("../shared/getGroupFromStudentId"),
+    // Users
     Users_schema = require("../../../models/Users/Users"),
     //Attendance
     Attendance_type = require("./Attendance"),
@@ -15,11 +17,10 @@ const // Users
     Rule_type = require("./Rule"),
     Rules_schema = require("../../../models/Users/Rules"),
     // Advancements
-    Goal_History_type = require("../Goals/History"),
-    Goals_schema = require("../../../models/Courses/Goals/Goals"),
-    Goals_History_schema = require("../../../models/Courses/Goals/History"),
+    Plan_History_type = require("../Plans/Plan_History"),
+    Plans_History_schema = require("../../../models/Plans/Plan_History"),
     // rule convert function
-    rulesConverter = require("../../types/shared/rulesConverter");
+    rulesConverter = require("../shared/rulesConverter");
 // User Type
 const User_type = new GraphQLObjectType({
     name: `User${~~(Math.random() * 1000)}`,
@@ -28,6 +29,7 @@ const User_type = new GraphQLObjectType({
         organization_id: { type: GraphQLID },
         name: { type: GraphQLString },
         email: { type: GraphQLString },
+        gender: { type: GraphQLBoolean },
         phone: { type: GraphQLString },
         rule_ids: { type: new GraphQLList(GraphQLID) },
         rules: {
@@ -39,13 +41,7 @@ const User_type = new GraphQLObjectType({
         group: {
             type: Group_type,
             async resolve({ id }) {
-                const subgroup = (
-                    await Subgroups_schema.find({ student_ids: id })
-                )?.[0];
-                const group = await Groups_schema.find({
-                    $or: [{ _id: subgroup?.group_id }, { student_ids: id }],
-                });
-                return group?.[0];
+                return await getGroupFromStudentId(id);
             },
         },
         attendances: {
@@ -54,22 +50,22 @@ const User_type = new GraphQLObjectType({
                 return await Attendances_schema.find({ user_id });
             },
         },
-        goals_history: {
-            type: new GraphQLList(Goal_History_type),
-            async resolve({ id: user_id }) {
-                return await Goals_History_schema.find({ user_id });
+        plans_history: {
+            type: new GraphQLList(Plan_History_type),
+            async resolve({ id: student_id }) {
+                return await Plans_History_schema.find({ student_id });
             },
         },
-        children: {
-            type: new GraphQLList(User_type),
-            async resolve({ id, rule_ids }) {
-                const parentRule = await rulesConverter({ rules: ["parent"] });
-                if (!rule_ids?.some((r) => r == parentRule[0])) return;
-                return await Users_schema.find({
-                    parent_id: id,
-                });
-            },
-        },
+        // children: {
+        //     type: new GraphQLList(User_type),
+        //     async resolve({ id, rule_ids }) {
+        //         const parentRule = await rulesConverter({ rules: ["parent"] });
+        //         if (!rule_ids?.some((r) => r == parentRule[0])) return;
+        //         return await Users_schema.find({
+        //             parent_id: id,
+        //         });
+        //     },
+        // },
     }),
 });
 // export
@@ -78,6 +74,5 @@ module.exports = User_type;
 const // Groups
     Group_type = require("../Groups/Group"),
     Groups_schema = require("../../../models/Groups/Groups"),
-    Channels_schema = require("../../../models/Courses/Channels"),
     Courses_schema = require("../../../models/Courses/Courses"),
     Subgroups_schema = require("../../../models/Groups/Subgroups");

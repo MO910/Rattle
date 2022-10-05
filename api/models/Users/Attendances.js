@@ -3,7 +3,10 @@ const mongoose = require("mongoose"),
 const Attendances = new Schema(
     {
         user_id: mongoose.ObjectId,
+        updated_by: mongoose.ObjectId,
         attended: Boolean,
+        date: Date,
+        note: String,
     },
     { timestamps: true, collection: "Attendances" }
 );

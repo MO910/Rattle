@@ -3,7 +3,7 @@ import gql from "graphql-tag";
 // function
 export default async function ({ state, commit }, { id: userId } = {}) {
     if (this.$auth.loggedIn && this.$auth.user && !state.user?.id) {
-        userId ||= this.$auth.user._id;
+        userId = userId || this.$auth.user._id;
         // GraphQl request
         const client = this.app.apolloProvider.defaultClient,
             {
@@ -14,28 +14,26 @@ export default async function ({ state, commit }, { id: userId } = {}) {
                         user(id: "${userId}") {
                             organization_id
                             name
-                            children {
-                                id
-                                name
-                                attendances {
-                                    attended
-                                }
-                                rules {
-                                    title
-                                    permissions
-                                }
-                            }
+                            email
+                            phone
+                            gender
                             attendances {
                                 attended
+                                date
                             }
                             rules {
                                 title
                                 permissions
                             }
-                            goals_history {
-                                id
-                                goal_id
-                                point
+                            group {
+                                title
+                                working_days
+                                courses {
+                                    title
+                                    subgroups{
+                                        title
+                                    }
+                                }
                             }
                         }
                     }

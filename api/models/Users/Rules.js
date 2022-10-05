@@ -3,7 +3,7 @@ const mongoose = require("mongoose"),
 const Rules = new Schema(
     {
         title: String,
-        permissions: String,
+        permissions: String, // encoded like [parent, student, etc]
     },
     { timestamps: true, collection: "Rules" }
 );

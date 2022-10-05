@@ -2,8 +2,8 @@ const mongoose = require("mongoose"),
     Schema = mongoose.Schema;
 const Courses = new Schema(
     {
-        title: String,
         group_id: mongoose.ObjectId,
+        title: String,
         description: String,
     },
     { timestamps: true, collection: "Courses" }

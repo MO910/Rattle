@@ -12,49 +12,34 @@ export default async function ({ state, commit }) {
         } = await client.query({
             query: gql`
                 query groups {
-                    groups(userId: "626d45dd2e600ed075c196ca") {
+                    groups(userId: "6336d7f1a99d2cb48dab444a") {
                         id
                         title
-                        students {
-                            id
-                            name
-                            attendances {
-                                id
-                                attended
-                            }
-                            goals_history {
-                                id
-                                goal_id
-                                point
-                            }
-                        }
-                        goals {
-                            id
-                            chapter
-                            from
-                            to
-                        }
+                        working_days
+                        description
                         courses {
                             id
                             title
-                            channels {
+                            description
+                            subgroups {
                                 id
                                 title
-                                subgroups {
-                                    id
+                                plans {
                                     title
-                                    students {
-                                        id
-                                        name
-                                        attendances {
-                                            id
-                                            attended
-                                        }
-                                        goals_history {
-                                            id
-                                            goal_id
-                                            point
-                                        }
+                                    from
+                                    amount
+                                    weeks
+                                    rabt_amount
+                                    working_days
+                                    starting_at
+                                }
+                                students {
+                                    name
+                                    email
+                                    phone
+                                    gender
+                                    plans_history {
+                                        amount_done
                                     }
                                 }
                             }

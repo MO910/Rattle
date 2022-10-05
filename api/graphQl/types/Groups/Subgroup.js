@@ -10,8 +10,8 @@ const {
 const User_type = require("../Users/User"),
     Users_schema = require("../../../models/Users/Users"),
     //
-    Goal_type = require("../Goals/Goal"),
-    Goals_schema = require("../../../models/Courses/Goals/Goals");
+    Plan_type = require("../Plans/Plan"),
+    Plans_schema = require("../../../models/Plans/Plans");
 // export Type
 // User Type
 module.exports = new GraphQLObjectType({
@@ -19,14 +19,15 @@ module.exports = new GraphQLObjectType({
     fields: () => ({
         id: { type: GraphQLID },
         title: { type: GraphQLString },
-        // goals: {
-        //     type: new GraphQLList(Goal_type),
-        //     async resolve({ id: subgroup_id }) {
-        //         return await Goals_schema.find({
-        //             subgroup_id,
-        //         });
-        //     },
-        // },
+        student_ids: { type: GraphQLID },
+        plans: {
+            type: new GraphQLList(Plan_type),
+            async resolve({ id: subgroup_id }) {
+                return await Plans_schema.find({
+                    subgroup_id,
+                });
+            },
+        },
         students: {
             type: new GraphQLList(User_type),
             async resolve({ student_ids }) {
