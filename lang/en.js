@@ -25,5 +25,33 @@ export default {
     students: "students",
     centers: "centers",
     //
-    weekDays: '["sun", "mon", "tue", "wed", "thu", "fri", "sat"]',
+    weekDays:
+        '["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]',
+    //
+    addPlan: "add plan",
+    plans: "plans",
+    surah: "surah",
+    search: "search",
+    weeks: "weeks",
+    new: "new",
+    old: "old",
+    rabt: "rabt",
+    ayah: "ayah",
+    grade: "grade",
+    from: "from",
+    to: "to",
+    //
+    pagesPerDay: "pages per day",
+    hasRabt: "the plan has Rabt",
+    rabtPages: "Rabt pages per day",
+    workingDays: "working days",
+    startingDate: "starting at date",
+    //
+    type: "type",
+    custom: "custom",
+    tajweed: "tajweed",
+    tafseer: "tafseer",
+    direction: "direction",
+    descending: "descending",
+    Progressive: "Progressive",
 };

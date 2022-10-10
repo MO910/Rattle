@@ -1,6 +1,15 @@
 import { generatePlanDays } from "./generatePlanDays";
 // function
-const planTable = ({ group, subgroup, weekDays, toString }) => {
+const planTable = ({
+    group,
+    courseTitle,
+    subgroup,
+    weekDays,
+    stringify,
+    versesPerPage,
+    surahAdj,
+    $vuetify,
+}) => {
     let plans = [],
         plansToTables = [];
     // generate plans
@@ -18,8 +27,16 @@ const planTable = ({ group, subgroup, weekDays, toString }) => {
             spreadPlan.push(plansTemp.splice(0, working_days.length));
         spreadPlan = spreadPlan.map((week) => {
             let weekObj = {};
-            week.forEach((d, i) => {
-                weekObj[weekDays[i]] = toString(plan.title, d);
+            week.forEach((day, i) => {
+                weekObj[weekDays[i]] = stringify({
+                    title: plan.title,
+                    day,
+                    courseTitle,
+                    versesPerPage,
+                    surahAdj,
+                    $vuetify,
+                    showDate: true,
+                });
             });
             return weekObj;
         });

@@ -4,30 +4,31 @@ const {
     GraphQLID,
     GraphQLBoolean,
 } = require("graphql");
-const History_Schema = require("../../../models/Courses/Goals/History");
+const History_Schema = require("../../../models/Plans/Plan_History");
 // Function
 module.exports = {
     type: GraphQLBoolean,
     args: {
-        user_id: { type: GraphQLID },
-        goal_id: { type: GraphQLID },
-        point: { type: GraphQLInt },
+        student_id: { type: GraphQLID },
+        plan_id: { type: GraphQLID },
+        updated_by: { type: GraphQLID },
+        amount_done: { type: GraphQLInt },
+        date: { type: GraphQLString },
+        grade: { type: GraphQLInt },
+        rabt: { type: GraphQLBoolean },
+        note: { type: GraphQLString },
     },
-    async resolve(_, { user_id, goal_id, point }) {
+    async resolve(_, args) {
         // Update User record
-        const $gte = new Date(new Date().toLocaleString().split(",")[0]),
-            $lte = new Date(new Date($gte).setDate($gte.getDate() + 1)),
-            exists = await History_Schema.findOneAndUpdate(
-                {
-                    user_id,
-                    goal_id,
-                    createdAt: { $gte, $lte },
-                },
-                { $inc: { point } }
-            );
-        return !(
-            !exists &&
-            !(await History_Schema.create({ user_id, goal_id, point }))
+        const exists = await History_Schema.findOneAndUpdate(
+            {
+                student_id: args.student_id,
+                plan_id: args.plan_id,
+                date: new Date(args.date),
+            },
+            args
         );
+        console.log("exists: ", exists);
+        return !(!exists && !(await History_Schema.create(args)));
     },
 };

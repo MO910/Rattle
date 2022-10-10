@@ -4,7 +4,7 @@ const generatePlanDays = (group, plan) => {
             ? plan.working_days
             : group.working_days,
         decreaseMillSec = [];
-    const { title } = plan;
+    const { id, title } = plan;
     const DAY_MILL_SEC = 24 * 60 * 60 * 1000,
         totalDays = plan.weeks * working_days.length,
         getDefInDays = (d1, d2) => (d1 >= d2 ? d1 - d2 : 7 - d2 + d1);
@@ -47,7 +47,7 @@ const generatePlanDays = (group, plan) => {
     }
     // format date to Date Object
     days.map((d) => (d.date = new Date(d.date)));
-    return { title, days };
+    return { id, title, days };
 };
 
 export { generatePlanDays };

@@ -8,10 +8,11 @@ const Plan_History = new Schema(
         amount_done: Number,
         grade: Number,
 
-        rabt_amount_done: Number,
-        rabt_grade: Number,
-
+        rabt: Boolean,
         note: String,
+        date: Date,
+        // rabt_amount_done: Number,
+        // rabt_grade: Number,
     },
     { timestamps: true, collection: "Plan_History" }
 );

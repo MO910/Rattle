@@ -9,6 +9,11 @@ const // user
     User_type = require("./types/Users/User"),
     Users_schema = require("../models/Users/Users"),
     Rules_schema = require("../models/Users/Rules"),
+    // Plans
+    Plan_Schema = require("../models/Plans/Plans"),
+    Plan_type = require("./types/Plans/Plan"),
+    Plan_History_Schema = require("../models/Plans/Plan_History"),
+    Plan_History_type = require("./types/Plans/Plan_History"),
     // group
     Group_type = require("./types/Groups/Group"),
     Groups_schema = require("../models/Groups/Groups"),
@@ -20,7 +25,8 @@ const // user
     Centers_schema = require("../models/Centers");
 // mutations
 const // Goals
-    addPlan = require("./mutations/Plans/addPlan");
+    addPlan = require("./mutations/Plans/addPlan"),
+    updatePlanHistory = require("./mutations/Plans/updateHistory");
 /*
     removeGoal = require("./mutations/Goals/removeGoal"),
     updateGoalsHistory = require("./mutations/Goals/updateHistory"),
@@ -74,15 +80,34 @@ const query = new GraphQLObjectType({
                     return orgs?.[0];
                 },
             },
+            subgroupHistoryAtDate: {
+                type: new GraphQLList(Plan_History_type),
+                args: {
+                    subgroup_id: { type: GraphQLID },
+                    date: { type: GraphQLString },
+                },
+                async resolve(_, { subgroup_id, date }) {
+                    // get plans
+                    const plans = await Plan_Schema.find({ subgroup_id }),
+                        allHistories = await Promise.all(
+                            plans.map(async (plan) => {
+                                const history = await Plan_History_Schema.find({
+                                    plan_id: plan.id,
+                                    date: new Date(date),
+                                });
+                                return history;
+                            })
+                        );
+                    return allHistories.flat();
+                },
+            },
         },
     }),
     mutation = new GraphQLObjectType({
         name: "mutation",
         fields: {
-            //         createUser,
-            //         createOrganization,
-            //         createCenter,
             addPlan,
+            updatePlanHistory,
         },
     });
 // exports

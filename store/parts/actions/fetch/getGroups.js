@@ -25,6 +25,7 @@ export default async function ({ state, commit }) {
                                 id
                                 title
                                 plans {
+                                    id
                                     title
                                     from
                                     amount
@@ -34,6 +35,7 @@ export default async function ({ state, commit }) {
                                     starting_at
                                 }
                                 students {
+                                    id
                                     name
                                     email
                                     phone

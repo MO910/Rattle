@@ -35,9 +35,6 @@ export default {
                 src: "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.2.6/gsap.min.js",
             },
             {
-                src: "/js/progressLine.js",
-            },
-            {
                 src: "/js/inputNumber.js",
             },
         ],
@@ -86,9 +83,9 @@ export default {
     // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
     vuetify: {
         customVariables: ["~/assets/variables.sass"],
-        // rtl: true,
+        rtl: true,
         lang: {
-            current: "en",
+            current: "ar",
             locales: { en, ar },
         },
         theme: {

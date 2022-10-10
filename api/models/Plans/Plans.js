@@ -10,7 +10,6 @@ const Plans = new Schema(
         amount: Number,
         weeks: Number,
 
-        // has_rabt: Boolean,
         rabt_amount: Number,
 
         working_days: Array,

@@ -41,4 +41,34 @@ export default {
     teachers: "المعلمين",
     students: "الطلاب",
     centers: "المراكز",
+    //
+    weekDays:
+        '["الاحد", "الاثنين", "الثلاثاء", "الاربعاء", "الخميس", "الجمعة", "السبت"]',
+    //
+    addPlan: "اضف خطة",
+    plans: "الخطط",
+    surah: "سورة",
+    search: "بحث",
+    weeks: "عدد الاسابيع",
+    new: "جديد",
+    old: "قديم",
+    rabt: "ربط",
+    ayah: "اية",
+    grade: "الدرجة",
+    from: "من",
+    to: "الى",
+    //
+    pagesPerDay: "عدد الاوجه في اليوم",
+    hasRabt: "الخطة تحتوي على الربط",
+    rabtPages: "عدد اوجه الربط اليومي",
+    workingDays: "ايام التسميع",
+    startingDate: "تاريخ البداية",
+    //
+    type: "النوع",
+    custom: "مخصص",
+    tajweed: "تجويد",
+    tafseer: "تفسير",
+    direction: "باتجاه",
+    descending: "تنازلي",
+    Progressive: "تصاعدي",
 };

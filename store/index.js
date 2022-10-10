@@ -6,13 +6,13 @@ import logout from "./parts/actions/authentication/logout";
 // Fetch
 import getUserData from "./parts/actions/fetch/getUserData";
 import getGroups from "./parts/actions/fetch/getGroups";
+import getSubgroupHistoryAtDate from "./parts/actions/fetch/getSubgroupHistoryAtDate";
 import getOrganization from "./parts/actions/fetch/getOrganization";
 import getTeachers from "./parts/actions/fetch/getTeachers";
 import getStudents from "./parts/actions/fetch/getStudents";
-// Advancements
-// import addGoal from "./parts/actions/Goals/addGoal";
-// import removeGoal from "./parts/actions/Goals/removeGoal";
-// import updateGoalsHistory from "./parts/actions/Goals/updateHistory";
+// Plans
+import addPlan from "./parts/actions/Plans/addPlan";
+import updateHistory from "./parts/actions/Plans/updateHistory";
 // User
 import createUser from "./parts/actions/Users/createUser";
 // Organizations
@@ -46,6 +46,8 @@ export default {
             pagesValue: 1,
             rabtPagesValue: 1,
         },
+        //
+        selectedDateHistory: [],
     }),
     actions: {
         // authentication
@@ -54,13 +56,13 @@ export default {
         // fetch
         getUserData,
         getGroups,
+        getSubgroupHistoryAtDate,
         getOrganization,
         getTeachers,
         getStudents,
         // Advancements
-        // addGoal,
-        // removeGoal,
-        // updateGoalsHistory,
+        updateHistory,
+        addPlan,
         // User
         createUser,
         // Organizations

@@ -11,6 +11,7 @@ const Plan_type = require("../../types/Plans/Plan"),
 module.exports = {
     type: Plan_type,
     args: {
+        subgroup_id: { type: GraphQLID },
         title: { type: GraphQLString },
         order_reversed: { type: GraphQLBoolean },
 
@@ -24,7 +25,6 @@ module.exports = {
         starting_at: { type: GraphQLString },
         note: { type: GraphQLString },
 
-        date: { type: GraphQLString },
         note: { type: GraphQLString },
     },
     async resolve(_, args) {
