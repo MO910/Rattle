@@ -2,7 +2,7 @@
 import gql from "graphql-tag";
 import Optimistic from "../functions/Optimistic";
 // function
-export default async function ({ state, commit }, { id }) {
+export default async function ({ state, commit }, id) {
     // if (this.$auth.loggedIn && this.$auth.user && !state.user.id) {
     // state.userId = this.$auth.user._id;
     // GraphQl request
@@ -10,21 +10,22 @@ export default async function ({ state, commit }, { id }) {
         const client = this.app.apolloProvider.defaultClient,
             { data } = await client.mutate({
                 mutation: gql`
-                    mutation { removeGoal(id: "${id}") }
+                    mutation { removePlan(id: "${id}") }
                 `,
             });
         return data;
     };
+    // let data = await request();
     // add optimistic response to the new goal
     const optimistic = new Optimistic({
         state,
         commit,
         request,
-        dataKey: "removeGoal",
+        dataKey: "removePlan",
     });
-    optimistic.remove({
+    await optimistic.remove({
         id,
-        tree: ["groups", "courses", "channels", "subgroups", "goals"],
+        tree: ["groups", "courses", "subgroups", "plans"],
     });
     // }
 }

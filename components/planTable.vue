@@ -5,6 +5,22 @@
         :items-per-page="10"
         class="elevation-1"
     )
+        //- days in english
+        template(v-slot:item.sunday="{ item }")
+            tableD(:item='item' day='sunday')
+        template(v-slot:item.monday="{ item }")
+            tableD(:item='item' day='monday')
+        template(v-slot:item.tuesday="{ item }")
+            tableD(:item='item' day='tuesday')
+        template(v-slot:item.wednesday="{ item }")
+            tableD(:item='item' day='wednesday')
+        template(v-slot:item.thursday="{ item }")
+            tableD(:item='item' day='thursday')
+        template(v-slot:item.friday="{ item }")
+            tableD(:item='item' day='friday')
+        template(v-slot:item.saturday="{ item }")
+            tableD(:item='item' day='saturday')
+        //- days in arabic
         template(v-slot:item.الاحد="{ item }")
             tableD(:item='item' day='الاحد')
         template(v-slot:item.الاثنين="{ item }")
@@ -30,15 +46,14 @@ export default {
         regExpReplace: new RegExp("<p>.+<\/p>", "g"),
         color: "primary",
     }),
-    mounted() {
-        console.log(this.plansToTables);
-    },
+    mounted() {},
     computed: {
         headers() {
             return this.weekDays.reduce((acc, curr) => {
                 acc.push({
                     text: curr[0].toUpperCase() + curr.slice(1),
                     value: curr,
+                    sortable: false,
                 });
                 return acc;
             }, []);
@@ -50,21 +65,13 @@ export default {
     methods: {
         getChip(item, head) {
             let chip = item[head].match(this.regExp);
-            console.log(item[head.text]);
             return chip?.[0];
         },
         rest(item, head) {
-            console.log(item[head]);
             return (
                 "\n" +
                 item[head].replace(this.regExpReplace, "").replace(/<|>/g, "")
             );
-        },
-        slot(head) {
-            let obj = {};
-            obj[`v-slot:item.${head}`] = "{ item }";
-            console.log(obj);
-            return obj;
         },
     },
 };

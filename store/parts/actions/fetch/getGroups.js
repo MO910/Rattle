@@ -27,6 +27,7 @@ export default async function ({ state, commit }) {
                                 plans {
                                     id
                                     title
+                                    order_reversed
                                     from
                                     amount
                                     weeks

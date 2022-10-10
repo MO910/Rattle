@@ -1,10 +1,12 @@
 // the function
 const generatePlanDays = (group, plan) => {
+    // console.log("=======================");
+    // console.log(plan.title);
     let working_days = plan.working_days.length
             ? plan.working_days
             : group.working_days,
         decreaseMillSec = [];
-    const { id, title } = plan;
+    // const { id, title } = plan;
     const DAY_MILL_SEC = 24 * 60 * 60 * 1000,
         totalDays = plan.weeks * working_days.length,
         getDefInDays = (d1, d2) => (d1 >= d2 ? d1 - d2 : 7 - d2 + d1);
@@ -35,19 +37,20 @@ const generatePlanDays = (group, plan) => {
                 starting_at +
                 decreaseMillSec[i % decreaseMillSec.length] * +!!i,
             from: pagePointer,
-            to: pagePointer + plan.amount - 1,
+            to: pagePointer + (plan.amount - 1) * (-1) ** plan.order_reversed,
         };
+        // console.log(day);
         // add rabt
         if (plan.rabt_amount)
             day.rabt_from = Math.max(day.from - plan.rabt_amount, plan.from);
         // close
         days.push(day);
         starting_at = day.date;
-        pagePointer += plan.amount;
+        pagePointer += plan.amount * (-1) ** plan.order_reversed;
     }
     // format date to Date Object
     days.map((d) => (d.date = new Date(d.date)));
-    return { id, title, days };
+    return { ...plan, days };
 };
 
 export { generatePlanDays };

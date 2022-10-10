@@ -14,9 +14,20 @@ v-container
     v-row.mt-10
         v-col.text-h4(cols='12')
             p.d-inline-block {{$vuetify.lang.t('$vuetify.plans')}}
-            addPlan(:default_days='groupWorkingDays' :subgroup_id='subgroup.id')
-        v-col.px-0.text-h4.col-md-4.col-sm-6.col-xs-12(v-for='(plan, pi) in plansOfDate' :key='plan.id') 
-            v-card.mx-5(@click='openTable(pi)')
+            addPlan(
+                :default_days='groupWorkingDays'
+                :group_id='group.id'
+                :subgroup_id='subgroup.id'
+                :after='fetchPlansDate'
+            )
+        v-col.px-0.text-h4.col-md-4.col-sm-6.col-xs-12(
+            v-for='(plan, pi) in plansOfDate'
+            :key='plan.id'
+            v-if='!plan.hide'
+        ) 
+            v-card.mx-5(@click='openTable(pi, $event)')
+                v-btn(@click='deletePlan(plan.id)' icon)
+                    v-icon mdi-delete
                 v-card-title.d-block.text-center {{$vuetify.lang.t(`$vuetify.${plan.title}`)}}
                 v-card-text {{getPlanString(plan, false)}}
         v-dialog(v-model='tableDialog')
@@ -37,7 +48,7 @@ v-container
                     advantage(
                         v-for='plan, pi in plansOfDate'
                         :key='student.id + plan.id + selectedDay'
-                        v-if='plan.day && !fetching'
+                        v-if='plan.day && !fetching && !plan.hide'
                         :plan='plan'
                         :student_id='student.id'
                         :selectedDate='selectedDate'
@@ -45,14 +56,12 @@ v-container
                     )
 </template>
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapState, mapMutations, mapActions } from "vuex";
 import { planTable } from "~/static/js/planTable";
 import { stringify } from "~/static/js/stringify";
 export default {
     middleware: ["fetchGroups"],
     data: () => ({
-        plans: [],
-        plansToTables: [],
         selectedDay: "2022-10-04",
         margePlans: [],
         tableIndex: null,
@@ -61,24 +70,7 @@ export default {
         fetching: false,
     }),
     async mounted() {
-        const { plans, plansToTables } = planTable({
-            group: this.group,
-            courseTitle: this.course.title,
-            subgroup: this.subgroup,
-            weekDays: this.weekDays,
-            versesPerPage: this.versesPerPage,
-            surahAdj: this.surahAdj,
-            $vuetify: this.$vuetify,
-            stringify,
-        });
-        console.log(plans);
-        this.plansToTables = plansToTables;
-        this.plans = plans;
-        //
-        // this.marge();
-        //
-        await this.getHistory();
-        // observer.observe(this, { selectedDate: true });
+        await this.fetchPlansDate();
     },
     computed: {
         ...mapState([
@@ -86,6 +78,8 @@ export default {
             "surahAdj",
             "versesPerPage",
             "selectedDateHistory",
+            "plansToTables",
+            "plans",
         ]),
         group() {
             const { groupId } = this.$route.params;
@@ -138,7 +132,28 @@ export default {
         },
     },
     methods: {
-        ...mapActions(["getSubgroupHistoryAtDate"]),
+        ...mapMutations(["updateModel"]),
+        ...mapActions(["getSubgroupHistoryAtDate", "removePlan"]),
+        //
+        async fetchPlansDate() {
+            const { plans, plansToTables } = planTable({
+                group: this.group,
+                courseTitle: this.course.title,
+                subgroup: this.subgroup,
+                weekDays: this.weekDays,
+                versesPerPage: this.versesPerPage,
+                surahAdj: this.surahAdj,
+                $vuetify: this.$vuetify,
+                stringify,
+            });
+            // update states
+            this.updateModel(["plansToTables", plansToTables]);
+            this.updateModel(["plans", plans]);
+            // marge plans
+            // this.marge();
+            // get history
+            await this.getHistory();
+        },
         // marge all plans to one block
         marge() {
             // get longest plan
@@ -180,7 +195,12 @@ export default {
             return s;
         },
         //
-        openTable(i) {
+        openTable(i, e) {
+            if (
+                e.target.classList.contains("v-btn--icon") ||
+                e.target.classList.contains("v-icon")
+            )
+                return;
             this.tableIndex = i;
             this.tableDialog = true;
         },
@@ -211,6 +231,11 @@ export default {
         allowedDates(val) {
             const weekDay = new Date(val).getDay();
             return weekDay in this.groupWorkingDays;
+        },
+        // remove plan
+        async deletePlan(id) {
+            await this.removePlan(id);
+            this.fetchPlansDate();
         },
     },
 };

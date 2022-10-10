@@ -124,7 +124,7 @@ export default {
         // days: ["sun", "mon", "tue", "wed", " thu", "fri", "sat"],
         days_selected: [0],
     }),
-    props: ["default_days", "subgroup_id"],
+    props: ["default_days", "subgroup_id", "group_id", "after"],
     mounted() {
         this.days_selected = this.default_days;
         // console.log(this.surahAdj.chapters);
@@ -153,17 +153,8 @@ export default {
     },
     methods: {
         ...mapActions(["addPlan"]),
-        add() {
-            this.dateMenu = false;
-            console.log("type: ", this.types[this.type_selected]);
-            console.log("direction", this.directions[this.direction_selected]);
-            // console.log("selectedSurahIndex", this.selectedSurahIndex);
-            console.log("weeks", this.weeks);
-            console.log("has_rabt", this.has_rabt);
-            console.log("days_selected", this.days_selected);
-            console.log("starting_at", this.starting_at);
-            console.log("obj: ", this.addPlanForm);
-
+        async add() {
+            this.dialog = false;
             // get starting page
             let pageNumber;
             const verse = `${this.selectedSurahIndex + 1}:${
@@ -173,11 +164,12 @@ export default {
                 if (p.some((v) => v.verse_key === verse)) pageNumber = pi;
             });
             // add
-            this.addPlan({
+            await this.addPlan({
+                group_id: this.group_id,
                 subgroup_id: this.subgroup_id,
                 title: this.types[this.type_selected],
                 order_reversed: !!this.direction_selected,
-                from: +pageNumber,
+                from: +pageNumber + 1,
                 amount: +this.addPlanForm.pagesValue,
                 weeks: +this.weeks,
                 rabt_amount: this.has_rabt
@@ -186,6 +178,8 @@ export default {
                 working_days: this.days_selected,
                 starting_at: new Date(this.starting_at),
             });
+            // fetch data again
+            await this.after();
         },
     },
 };

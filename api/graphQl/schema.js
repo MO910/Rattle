@@ -26,6 +26,7 @@ const // user
 // mutations
 const // Goals
     addPlan = require("./mutations/Plans/addPlan"),
+    removePlan = require("./mutations/Plans/removePlan"),
     updatePlanHistory = require("./mutations/Plans/updateHistory");
 /*
     removeGoal = require("./mutations/Goals/removeGoal"),
@@ -108,6 +109,7 @@ const query = new GraphQLObjectType({
         fields: {
             addPlan,
             updatePlanHistory,
+            removePlan,
         },
     });
 // exports

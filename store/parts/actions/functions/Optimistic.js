@@ -12,14 +12,18 @@ export default class {
     async add({ requestData, id, nodePath, tree, targetArray, refresh }) {
         const { state, commit } = this;
         // search for node if not provided
-        nodePath ||= treeFinder({
-            id,
-            tree,
-            branch: state,
-        });
+        nodePath =
+            nodePath ||
+            treeFinder({
+                id,
+                tree,
+                branch: state,
+            });
         let fullPath = nodePath;
+        console.log(fullPath);
         if (targetArray) fullPath += `.${targetArray}`;
         // push the object to it
+        console.log(`state.${fullPath}?.length`);
         const itemIndex = eval(`state.${fullPath}?.length`);
         commit("push", [`${fullPath}`, requestData]);
         // try the request
@@ -34,7 +38,7 @@ export default class {
             console.log(err);
         }
         // refresh
-        refresh ||= fullPath;
+        refresh = refresh || fullPath;
         commit("refreshObj", refresh);
     }
     // remove item response
@@ -48,6 +52,7 @@ export default class {
             }),
             indexRegExp = /\[\d+\]$/,
             allListPath = nodePath.replace(indexRegExp, "");
+        console.log(nodePath, allListPath);
         // hide temporary until it is cleared from DB (optimistic response)
         commit("updateModel", [`${nodePath}.hide`, true]);
         commit("refreshObj", allListPath);

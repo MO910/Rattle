@@ -14,8 +14,10 @@ v-row
             hide-details
         )
     template(v-if='!disableRatting')
+        //- v-col(cols='12')
+            v-card-text {{selectedDateHistory}}
         v-col(cols='4')
-            v-card-text {{$vuetify.lang.t("$vuetify.grade")}}: {{ ratingRatio ? ratingRatio * 10 : '--'}} / 10
+            v-card-text {{$vuetify.lang.t("$vuetify.grade")}}: {{ ratingRatio }} {{this.history.grade}} / 10
         v-col.d-flex.justify-end.align-center(cols='8')
             v-rating.d-flex.justify-space-between.align-center(
                 @input="changeRating"
@@ -54,16 +56,13 @@ export default {
             let allVerses = [];
             for (let i = from - 1; i < to; i++)
                 allVerses.push(this.versesPerPage.pages[i]);
-            return allVerses.flat().map((v) => v.verse_key);
+            return allVerses.flat().map((v) => v?.verse_key);
             // this.verseKeyToName()
         },
         verseName() {
             const currentVerse = this.versesKeys[this.amount_done - 1];
             return currentVerse && verseKeyToName(currentVerse);
         },
-        // ratingLength() {
-        //     return this.windowWidth > 960 ? 10 : 5;
-        // },
         disableRatting() {
             // this.ratingRatio = 0;
             return this.amount_done < this.versesKeys.length;

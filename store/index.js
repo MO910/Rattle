@@ -12,6 +12,7 @@ import getTeachers from "./parts/actions/fetch/getTeachers";
 import getStudents from "./parts/actions/fetch/getStudents";
 // Plans
 import addPlan from "./parts/actions/Plans/addPlan";
+import removePlan from "./parts/actions/Plans/removePlan";
 import updateHistory from "./parts/actions/Plans/updateHistory";
 // User
 import createUser from "./parts/actions/Users/createUser";
@@ -24,6 +25,8 @@ export default {
     state: () => ({
         user: {},
         groups: {},
+        plans: [],
+        plansToTables: [],
         versesPerPage,
         surahAdj,
         // login
@@ -63,6 +66,7 @@ export default {
         // Advancements
         updateHistory,
         addPlan,
+        removePlan,
         // User
         createUser,
         // Organizations

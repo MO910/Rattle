@@ -10,12 +10,14 @@ const stringify = ({
     $vuetify,
     showDate,
 }) => {
-    if (!title || !day) return "there is nothing planed today";
+    cons.lang.isEn = $vuetify.lang.current == "en";
+    // if there is nothing
+    if (!title || !day)
+        return cons.lang.isEn ? "there is nothing today" : "لا يوجد شيء اليوم";
     // translations
     cons.versesPerPage = versesPerPage;
     cons.surahAdj = surahAdj;
     cons.$vuetify = $vuetify;
-    cons.lang.isEn = $vuetify.lang.current == "en";
     cons.lang.from = $vuetify.lang.t("$vuetify.from");
     cons.lang.to = $vuetify.lang.t("$vuetify.to");
     cons.lang.ayah = $vuetify.lang.t("$vuetify.ayah");
@@ -24,15 +26,15 @@ const stringify = ({
     // if the course is quran
     if (courseTitle.toLowerCase() === "quran") {
         let str = pageToVerse(day);
+        if (details) str = `${title}: ${str}`;
         if (showDate) {
             let lang = cons.lang.isEn ? "en-GB" : "ar-EG",
                 spread = cons.lang.isEn ? "," : "،",
                 date = new Intl.DateTimeFormat(lang, { dateStyle: "full" })
                     .format(day.date)
-                    .split(spread)[+!cons.lang.isEn];
+                    .split(spread)[1];
             str = `<p>${date}</p> ${str}`;
         }
-        if (details) str = `${title}: ${str}`;
         return str;
     } // normal book
     else {
@@ -52,6 +54,11 @@ const stringify = ({
 };
 // get verses from pages
 const pageToVerse = ({ from, to }) => {
+    if (
+        !cons.versesPerPage.pages[from - 1] ||
+        !cons.versesPerPage.pages[to - 1]
+    )
+        return;
     let fromVerse = cons.versesPerPage.pages[from - 1][0].verse_key,
         toVerse = cons.versesPerPage.pages[to - 1].at(-1).verse_key;
     fromVerse = verseKeyToName(fromVerse);
