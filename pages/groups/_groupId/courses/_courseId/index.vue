@@ -16,7 +16,6 @@ v-container
                     //- include ../../../static/img/quran.pug
                     //- v-icon.mr-5(:color='item.color' large) mdi-{{item.icon}}
                 v-card-title.text-capitalize.pt-6 {{$vuetify.lang.t(item.title)}}
-                v-card-text 15 of 20
                 v-row
                     v-col(cols='3' v-for='student in item.students' :key='student.id')
                         folder(:folder='student' icon='mdi-account')

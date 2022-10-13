@@ -26,8 +26,10 @@ const User_type = new GraphQLObjectType({
     name: `User${~~(Math.random() * 1000)}`,
     fields: () => ({
         id: { type: GraphQLID },
+        group_id: { type: GraphQLID },
         organization_id: { type: GraphQLID },
-        name: { type: GraphQLString },
+        first_name: { type: GraphQLString },
+        parent_name: { type: GraphQLString },
         email: { type: GraphQLString },
         gender: { type: GraphQLBoolean },
         phone: { type: GraphQLString },
@@ -38,10 +40,16 @@ const User_type = new GraphQLObjectType({
                 return await rulesConverter({ rule_ids });
             },
         },
-        group: {
-            type: Group_type,
+        groups: {
+            type: new GraphQLList(Group_type),
+            async resolve(args) {
+                return await getGroupFromStudentId(args);
+            },
+        },
+        subgroups: {
+            type: new GraphQLList(Subgroup_type),
             async resolve({ id }) {
-                return await getGroupFromStudentId(id);
+                return await Subgroups_schema.find({ student_ids: id });
             },
         },
         attendances: {
@@ -75,4 +83,6 @@ const // Groups
     Group_type = require("../Groups/Group"),
     Groups_schema = require("../../../models/Groups/Groups"),
     Courses_schema = require("../../../models/Courses/Courses"),
+    // Subgroups
+    Subgroup_type = require("../Groups/Subgroup"),
     Subgroups_schema = require("../../../models/Groups/Subgroups");

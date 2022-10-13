@@ -14,7 +14,7 @@ module.exports = new GraphQLObjectType({
     name: "Organization",
     fields: () => ({
         id: { type: GraphQLID },
-        name: { type: GraphQLString },
+        title: { type: GraphQLString },
         centers: {
             type: new GraphQLList(Center_type),
             async resolve({ id: organization_id }) {

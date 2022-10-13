@@ -28,7 +28,6 @@ module.exports = {
             },
             args
         );
-        console.log("exists: ", exists);
         return !(!exists && !(await History_Schema.create(args)));
     },
 };

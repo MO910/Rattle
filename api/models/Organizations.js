@@ -3,7 +3,7 @@ const mongoose = require("mongoose"),
 const Organizations = new Schema(
     {
         owner_id: mongoose.ObjectId,
-        name: String,
+        title: String,
         description: String,
     },
     { timestamps: true, collection: "Organizations" }

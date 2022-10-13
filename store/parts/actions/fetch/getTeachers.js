@@ -3,12 +3,7 @@ import gql from "graphql-tag";
 // function
 export default async function ({ state, commit }) {
     const organization_id = state.organization?.id;
-    if (
-        this.$auth.loggedIn &&
-        this.$auth.user &&
-        !state.user?.id &&
-        organization_id
-    ) {
+    if (this.$auth.loggedIn && this.$auth.user && organization_id) {
         // GraphQl request
         const client = this.app.apolloProvider.defaultClient,
             {
@@ -22,7 +17,8 @@ export default async function ({ state, commit }) {
                         ) {
                             id
                             organization_id
-                            name
+                            first_name
+                            parent_name
                             email
                             phone
                             attendances {

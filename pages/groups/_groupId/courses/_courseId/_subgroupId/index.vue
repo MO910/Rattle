@@ -44,7 +44,7 @@ v-container
                 template(slot="progress")
                     v-progress-linear(indeterminate)
                 div.py-5.px-10
-                    v-card-title.text-capitalize.text-h4.pt-6 {{student.name}}
+                    v-card-title.text-capitalize.text-h4.pt-6 {{fullName(student)}}
                     advantage(
                         v-for='plan, pi in plansOfDate'
                         :key='student.id + plan.id + selectedDay'
@@ -134,6 +134,9 @@ export default {
     methods: {
         ...mapMutations(["updateModel"]),
         ...mapActions(["getSubgroupHistoryAtDate", "removePlan"]),
+        fullName(user) {
+            return `${user.first_name} ${user.parent_name || ""}`;
+        },
         //
         async fetchPlansDate() {
             const { plans, plansToTables } = planTable({
@@ -183,7 +186,7 @@ export default {
         },
         //
         getPlanString(plan, details = true) {
-            const s = stringify({
+            const forToday = stringify({
                 courseTitle: this.course.title,
                 details,
                 versesPerPage: this.versesPerPage,
@@ -191,8 +194,9 @@ export default {
                 $vuetify: this.$vuetify,
                 ...plan,
             });
-            console.log(s);
-            return s;
+            return (
+                forToday || this.$vuetify.lang.t("$vuetify.nothingTodayMessage")
+            );
         },
         //
         openTable(i, e) {

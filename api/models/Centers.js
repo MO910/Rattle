@@ -4,7 +4,7 @@ const Centers = new Schema(
     {
         organization_id: mongoose.ObjectId,
         admin_ids: Array,
-        name: String,
+        title: String,
         working_days: String, // encode like [sat, sun, mon, tue, wed, thu, fri]
         description: String,
     },

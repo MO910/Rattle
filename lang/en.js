@@ -10,10 +10,14 @@ export default {
     ownerInfo: "owner information",
     organizationInfo: "organization information",
     // form
+    add_student: "add student",
+    add_teacher: "add teacher",
     email: "email",
     password: "password",
     confirmPassword: "confirm password",
     name: "name",
+    first_name: "first name",
+    parent_name: "parent name",
     phone: "phone",
     // dialogs
     newCenter: "new center",
@@ -54,4 +58,6 @@ export default {
     direction: "direction",
     descending: "descending",
     Progressive: "Progressive",
+    //
+    nothingTodayMessage: "لا يوجد شيء اليوم",
 };

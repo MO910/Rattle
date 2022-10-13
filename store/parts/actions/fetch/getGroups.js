@@ -37,7 +37,8 @@ export default async function ({ state, commit }) {
                                 }
                                 students {
                                     id
-                                    name
+                                    first_name
+                                    parent_name
                                     email
                                     phone
                                     gender

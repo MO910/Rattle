@@ -27,10 +27,14 @@ export default {
         },
     },
     // form
+    add_student: "اضف طالب",
+    add_teacher: "اضف معلم",
     email: "البريد الالكتروني",
     password: "كلمة المرور",
     confirmPassword: "تأكيد كلمة المرور",
     name: "الاسم",
+    first_name: "الاسم الاول",
+    parent_name: "اسم الاب",
     phone: "رقم الهاتف",
     // dialogs
     newCenter: "مركز جديد",
@@ -71,4 +75,6 @@ export default {
     direction: "باتجاه",
     descending: "تنازلي",
     Progressive: "تصاعدي",
+    //
+    nothingTodayMessage: "there is nothing today",
 };

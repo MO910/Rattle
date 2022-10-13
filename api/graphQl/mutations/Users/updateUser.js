@@ -14,12 +14,13 @@ const // User
 module.exports = {
     type: User_type,
     args: {
-        email: { type: GraphQLString },
+        id: { type: GraphQLID },
         group_id: { type: GraphQLID },
         organization_id: { type: GraphQLID },
-        password: { type: GraphQLString },
         first_name: { type: GraphQLString },
         parent_name: { type: GraphQLString },
+        email: { type: GraphQLString },
+        password: { type: GraphQLString },
         gender: { type: GraphQLString },
         phone: { type: GraphQLString },
         rules: { type: new GraphQLList(GraphQLString) },
@@ -27,6 +28,6 @@ module.exports = {
     async resolve(_, args) {
         // extract id from rule title
         args.rule_ids = await rulesConverter({ rules: args.rules });
-        return User_Schema.create(args);
+        return User_Schema.findByIdAndUpdate(args.id, args);
     },
 };

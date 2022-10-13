@@ -27,19 +27,20 @@ const // user
 const // Goals
     addPlan = require("./mutations/Plans/addPlan"),
     removePlan = require("./mutations/Plans/removePlan"),
-    updatePlanHistory = require("./mutations/Plans/updateHistory");
+    updatePlanHistory = require("./mutations/Plans/updateHistory"),
+    // Users
+    createUser = require("./mutations/Users/createUser"),
+    updateUser = require("./mutations/Users/updateUser"),
+    // rule convert function
+    rulesConverter = require("./types/shared/rulesConverter");
 /*
     removeGoal = require("./mutations/Goals/removeGoal"),
     updateGoalsHistory = require("./mutations/Goals/updateHistory"),
-    // Users
-    createUser = require("./mutations/Users/createUser"),
     // Organization
     createOrganization = require("./mutations/createOrganization"),
     // Center
     createCenter = require("./mutations/createCenter"),
-    // rule convert function
-    rulesConverter = require("./types/shared/rulesConverter");
-*/
+    */
 //
 const query = new GraphQLObjectType({
         name: "RootQueryType",
@@ -53,7 +54,9 @@ const query = new GraphQLObjectType({
                     rules: { type: new GraphQLList(GraphQLString) },
                 },
                 async resolve(_, { id, organization_id, rules }) {
-                    const rule_ids = rules && (await rulesConverter({ rules }));
+                    // get ids from rules titles
+                    let rule_ids = rules && (await rulesConverter({ rules }));
+                    rule_ids = rule_ids && { $in: rule_ids };
                     // filter the empty keys
                     let query = { _id: id, organization_id, rule_ids };
                     query = Object.entries(query).reduce((a, [k, v]) => {
@@ -75,10 +78,10 @@ const query = new GraphQLObjectType({
                 type: Organization_type,
                 args: { userId: { type: GraphQLID } },
                 async resolve(_, { userId }) {
-                    const orgs = await Organizations_schema.find({
-                        owner_id: userId,
-                    });
-                    return orgs?.[0];
+                    const user = await Users_schema.findById(userId);
+                    return await Organizations_schema.findById(
+                        user.organization_id
+                    );
                 },
             },
             subgroupHistoryAtDate: {
@@ -107,6 +110,10 @@ const query = new GraphQLObjectType({
     mutation = new GraphQLObjectType({
         name: "mutation",
         fields: {
+            // users
+            createUser,
+            updateUser,
+            // plans
             addPlan,
             updatePlanHistory,
             removePlan,

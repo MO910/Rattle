@@ -12,8 +12,7 @@ const stringify = ({
 }) => {
     cons.lang.isEn = $vuetify.lang.current == "en";
     // if there is nothing
-    if (!title || !day)
-        return cons.lang.isEn ? "there is nothing today" : "لا يوجد شيء اليوم";
+    if (!title || !day) return;
     // translations
     cons.versesPerPage = versesPerPage;
     cons.surahAdj = surahAdj;

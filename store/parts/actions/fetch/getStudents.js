@@ -6,7 +6,7 @@ export default async function ({ state, commit }) {
     if (
         this.$auth.loggedIn &&
         this.$auth.user &&
-        !state.user?.id &&
+        state.user?.id &&
         organization_id
     ) {
         // GraphQl request
@@ -22,7 +22,7 @@ export default async function ({ state, commit }) {
                         ) {
                             id
                             organization_id
-                            name
+                            first_name
                             email
                             phone
                             attendances {
@@ -32,7 +32,11 @@ export default async function ({ state, commit }) {
                                 title
                                 permissions
                             }
-                            group {
+                            groups {
+                                id
+                                title
+                            }
+                            subgroups {
                                 id
                                 title
                             }
@@ -40,7 +44,6 @@ export default async function ({ state, commit }) {
                     }
                 `,
             });
-        console.log("asssss", user);
         // update store
         commit("updateModel", ["students", user]);
     }

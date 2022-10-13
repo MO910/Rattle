@@ -3,8 +3,10 @@ const mongoose = require("mongoose"),
 const Users = new Schema(
     {
         organization_id: mongoose.ObjectId,
+        group_id: mongoose.ObjectId,
         parent_id: mongoose.ObjectId,
-        name: String,
+        first_name: String,
+        parent_name: String,
         email: String,
         password: String,
         rule_ids: Array,

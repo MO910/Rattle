@@ -20,10 +20,10 @@ export default class {
                 branch: state,
             });
         let fullPath = nodePath;
-        console.log(fullPath);
+        // console.log(fullPath);
         if (targetArray) fullPath += `.${targetArray}`;
         // push the object to it
-        console.log(`state.${fullPath}?.length`);
+        // console.log(`state.${fullPath}?.length`);
         const itemIndex = eval(`state.${fullPath}?.length`);
         commit("push", [`${fullPath}`, requestData]);
         // try the request
@@ -52,7 +52,7 @@ export default class {
             }),
             indexRegExp = /\[\d+\]$/,
             allListPath = nodePath.replace(indexRegExp, "");
-        console.log(nodePath, allListPath);
+        // console.log(nodePath, allListPath);
         // hide temporary until it is cleared from DB (optimistic response)
         commit("updateModel", [`${nodePath}.hide`, true]);
         commit("refreshObj", allListPath);

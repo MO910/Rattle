@@ -10,8 +10,8 @@ export default {
     props: ["folder", "translation", "router", "icon"],
     computed: {
         title() {
-            const { title, name } = this.folder;
-            const val = title || name || this.folder;
+            const { title, first_name } = this.folder;
+            const val = title || first_name || this.folder;
             if (this.translation) return this.$vuetify.lang.t(val);
             return val;
         },

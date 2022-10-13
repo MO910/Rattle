@@ -12,28 +12,39 @@ export default async function ({ state, commit }, { id: userId } = {}) {
                 query: gql`
                     query user {
                         user(id: "${userId}") {
+                            id
                             organization_id
-                            name
+                            first_name
+                            parent_name
                             email
                             phone
                             gender
                             attendances {
+                                id
                                 attended
                                 date
                             }
                             rules {
+                                id
                                 title
                                 permissions
                             }
-                            group {
+                            groups {
+                                id
                                 title
                                 working_days
                                 courses {
+                                    id
                                     title
                                     subgroups{
+                                        id
                                         title
                                     }
                                 }
+                            }
+                            subgroups {
+                                id
+                                title
                             }
                         }
                     }

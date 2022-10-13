@@ -1,7 +1,7 @@
 <template lang="pug">
 v-container
     v-row.mt-8
-        v-col(cols='3' v-for='rule in user.rules' :key='rule.title')
+        v-col(cols='3' v-for='rule in rules' :key='rule.title')
             folder(:folder='rule' :router='ruleRouter(rule.title)')
 </template>
 
@@ -12,7 +12,12 @@ export default {
     mounted() {
         console.log(this.user);
     },
-    computed: mapState(["user"]),
+    computed: {
+        ...mapState(["user"]),
+        rules() {
+            return this.user?.rules;
+        },
+    },
     methods: {
         ruleRouter(rule) {
             switch (rule.toLowerCase()) {

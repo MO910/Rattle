@@ -16,6 +16,7 @@ import removePlan from "./parts/actions/Plans/removePlan";
 import updateHistory from "./parts/actions/Plans/updateHistory";
 // User
 import createUser from "./parts/actions/Users/createUser";
+import updateUser from "./parts/actions/Users/updateUser";
 // Organizations
 import createOrganization from "./parts/actions/createOrganization";
 // Center
@@ -69,6 +70,7 @@ export default {
         removePlan,
         // User
         createUser,
+        updateUser,
         // Organizations
         createOrganization,
         // Center
@@ -82,11 +84,6 @@ export default {
         refreshObj(state, obj) {
             // console.log(obj, value);
             const isArray = Array.isArray(eval(`state.${obj}`));
-            console.log(
-                `state.${obj} = ${isArray ? "[" : "{"}...state.${obj}${
-                    isArray ? "]" : "}"
-                }`
-            );
             eval(
                 `state.${obj} = ${isArray ? "[" : "{"}...state.${obj}${
                     isArray ? "]" : "}"

@@ -7,11 +7,7 @@ import stringify from "../functions/stringify";
 export default async function ({ state, commit }, args) {
     // if (this.$auth.loggedIn && this.$auth.user && !state.user.id) {
     // state.userId = this.$auth.user._id;
-    const nodePath = args.nodePath,
-        organization_id = state.organization?.id;
-    delete args.nodePath;
-    // generate a random password if there is null passed
-    args.password = args.password || randomPassword();
+    // const nodePath = args.nodePath;
     //  stringify
     const sArgs = stringify(args);
     // GraphQl request
@@ -20,7 +16,7 @@ export default async function ({ state, commit }, args) {
             { data } = await client.mutate({
                 mutation: gql`
                     mutation {
-                        createUser(${sArgs}){
+                        updateUser(${sArgs}){
                             id
                         }
                     }
@@ -28,17 +24,18 @@ export default async function ({ state, commit }, args) {
             });
         return data;
     };
+    await request();
     // console.log(data)
     // add optimistic response to the new goal
-    const optimistic = new Optimistic({
-        state,
-        commit,
-        request,
-        dataKey: "createUser",
-    });
-    optimistic.add({
-        requestData: args,
-        nodePath,
-    });
+    // const optimistic = new Optimistic({
+    //     state,
+    //     commit,
+    //     request,
+    //     dataKey: "updateUser",
+    // });
+    // optimistic.add({
+    //     requestData: args,
+    //     nodePath,
+    // });
     // }
 }
