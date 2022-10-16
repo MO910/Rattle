@@ -1,7 +1,7 @@
 <template lang="pug" key="index">
 v-container 
     v-row
-        v-col.text-h3(cols='12') {{ subgroup.title }}
+        v-col.text-h3(cols='12') {{ subgroup.title || fullName(subgroup)}}
         v-dialog(v-model='dateMenu' width="290px")
             template(v-slot:activator='{ on, attrs }')
                 v-col.text-h5(cols='12' v-text='dateStyled' v-bind='attrs' v-on='on')
@@ -11,6 +11,7 @@ v-container
                 :allowed-dates="allowedDates"
                 color="primary"
             )
+    //- plans
     v-row.mt-10
         v-col.text-h4(cols='12')
             p.d-inline-block {{$vuetify.lang.t('$vuetify.plans')}}
@@ -19,7 +20,9 @@ v-container
                 :group_id='group.id'
                 :subgroup_id='subgroup.id'
                 :after='fetchPlansDate'
+                :isStudent='isStudent'
             )
+    v-row.mt-10(v-if='plansOfDate.length')
         v-col.px-0.text-h4.col-md-4.col-sm-6.col-xs-12(
             v-for='(plan, pi) in plansOfDate'
             :key='plan.id'
@@ -33,7 +36,10 @@ v-container
         v-dialog(v-model='tableDialog')
             template(v-slot:activator='{ on, attrs }')
             plan-table(:plansToTables='plansToTables[tableIndex]' :weekDays='weekDays')
-    v-row.mt-10
+    v-row(v-else)
+        v-col.text-h5(cols='12') there is no plans. do you want to add one!
+    //- student
+    v-row.mt-10(v-if='subgroup.students')
         v-col.text-h4(cols='12') {{$vuetify.lang.t('$vuetify.students')}}
         v-col.px-0.col-xs-12.col-sm-12.col-md-6(
             cols='6'
@@ -54,11 +60,31 @@ v-container
                         :selectedDate='selectedDate'
                         :divider='advantageDivider(pi)'
                     )
+    v-row.mt-10(v-else)
+        v-col.px-0(
+            cols='12'
+            v-if='dayExist'
+        )
+            v-card.mx-5(:loading="fetching")
+                template(slot="progress")
+                    v-progress-linear(indeterminate)
+                div.py-5.px-10
+                    //- v-card-title.text-capitalize.text-h4.pt-6 {{fullName(subgroup)}}
+                    advantage(
+                        v-for='plan, pi in plansOfDate'
+                        :key='subgroup.id + plan.id + selectedDay'
+                        v-if='plan.day && !fetching && !plan.hide'
+                        :plan='plan'
+                        :student_id='subgroup.id'
+                        :selectedDate='selectedDate'
+                        :divider='advantageDivider(pi)'
+                    )
 </template>
 <script>
 import { mapState, mapMutations, mapActions } from "vuex";
 import { planTable } from "~/static/js/planTable";
 import { stringify } from "~/static/js/stringify";
+import { DAY_MILL_SEC, getDefInDays } from "~/static/js/generatePlanDays";
 export default {
     middleware: ["fetchGroups"],
     data: () => ({
@@ -68,9 +94,11 @@ export default {
         tableDialog: false,
         dateMenu: false,
         fetching: false,
+        isStudent: false,
     }),
     async mounted() {
         await this.fetchPlansDate();
+        this.selectedDay = this.getClosestWorkingDay();
     },
     computed: {
         ...mapState([
@@ -91,16 +119,23 @@ export default {
                 return this.group.courses.filter((c) => c.id == courseId)?.[0];
         },
         subgroup() {
-            const { subgroupId } = this.$route.params;
-            if (this.course)
-                return this.course.subgroups.filter(
+            const { subgroupId } = this.$route.params,
+                sub = this.course.subgroups.filter(
                     (s) => s.id == subgroupId
-                )?.[0];
+                )?.[0],
+                student =
+                    sub ||
+                    this.group.floatingStudents.filter(
+                        (s) => s.id == subgroupId
+                    )?.[0];
+            this.isStudent = !sub;
+            return sub || student;
         },
         weekDays() {
-            let weekDays = JSON.parse(
-                this.$vuetify.lang.t("$vuetify.weekDays")
-            );
+            let weekDays = JSON.parse(this.$vuetify.lang.locales.en.weekDays);
+            // let weekDays = JSON.parse(
+            //     this.$vuetify.lang.t("$vuetify.weekDays")
+            // );
             return this.group.working_days.map((di) => weekDays[di]);
         },
         groupWorkingDays() {
@@ -130,10 +165,25 @@ export default {
                 formatter = new Intl.DateTimeFormat(lang, options);
             return formatter.format(this.selectedDate);
         },
+        // check if day in plans exists
+        dayExist() {
+            return this.plansOfDate?.some((p) => p.day);
+        },
     },
     methods: {
         ...mapMutations(["updateModel"]),
         ...mapActions(["getSubgroupHistoryAtDate", "removePlan"]),
+        getClosestWorkingDay(day = new Date()) {
+            const today = day.getDay();
+            let diff = this.group.working_days.map((day) =>
+                getDefInDays(day + 1, today + 1)
+            );
+            // get the closest day
+            const min = Math.min(...diff),
+                closestDay = day.getTime() + min * DAY_MILL_SEC;
+            // to string
+            return new Date(closestDay).toISOString().substr(0, 10);
+        },
         fullName(user) {
             return `${user.first_name} ${user.parent_name || ""}`;
         },
@@ -149,6 +199,7 @@ export default {
                 $vuetify: this.$vuetify,
                 stringify,
             });
+            console.log(plans, plansToTables);
             // update states
             this.updateModel(["plansToTables", plansToTables]);
             this.updateModel(["plans", plans]);
@@ -174,11 +225,7 @@ export default {
             // loop
             this.plansToTables.forEach((plan) => {
                 plan.forEach((week, wi) => {
-                    // console.log(week);
                     for (let day in week) {
-                        // console.log(plansToTables[0][wi]);
-                        console.log(wi, day);
-                        console.log("-----------------------");
                         this.margePlans[wi][day] += `\n${week[day]}`;
                     }
                 });

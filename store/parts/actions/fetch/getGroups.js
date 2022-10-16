@@ -17,6 +17,34 @@ export default async function ({ state, commit }) {
                         title
                         working_days
                         description
+                        floatingStudents {
+                            id
+                            first_name
+                            parent_name
+                            email
+                            phone
+                            gender
+                            plans {
+                                id
+                                title
+                                order_reversed
+                                from
+                                amount
+                                weeks
+                                rabt_amount
+                                working_days
+                                starting_at
+                                custom_plans {
+                                    id
+                                    from
+                                    to
+                                    date
+                                }
+                            }
+                            plans_history {
+                                amount_done
+                            }
+                        }
                         courses {
                             id
                             title
@@ -34,6 +62,12 @@ export default async function ({ state, commit }) {
                                     rabt_amount
                                     working_days
                                     starting_at
+                                    custom_plans {
+                                        id
+                                        from
+                                        to
+                                        date
+                                    }
                                 }
                                 students {
                                     id

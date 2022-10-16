@@ -83,7 +83,14 @@ export default {
             search: "",
             tempValue: "",
             newGroupSelectedId: "",
-            headerNames: ["first_name", "email", "phone", "group", "subgroup"],
+            headerNames: [
+                "first_name",
+                "parent_name",
+                "email",
+                "phone",
+                "group",
+                "subgroup",
+            ],
         };
     },
     mounted() {

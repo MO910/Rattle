@@ -3,8 +3,10 @@ import gql from "graphql-tag";
 import Optimistic from "../functions/Optimistic";
 // function
 export default async function ({ state, commit }, args) {
-    const subgroup_id = args.subgroup_id;
+    const subgroup_id = args.subgroup_id,
+        tree = args.tree;
     delete args.group_id;
+    delete args.tree;
     // if (this.$auth.loggedIn && this.$auth.user && !state.user.id) {
     // state.userId = this.$auth.user._id;
     const stringifyArgs = JSON.stringify(args)
@@ -42,7 +44,7 @@ export default async function ({ state, commit }, args) {
     await optimistic.add({
         id: subgroup_id,
         requestData: args,
-        tree: ["groups", "courses", "subgroups"],
+        tree,
         targetArray: "plans",
     });
     // }

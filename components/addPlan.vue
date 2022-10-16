@@ -121,10 +121,9 @@ export default {
         )
             .toISOString()
             .substr(0, 10),
-        // days: ["sun", "mon", "tue", "wed", " thu", "fri", "sat"],
         days_selected: [0],
     }),
-    props: ["default_days", "subgroup_id", "group_id", "after"],
+    props: ["default_days", "subgroup_id", "group_id", "after", "isStudent"],
     mounted() {
         this.days_selected = this.default_days;
         // console.log(this.surahAdj.chapters);
@@ -177,6 +176,9 @@ export default {
                     : undefined,
                 working_days: this.days_selected,
                 starting_at: new Date(this.starting_at),
+                tree: this.isStudent
+                    ? ["groups", "floatingStudents"]
+                    : ["groups", "courses", "subgroups"],
             });
             // fetch data again
             await this.after();

@@ -8,7 +8,9 @@ const {
 } = require("graphql");
 //
 const history_type = require("./Plan_History"),
-    history_schema = require("../../../models/Plans/Plan_History");
+    history_schema = require("../../../models/Plans/Plan_History"),
+    custom_plan_type = require("./Custom_Plan"),
+    custom_plans_schema = require("../../../models/Plans/Custom_Plans");
 // User Type
 module.exports = new GraphQLObjectType({
     name: "Plans",
@@ -25,7 +27,17 @@ module.exports = new GraphQLObjectType({
 
         working_days: { type: new GraphQLList(GraphQLInt) },
         starting_at: { type: GraphQLString },
+
         note: { type: GraphQLString },
+        custom: { type: GraphQLBoolean },
+        custom_plans: {
+            type: new GraphQLList(custom_plan_type),
+            // type: GraphQLBoolean,
+            async resolve({ id, custom }) {
+                if (!custom) return [];
+                return await custom_plans_schema.find({ plan_id: id });
+            },
+        },
         history: {
             type: new GraphQLList(history_type),
             // async resolve({ id: plan_id }) {

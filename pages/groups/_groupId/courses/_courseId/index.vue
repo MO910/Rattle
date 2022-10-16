@@ -1,5 +1,9 @@
 <template lang="pug" key="index">
 v-container
+    .text-h3 الطلاب
+    v-row
+        v-col(cols='2' v-for='student in group.floatingStudents' :key='student.id')
+            folder(:folder='student' icon='mdi-account' :router='subgroupRouter(student.id)')
     .text-h3 المجموعات الفرعية
     v-row.pt-10
         v-col(

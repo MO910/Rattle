@@ -14,6 +14,8 @@ const Plans = new Schema(
 
         working_days: Array,
         starting_at: Date,
+
+        custom: Boolean,
         note: String,
     },
     { timestamps: true, collection: "Plans" }

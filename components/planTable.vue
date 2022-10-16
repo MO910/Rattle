@@ -20,21 +20,6 @@
             tableD(:item='item' day='friday')
         template(v-slot:item.saturday="{ item }")
             tableD(:item='item' day='saturday')
-        //- days in arabic
-        template(v-slot:item.الاحد="{ item }")
-            tableD(:item='item' day='الاحد')
-        template(v-slot:item.الاثنين="{ item }")
-            tableD(:item='item' day='الاثنين')
-        template(v-slot:item.الثلاثاء="{ item }")
-            tableD(:item='item' day='الثلاثاء')
-        template(v-slot:item.الاربعاء="{ item }")
-            tableD(:item='item' day='الاربعاء')
-        template(v-slot:item.الخميس="{ item }")
-            tableD(:item='item' day='الخميس')
-        template(v-slot:item.الجمعة="{ item }")
-            tableD(:item='item' day='الجمعة')
-        template(v-slot:item.السبت="{ item }")
-            tableD(:item='item' day='السبت')
 </template>
 <script>
 import { mapState, mapActions } from "vuex";
@@ -49,9 +34,13 @@ export default {
     mounted() {},
     computed: {
         headers() {
-            return this.weekDays.reduce((acc, curr) => {
+            const weekDaysLang = JSON.parse(
+                this.$vuetify.lang.t("$vuetify.weekDays")
+            );
+            return this.weekDays.reduce((acc, curr, i) => {
+                const currLang = weekDaysLang[i];
                 acc.push({
-                    text: curr[0].toUpperCase() + curr.slice(1),
+                    text: currLang[0].toUpperCase() + currLang.slice(1),
                     value: curr,
                     sortable: false,
                 });

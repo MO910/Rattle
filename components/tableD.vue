@@ -12,18 +12,16 @@ export default {
         color: "primary",
     }),
     mounted() {
-        console.log(this.item, this.day);
+        // console.log(this.item);
     },
     computed: {},
     methods: {
         getChip(item) {
-            let chip = item[this.day].match(this.regExp);
-            console.log(item[this.day.text]);
+            let chip = item[this.day]?.match(this.regExp);
             return chip?.[0];
         },
         rest(item) {
-            console.log(item[this.day]);
-            return item[this.day].replace(this.regExpReplace, "");
+            return item[this.day]?.replace(this.regExpReplace, "");
         },
     },
 };

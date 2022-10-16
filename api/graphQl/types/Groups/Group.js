@@ -6,15 +6,16 @@ const {
     GraphQLList,
     GraphQLBoolean,
 } = require("graphql");
-//
-// const User_type = require("../Users/User"),
-//     Users_schema = require("../../../models/Users/Users"),
+
+const // Users
+    User_type = require("../Users/User"),
+    Users_schema = require("../../../models/Users/Users"),
+    // courses
+    Courses_schema = require("../../../models/Courses/Courses"),
+    Course_type = require("./Course");
 //     // Goals
 //     Goal_type = require("../Goals/Goal"),
 //     Goals_schema = require("../../../models/Courses/Goals/Goals"),
-//     // courses
-const Courses_schema = require("../../../models/Courses/Courses"),
-    Course_type = require("./Course");
 // export Type
 module.exports = new GraphQLObjectType({
     name: "Group",
@@ -43,6 +44,12 @@ module.exports = new GraphQLObjectType({
         //         return students;
         //     },
         // },
+        floatingStudents: {
+            type: new GraphQLList(User_type),
+            async resolve({ id: group_id }) {
+                return await Users_schema.find({ group_id });
+            },
+        },
         courses: {
             type: new GraphQLList(Course_type),
             async resolve({ id: group_id }) {

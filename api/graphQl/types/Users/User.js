@@ -16,6 +16,9 @@ const // shared function
     // rules
     Rule_type = require("./Rule"),
     Rules_schema = require("../../../models/Users/Rules"),
+    // Plans
+    Plan_type = require("../Plans/Plan"),
+    Plans_schema = require("../../../models/Plans/Plans"),
     // Advancements
     Plan_History_type = require("../Plans/Plan_History"),
     Plans_History_schema = require("../../../models/Plans/Plan_History"),
@@ -62,6 +65,12 @@ const User_type = new GraphQLObjectType({
             type: new GraphQLList(Plan_History_type),
             async resolve({ id: student_id }) {
                 return await Plans_History_schema.find({ student_id });
+            },
+        },
+        plans: {
+            type: new GraphQLList(Plan_type),
+            async resolve({ id }) {
+                return await Plans_schema.find({ subgroup_id: id });
             },
         },
         // children: {
