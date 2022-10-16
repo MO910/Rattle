@@ -1,17 +1,16 @@
 <template lang="pug">
 div
-    v-col
-        v-sheet(height='64')
-            v-toolbar(flat)
-                v-btn.mr-4(outlined color='grey darken-2' @click='setToday')
-                    | Today
-                v-btn(fab text small color='grey darken-2' @click='prev')
-                    v-icon(small) mdi-chevron-left
-                v-btn(fab text small color='grey darken-2' @click='next')
-                    v-icon(small) mdi-chevron-right
-                v-toolbar-title(v-if='$refs.calendar') {{ $refs.calendar.title }}
+    v-sheet(height='64')
+        v-toolbar(flat)
+            v-btn.mr-4(outlined @click='setToday')
+                | Today
+            v-btn(fab text small color='grey darken-2' @click='next')
+                v-icon(small) mdi-chevron-right
+            v-btn(fab text small color='grey darken-2' @click='prev')
+                v-icon(small) mdi-chevron-left
+            v-toolbar-title(v-if='$refs.calendar') {{ $refs.calendar.title }}
 
-    v-sheet.d-flex(tile height='54')
+    //- v-sheet.d-flex(tile height='54')
         v-btn.ma-2(icon @click='$refs.calendar.prev()')
             v-icon mdi-chevron-left
         v-select.ma-2(v-model='type' :items='types' dense outlined hide-details label='type')
@@ -20,24 +19,34 @@ div
         v-spacer
         v-btn.ma-2(icon @click='$refs.calendar.next()')
             v-icon mdi-chevron-right
-    v-sheet(height='600')
+    v-sheet
         //- v-toolbar-title(v-if="$refs.calendar")
                 |{{ $refs.calendar.title }}
         v-calendar(
             ref='calendar'
             v-model='value'
             color='primary'
-            :weekdays='weekday'
+            :weekdays='groupWorkingDays'
             :type='type'
             :events='events'
             :event-overlap-mode='mode'
             :event-overlap-threshold='30'
             :event-color='getEventColor'
             @click:event="showEvent"
-            @change='getEvents'
+            @click:more="viewDay"
+            @click:date="viewDay"
         )
+        //- @change='getEvents'
+        v-menu(v-model='daySelected.dialog' width="290px" :activator='daySelected.element' offset-x)
+            v-card
+                //- v-card-title {{daySelected.data.date}}
+                //- :class='`${event.color}--text`'
+                v-card-text(
+                    v-for='event in daySelected.data.day'
+                    :key='event.name'
+                ) {{event.name}}
         v-menu(v-model='selectedOpen' :close-on-content-click='true' :activator='selectedElement' offset-x)
-            v-card(color='grey lighten-4' min-width='350px' flat)
+            v-card(:color='getColor()' min-width='350px' flat)
                 //- v-toolbar(:color='selectedEvent.color' dark)
                     v-btn(icon)
                         v-icon mdi-pencil
@@ -55,8 +64,16 @@ div
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapMutations, mapActions } from "vuex";
+import { calendarDate } from "~/static/js/calendarDate";
+import { stringify } from "~/static/js/stringify";
+// import { DAY_MILL_SEC, getDefInDays } from "~/static/js/generatePlanDays";
 export default {
+    middleware: ["fetchGroups"],
+    async mounted() {
+        // console.log(this.groups);
+        await this.fetchPlansDate();
+    },
     data: () => ({
         type: "month",
         types: ["month", "week", "day", "4day"],
@@ -64,14 +81,19 @@ export default {
         modes: ["stack", "column"],
         selectedElement: null,
         selectedOpen: false,
+        daySelected: {
+            dialog: false,
+            element: null,
+            data: [],
+        },
         selectedEvent: {},
         weekday: [0, 1, 2, 3, 4, 5, 6],
-        weekdays: [
-            { text: "Sun - Sat", value: [0, 1, 2, 3, 4, 5, 6] },
-            { text: "Mon - Sun", value: [1, 2, 3, 4, 5, 6, 0] },
-            { text: "Mon - Fri", value: [1, 2, 3, 4, 5] },
-            { text: "Mon, Wed, Fri", value: [1, 3] },
-        ],
+        // weekdays: [
+        //     { text: "Sun - Sat", value: [0, 1, 2, 3, 4, 5, 6] },
+        //     { text: "Mon - Sun", value: [1, 2, 3, 4, 5, 6, 0] },
+        //     { text: "Mon - Fri", value: [1, 2, 3, 4, 5] },
+        //     { text: "Mon, Wed, Fri", value: [1, 3] },
+        // ],
         value: "",
         events: [
             {
@@ -103,43 +125,102 @@ export default {
             "Party",
         ],
     }),
-    methods: {
-        getEvents({ start, end }) {
-            console.log(start, end);
-            const events = [];
-
-            const min = new Date(`${start.date}T00:00:00`);
-            const max = new Date(`${end.date}T23:59:59`);
+    computed: {
+        ...mapState([
+            "groups",
+            "surahAdj",
+            "versesPerPage",
+            "selectedDateHistory",
+            "plansToTables",
+            "plans",
+        ]),
+        group() {
+            const { groupId } = this.$route.params;
+            return this.groups.filter((g) => g.id == groupId)?.[0];
         },
-        h({ start, end }) {
-            console.log(start, end);
-            const events = [];
-
-            const min = new Date(`${start.date}T00:00:00`);
-            const max = new Date(`${end.date}T23:59:59`);
-            const days = (max.getTime() - min.getTime()) / 86400000;
-            const eventCount = this.rnd(days, days + 20);
-
-            for (let i = 0; i < eventCount; i++) {
-                const allDay = this.rnd(0, 3) === 0;
-                const firstTimestamp = this.rnd(min.getTime(), max.getTime());
-                const first = new Date(
-                    firstTimestamp - (firstTimestamp % 900000)
+        course() {
+            const { courseId } = this.$route.params;
+            if (this.group)
+                return this.group.courses.filter((c) => c.id == courseId)?.[0];
+        },
+        subgroup() {
+            const { subgroupId } = this.$route.params,
+                sub = this.course.subgroups.filter(
+                    (s) => s.id == subgroupId
+                )?.[0],
+                student =
+                    sub ||
+                    this.group.floatingStudents.filter(
+                        (s) => s.id == subgroupId
+                    )?.[0];
+            this.isStudent = !sub;
+            return sub || student;
+        },
+        groupWorkingDays() {
+            return this.group.working_days;
+        },
+        weekDays() {
+            let weekDays = JSON.parse(this.$vuetify.lang.locales.en.weekDays);
+            return this.groupWorkingDays.map((di) => weekDays[di]);
+        },
+    },
+    methods: {
+        ...mapMutations(["updateModel"]),
+        // fetch plans
+        async fetchPlansDate() {
+            const { plans, events } = calendarDate({
+                group: this.group,
+                courseTitle: this.course.title,
+                subgroup: this.subgroup,
+                weekDays: this.weekDays,
+                versesPerPage: this.versesPerPage,
+                surahAdj: this.surahAdj,
+                $vuetify: this.$vuetify,
+                stringify,
+            });
+            // console.log(plans, events);
+            // update states
+            // this.updateModel(["events", events]);
+            this.events = events;
+            this.updateModel(["plans", plans]);
+            // marge plans
+            // this.marge();
+            // get history
+            // await this.getHistory();
+        },
+        viewDay({ date, nativeEvent }) {
+            const open = () => {
+                // open dialog
+                this.daySelected.element = nativeEvent.target;
+                // this.daySelected.dialog = true;
+                // filter day events
+                const min = new Date(`${date}T00:00:00`);
+                const max = new Date(`${date}T23:59:59`);
+                const day = this.events.filter(
+                    (e) =>
+                        (e.start < max && e.start > min) ||
+                        (e.end < max && e.end > min)
                 );
-                const secondTimestamp = this.rnd(2, allDay ? 288 : 8) * 900000;
-                const second = new Date(first.getTime() + secondTimestamp);
+                this.daySelected.data = { date, day };
+                // animation
+                requestAnimationFrame(() =>
+                    requestAnimationFrame(
+                        () => (this.daySelected.dialog = true)
+                    )
+                );
+            };
 
-                events.push({
-                    name: this.names[this.rnd(0, this.names.length - 1)],
-                    start: first,
-                    end: second,
-                    color: this.colors[this.rnd(0, this.colors.length - 1)],
-                    timed: !allDay,
-                });
+            // animation
+            if (this.daySelected.dialog) {
+                this.daySelected.dialog = false;
+                requestAnimationFrame(() =>
+                    requestAnimationFrame(() => open())
+                );
+            } else {
+                open();
             }
 
-            this.events = events;
-            console.log(this.events);
+            nativeEvent.stopPropagation();
         },
         getEventColor(event) {
             return event.color;
@@ -176,6 +257,22 @@ export default {
 
             nativeEvent.stopPropagation();
         },
+        getColor() {
+            return this.selectedEvent?.color || "";
+        },
     },
 };
 </script>
+<style lang="sass">
+.v-calendar-monthly
+    height: auto !important
+    .v-calendar-weekly__week
+        flex: none
+        .v-calendar-weekly__day
+            padding: 5px 10px
+        .v-event
+            height: auto !important
+            margin: 10px 0 !important
+            padding: 10px
+            white-space: break-spaces !important
+</style>

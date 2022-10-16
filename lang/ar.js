@@ -76,5 +76,6 @@ export default {
     descending: "تنازلي",
     Progressive: "تصاعدي",
     //
-    nothingTodayMessage: "there is nothing today",
+    nothingTodayMessage: "لا يوجد شيء اليوم",
+    showCalendar: "اظهر التقويم",
 };

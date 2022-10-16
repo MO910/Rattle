@@ -19,7 +19,6 @@ const generatePlanDays = (group, plan, custom) => {
         totalDays = custom
             ? weeks * working_days.length
             : plan.weeks * working_days.length;
-    console.log("ending_at", ending_at, plan.ending_at, weeks);
     //  fill days array
     for (let i = 0; i < totalDays; i++) {
         let day = {};

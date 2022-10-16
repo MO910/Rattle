@@ -27,6 +27,7 @@ export default async function ({ state, commit }) {
                             plans {
                                 id
                                 title
+                                color
                                 order_reversed
                                 from
                                 amount
@@ -55,6 +56,7 @@ export default async function ({ state, commit }) {
                                 plans {
                                     id
                                     title
+                                    color
                                     order_reversed
                                     from
                                     amount

@@ -4,6 +4,7 @@ const Plans = new Schema(
     {
         subgroup_id: mongoose.ObjectId,
         title: String,
+        color: String,
         order_reversed: Boolean,
 
         from: Number,

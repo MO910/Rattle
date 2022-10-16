@@ -10,7 +10,31 @@ v-dialog(v-model='dialog' width="570")
         )
             v-icon mdi-plus
     v-card
-        v-card-title.text-h5.text-capitalize {{$vuetify.lang.t('$vuetify.addPlan')}}
+        v-card-title.text-h5.text-capitalize.d-inline-block {{$vuetify.lang.t('$vuetify.addPlan')}}
+        //- pickColor
+        v-menu(offset-y)
+            template(v-slot:activator='{ on, attrs }')
+                v-btn(
+                    v-bind='attrs'
+                    v-on='on'
+                    fab
+                    dark
+                    x-small
+                    :color="selectedColor"
+                )
+            v-card
+                v-card-text
+                    v-btn.ma-3(
+                        v-for='color in colors'
+                        :key='color'
+                        :color="color"
+                        @click='selectColor(color)'
+                        fab
+                        dark
+                        x-small
+                    )
+                        v-icon(v-if='color == selectedColor') mdi-check-circle
+        //- other fields
         v-card-text
             v-row
                 v-col.text-h6(cols='12') {{$vuetify.lang.t('$vuetify.type')}}
@@ -105,9 +129,21 @@ export default {
         has_rabt: false,
         dateMenu: false,
         selectedSurahIndex: null,
+        selectedColor: null,
         surahSearch: "",
         type_selected: 0,
         types: ["new", "old", "tajweed", "tafseer", "custom"],
+        colors: [
+            "red",
+            "indigo",
+            "deep-purple",
+            "teal",
+            "lime darken-3",
+            "orange",
+            "blue-grey",
+            "brown",
+            "deep-orange",
+        ],
         direction_selected: 0,
         directions: ["descending", "Progressive"],
         min: 1,
@@ -126,6 +162,7 @@ export default {
     props: ["default_days", "subgroup_id", "group_id", "after", "isStudent"],
     mounted() {
         this.days_selected = this.default_days;
+        this.randomValidColor();
         // console.log(this.surahAdj.chapters);
     },
     computed: {
@@ -179,10 +216,26 @@ export default {
                 tree: this.isStudent
                     ? ["groups", "floatingStudents"]
                     : ["groups", "courses", "subgroups"],
+                color: this.selectedColor,
             });
             // fetch data again
             await this.after();
         },
+        // colors
+        randomValidColor() {
+            this.selectedColor = this.colors[0];
+        },
+        selectColor(color) {
+            this.selectedColor = color;
+        },
     },
 };
 </script>
+<style lang="sass" scoped>
+.pickColor
+    height: 1.3em
+    aspect-ratio: 1/1
+    background: red
+    display: inline-block
+    border-radius: 50%
+</style>

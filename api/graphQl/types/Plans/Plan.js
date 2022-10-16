@@ -17,6 +17,7 @@ module.exports = new GraphQLObjectType({
     fields: () => ({
         id: { type: GraphQLID },
         title: { type: GraphQLString },
+        color: { type: GraphQLString },
         order_reversed: { type: GraphQLBoolean },
 
         from: { type: GraphQLInt },

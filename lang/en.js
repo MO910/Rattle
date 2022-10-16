@@ -59,5 +59,6 @@ export default {
     descending: "descending",
     Progressive: "Progressive",
     //
-    nothingTodayMessage: "لا يوجد شيء اليوم",
+    nothingTodayMessage: "there is nothing today",
+    showCalendar: "show calendar",
 };

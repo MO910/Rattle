@@ -13,6 +13,14 @@ v-container
             )
     //- plans
     v-row.mt-10
+        v-col
+            v-btn(
+                router :to='calendarRouter'
+                color='primary lighten-2'
+                outlined block x-large
+            )
+                v-icon.mx-5 mdi-calendar-today
+                | {{$vuetify.lang.t('$vuetify.showCalendar')}}
         v-col.text-h4(cols='12')
             p.d-inline-block {{$vuetify.lang.t('$vuetify.plans')}}
             addPlan(
@@ -28,7 +36,7 @@ v-container
             :key='plan.id'
             v-if='!plan.hide'
         ) 
-            v-card.mx-5(@click='openTable(pi, $event)')
+            v-card.mx-5(@click='openTable(pi, $event)' :color='plan.color')
                 v-btn(@click='deletePlan(plan.id)' icon)
                     v-icon mdi-delete
                 v-card-title.d-block.text-center {{$vuetify.lang.t(`$vuetify.${plan.title}`)}}
@@ -168,6 +176,10 @@ export default {
         // check if day in plans exists
         dayExist() {
             return this.plansOfDate?.some((p) => p.day);
+        },
+        // rout to calendar
+        calendarRouter() {
+            return `${this.$router.currentRoute.path}/calendar`;
         },
     },
     methods: {
