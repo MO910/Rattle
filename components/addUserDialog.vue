@@ -1,12 +1,18 @@
 <template lang="pug">
-v-dialog.addCenterDialog(v-model='addUserForm.dialog' persistent max-width='600px')
+v-dialog(v-model='addUserDialog' persistent max-width='600px')
     v-card
-        v-card-title
-            span.text-h4.text-capitalize {{$vuetify.lang.t("$vuetify.newTeacher")}}
+        v-card-title.text-h4.text-capitalize {{$vuetify.lang.t("$vuetify.users")}}
         v-card-text
             v-container
-                v-form(v-model="valid")
+                v-form(v-model="textFieldsValid")
                     v-row
+                        v-col(cols='12')
+                            //- searching
+                            v-chip-group(
+                                v-model='selectedRules'
+                                active-class='primary--text' column multiple
+                            )
+                                v-chip(v-for='rule in rules' :key='rule' filter) {{ rule }}
                         v-col(cols='6')
                             v-text-field(
                                 v-model='first_name'
@@ -59,7 +65,7 @@ v-dialog.addCenterDialog(v-model='addUserForm.dialog' persistent max-width='600p
                     v-spacer
                     v-btn(color='red darken-1' text @click='close')
                         | {{$vuetify.lang.t("$vuetify.cancel")}}
-                    v-btn(color='blue darken-1' text @click='add')
+                    v-btn(color='blue darken-1' text @click='add' :disabled='!valid')
                         | {{$vuetify.lang.t("$vuetify.add")}}
 </template>
 <script>
@@ -67,21 +73,26 @@ import { mapState, mapActions, mapMutations } from "vuex";
 export default {
     // props: ["dialog"],
     data: () => ({
-        valid: false,
+        textFieldsValid: false,
         first_name: "",
         parent_name: "",
         email: "",
         phone: "",
         selectedCenterId: null,
         selectedGroupId: null,
+        rules: ["student", "parent", "teacher", "admin"],
+        selectedRules: [],
         requiredRole: (v) => !!v || "this field is required",
     }),
     computed: {
-        ...mapState(["addUserForm", "organization"]),
+        ...mapState(["addUserDialog", "organization"]),
         selectedCenterGroups() {
             return this.organization.centers?.filter(
                 (c) => c.id == this.selectedCenterId
             )?.[0]?.groups;
+        },
+        valid() {
+            return this.textFieldsValid && this.selectedRules.length;
         },
     },
     props: ["newUserRule", "nodePath"],
@@ -92,10 +103,11 @@ export default {
             this.name = "";
             this.email = "";
             this.phone = "";
-            this.updateModel(["addUserForm.dialog", false]);
+            this.updateModel(["addUserDialog", false]);
         },
         async add() {
             if (!this.valid) return;
+            let rules = this.selectedRules?.map((ti) => this.rules[ti]);
             await this.createUser({
                 organization_id: this.organization.id,
                 group_id: this.selectedGroupId,
@@ -103,8 +115,10 @@ export default {
                 first_name: this.first_name,
                 parent_name: this.parent_name,
                 phone: this.phone,
-                rules: [this.newUserRule],
-                nodePath: this.nodePath,
+                rules: rules.map((title) => ({
+                    title,
+                })),
+                nodePath: "users",
             });
             this.close();
         },

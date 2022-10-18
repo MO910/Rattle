@@ -8,7 +8,8 @@ export default async function ({ state, commit }, args) {
     // if (this.$auth.loggedIn && this.$auth.user && !state.user.id) {
     // state.userId = this.$auth.user._id;
     const nodePath = args.nodePath,
-        organization_id = state.organization?.id;
+        rules = [...args.rules];
+    args.rules = args.rules.map((rule) => rule.title);
     delete args.nodePath;
     // generate a random password if there is null passed
     args.password = args.password || randomPassword();
@@ -28,7 +29,6 @@ export default async function ({ state, commit }, args) {
             });
         return data;
     };
-    // console.log(data)
     // add optimistic response to the new goal
     const optimistic = new Optimistic({
         state,
@@ -37,7 +37,7 @@ export default async function ({ state, commit }, args) {
         dataKey: "createUser",
     });
     optimistic.add({
-        requestData: args,
+        requestData: { ...args, rules },
         nodePath,
     });
     // }

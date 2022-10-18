@@ -61,4 +61,7 @@ export default {
     //
     nothingTodayMessage: "there is nothing today",
     showCalendar: "show calendar",
+    //
+    users: "associate",
+    addUser: "add a new user",
 };

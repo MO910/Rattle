@@ -78,4 +78,7 @@ export default {
     //
     nothingTodayMessage: "لا يوجد شيء اليوم",
     showCalendar: "اظهر التقويم",
+    //
+    users: "المنتسبين",
+    addUser: "اضف منتسب جديد",
 };

@@ -1,65 +1,81 @@
 <template lang="pug">
 v-container
     v-row.mt-8
-        .text-h3 {{$vuetify.lang.t(`$vuetify.${usersMode}`)}}
-        v-btn(color='primary' @click='openUserDialog') {{$vuetify.lang.t(`$vuetify.add_${newUserRule}`)}}
-        v-btn(color='secondary') import from Excel
+        .text-h3 {{$vuetify.lang.t(`$vuetify.users`)}}
+        v-btn(color='primary' @click='openAddUserDialog') {{$vuetify.lang.t(`$vuetify.addUser`)}}
+        v-btn(color='green' @click='openImport') import from Excel
         v-btn(color='red' text @click='select=!select') delete
+    //- searching
+    v-chip-group.mt-10(
+        v-model='tags'
+        active-class='primary--text' column multiple
+    )
+        v-chip(v-for='rule in rules' :key='rule' filter) {{ rule }}
     v-text-field(
         v-model="search"
         append-icon="mdi-magnify"
-        label="Search"
+        :label="$vuetify.lang.t(`$vuetify.search`)"
         single-line
         hide-details
     )
-    v-data-table(
-        :headers="headers"
-        :items="usersInfo"
-        item-key="id"
-        :items-per-page="itemsPerPage"
-        :search="search"
-        :single-select='false'
-        :page.sync="page"
-        @page-count="pageCount = $event"
-        :show-select='select'
-        hide-default-footer
-        loading-text="Loading... Please wait"
-        color='red'
-        class="elevation-1"
-    )
-        template(v-slot:item.first_name='props')
-            edit-dialog(:props='props' col='first_name')
-        template(v-slot:item.parent_name='props')
-            edit-dialog(:props='props' col='parent_name')
-        template(v-slot:item.phone='props')
-            edit-dialog(:props='props' col='phone')
-        template(v-slot:item.email='props')
-            edit-dialog(:props='props' col='email')
-        template(v-slot:item.group='props')
-            //- @save="save"
-            //- @cancel="cancel"
-            //- @open="open"
-            //- @close="close"
-            v-edit-dialog(
-                :return-value.sync='props.item.group'
-                @open="open(props)"
-                @close='close(props)'
-            ) {{ props.item.group }}
-                template(v-slot:input)
-                    v-select(
-                        v-model="newGroupSelectedId"
-                        :items="organization.groups"
-                        item-text='title'
-                        item-value='id'
-                        label="group"
-                    )
-
-    .text-center
+    //- users cards
+    v-row
+        v-col.mt-10.col-md-4.col-sm-6.col-xs-12(v-for='user in searchResults' :key='user.id')
+            v-card(@click='openEditUserDialog(user)')
+                v-card-title {{fullName(user)}}
+                v-card-text 
+                    v-chip.ma-3(v-for='rule in user.rules' :key='rule.id') {{rule.title}}
+        v-col.mt-10(v-if='!searchResults.length') there is no search results
+    addUserDialog
+    importExcelDialog
+    editUserDialog
+    //- div
+        v-data-table(
+            :headers="headers"
+            :items="allUsersInfo"
+            item-key="id"
+            :items-per-page="itemsPerPage"
+            :search="search"
+            :single-select='false'
+            :page.sync="page"
+            @page-count="pageCount = $event"
+            :show-select='select'
+            hide-default-footer
+            loading-text="Loading... Please wait"
+            color='red'
+            class="elevation-1"
+        )
+            template(v-slot:item.first_name='props')
+                edit-dialog(:props='props' col='first_name')
+            template(v-slot:item.parent_name='props')
+                edit-dialog(:props='props' col='parent_name')
+            template(v-slot:item.phone='props')
+                edit-dialog(:props='props' col='phone')
+            template(v-slot:item.email='props')
+                edit-dialog(:props='props' col='email')
+            template(v-slot:item.group='props')
+                //- @save="save"
+                //- @cancel="cancel"
+                //- @open="open"
+                //- @close="close"
+                v-edit-dialog(
+                    :return-value.sync='props.item.group'
+                    @open="open(props)"
+                    @close='close(props)'
+                ) {{ props.item.group }}
+                    template(v-slot:input)
+                        v-select(
+                            v-model="newGroupSelectedId"
+                            :items="organization.groups"
+                            item-text='title'
+                            item-value='id'
+                            label="group"
+                        )
+    //- .text-center
         v-pagination(
             v-model="page"
             :length="pageCount"
         )
-    addUser(:newUserRule='newUserRule' :nodePath='usersMode')
 </template>
 
 <script>
@@ -67,15 +83,14 @@ import { mapState, mapMutations, mapActions } from "vuex";
 export default {
     async middleware({ store, redirect, route, $auth }) {
         if (!$auth.$state.loggedIn || !$auth.$state.user) redirect("/login");
-        const usersMode = route.query?.mode;
+        // const usersMode = route.query?.mode;
         await store.dispatch("getOrganization");
         // console.log(store.state.organization);
-        if (usersMode == "teachers") await store.dispatch("getTeachers");
-        else if (usersMode == "students") await store.dispatch("getStudents");
+        await store.dispatch("getUsers");
     },
     data() {
         return {
-            usersMode: this.$route.query?.mode,
+            // usersMode: this.$route.query?.mode,
             page: 1,
             pageCount: 2,
             itemsPerPage: 10,
@@ -83,6 +98,7 @@ export default {
             search: "",
             tempValue: "",
             newGroupSelectedId: "",
+            tags: [],
             headerNames: [
                 "first_name",
                 "parent_name",
@@ -94,22 +110,37 @@ export default {
         };
     },
     mounted() {
-        // console.log(this.nameTranslation("مالك"));
+        // select all rules
+        this.tags = Array.from({ length: this.rules.length }, (_, i) => i * 1);
     },
     computed: {
-        ...mapState(["students", "teachers", "organization"]),
-        usersInfo() {
-            const users = this.usersMode.match(/(teachers)|(students)/g)
-                ? this[this.usersMode]
-                : [];
-            // console.log(users);
-            return users?.map((user) => {
+        ...mapState(["users", "organization", "importExcel"]),
+        allUsersInfo() {
+            return this.users?.map((user) => {
                 const group = user.groups?.map((g) => g.title)?.join(", ");
                 const subgroup = user.subgroups
                     ?.map((g) => g.title)
                     ?.join(", ");
                 return { ...user, group, subgroup };
             });
+        },
+        searchResults() {
+            let selectedRules = this.tags?.map((ti) => this.rules[ti]),
+                //search by rules
+                results = this.allUsersInfo.filter((user) =>
+                    user.rules.some(
+                        (rule) => selectedRules?.indexOf(rule.title) !== -1
+                    )
+                );
+            // search by name
+            results = results.filter((user) =>
+                this.fullName(user).match(this.search)
+            );
+            // sort by name
+            results.sort((x, y) =>
+                this.fullName(x).localeCompare(this.fullName(y))
+            );
+            return results;
         },
         headers() {
             return this.headerNames.reduce((acc, h) => {
@@ -120,22 +151,29 @@ export default {
                 return acc;
             }, []);
         },
-        newUserRule() {
-            return this.usersMode.replace(/s$/, "");
+        rules() {
+            let rules = this.allUsersInfo
+                .map((u) => u.rules)
+                .flat()
+                .map((r) => r.title);
+            return Array.from(new Set(rules));
         },
     },
     methods: {
         ...mapMutations(["updateModel"]),
         ...mapActions(["updateUser"]),
-        openUserDialog() {
-            this.updateModel(["addUserForm.dialog", true]);
+        openAddUserDialog() {
+            this.updateModel(["addUserDialog", true]);
         },
-        open(props) {
-            this.newGroupSelectedId = props.item.group.id;
-            console.log(props.header.value);
+        openEditUserDialog(user) {
+            this.updateModel(["editUserForm.dialog", true]);
+            this.updateModel(["editUserForm.user", user]);
         },
-        close(props) {
-            console.log(props, this.newGroupSelectedId);
+        openImport() {
+            this.updateModel(["importExcel.dialog", true]);
+        },
+        fullName(user) {
+            return `${user.first_name} ${user.parent_name || ""}`;
         },
         // nameTranslation(name) {
         //     // #use graph db

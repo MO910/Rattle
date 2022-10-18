@@ -34,6 +34,12 @@ export default {
             {
                 src: "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.2.6/gsap.min.js",
             },
+            // {
+            //     src: "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/jszip.js",
+            // },
+            // {
+            //     src: "/js/read-excel-file.min.js",
+            // },
             {
                 src: "/js/inputNumber.js",
             },

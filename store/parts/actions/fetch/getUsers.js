@@ -3,7 +3,12 @@ import gql from "graphql-tag";
 // function
 export default async function ({ state, commit }) {
     const organization_id = state.organization?.id;
-    if (this.$auth.loggedIn && this.$auth.user && organization_id) {
+    if (
+        this.$auth.loggedIn &&
+        this.$auth.user &&
+        state.user?.id &&
+        organization_id
+    ) {
         // GraphQl request
         const client = this.app.apolloProvider.defaultClient,
             {
@@ -13,12 +18,10 @@ export default async function ({ state, commit }) {
                     query user {
                         user(
                             organization_id: "${organization_id}"
-                            rules: ["teacher"]
                         ) {
                             id
                             organization_id
                             first_name
-                            parent_name
                             email
                             phone
                             attendances {
@@ -28,11 +31,19 @@ export default async function ({ state, commit }) {
                                 title
                                 permissions
                             }
+                            groups {
+                                id
+                                title
+                            }
+                            subgroups {
+                                id
+                                title
+                            }
                         }
                     }
                 `,
             });
         // update store
-        commit("updateModel", ["teachers", user]);
+        commit("updateModel", ["users", user]);
     }
 }

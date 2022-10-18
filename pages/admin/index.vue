@@ -9,7 +9,7 @@ v-container
 import { mapState } from "vuex";
 export default {
     data: () => ({
-        controls: ["centers", "groups", "courses", "teachers", "students"],
+        controls: ["centers", "groups", "courses", "users"],
     }),
     computed: mapState(["user"]),
     methods: {
@@ -18,8 +18,8 @@ export default {
                 /\/$/,
                 ""
             );
-            if (control.match(/(teachers)|(students)/g))
-                control = `users?mode=${control}`;
+            // if (control.match(/(teachers)|(students)/g))
+            //     control = `users?mode=${control}`;
             return `${fullPath}/${control}`;
         },
     },

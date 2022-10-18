@@ -8,8 +8,9 @@ import getUserData from "./parts/actions/fetch/getUserData";
 import getGroups from "./parts/actions/fetch/getGroups";
 import getSubgroupHistoryAtDate from "./parts/actions/fetch/getSubgroupHistoryAtDate";
 import getOrganization from "./parts/actions/fetch/getOrganization";
-import getTeachers from "./parts/actions/fetch/getTeachers";
-import getStudents from "./parts/actions/fetch/getStudents";
+// import getTeachers from "./parts/actions/fetch/getTeachers";
+// import getStudents from "./parts/actions/fetch/getUsers";
+import getUsers from "./parts/actions/fetch/getUsers";
 // Plans
 import addPlan from "./parts/actions/Plans/addPlan";
 import removePlan from "./parts/actions/Plans/removePlan";
@@ -25,6 +26,7 @@ import createCenter from "./parts/actions/createCenter";
 export default {
     state: () => ({
         user: {},
+        users: [],
         groups: {},
         plans: [],
         plansToTables: [],
@@ -42,8 +44,14 @@ export default {
         addCenterForm: {
             dialog: false,
         },
-        addUserForm: {
+        importExcel: {
             dialog: false,
+            data: null,
+        },
+        addUserDialog: false,
+        editUserForm: {
+            dialog: false,
+            user: {},
         },
         addPlanForm: {
             ayahValue: 1,
@@ -62,8 +70,7 @@ export default {
         getGroups,
         getSubgroupHistoryAtDate,
         getOrganization,
-        getTeachers,
-        getStudents,
+        getUsers,
         // Advancements
         updateHistory,
         addPlan,
@@ -75,6 +82,10 @@ export default {
         createOrganization,
         // Center
         createCenter,
+        // concatenate full name
+        fullName(user) {
+            return `${user.first_name} ${user.parent_name || ""}`;
+        },
     },
     mutations: {
         updateModel(state, [obj, value]) {
