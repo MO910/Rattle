@@ -6,12 +6,22 @@ v-dialog.addCenterDialog(v-model='addCenterForm.dialog' persistent max-width='60
         v-card-text
             v-container
                 v-row 
-                    v-text-field(
-                        v-model='centerName'
-                        name="name"
-                        autocomplete="name"
-                        :label="$vuetify.lang.t('$vuetify.name')"
-                    )
+                    v-col(cols='12')
+                        v-text-field(
+                            v-model='title'
+                            name="name"
+                            autocomplete="name"
+                            :label="$vuetify.lang.t('$vuetify.name')"
+                        )
+                    v-col(cols='12').text-h6.font-weight-regular.text-capitalize
+                        | {{$vuetify.lang.t('$vuetify.workingDays')}}
+                    v-btn-toggle(v-model="working_days" mandatory multiple group dense color="cyan darken-3")
+                        v-btn.mr-3(v-for='(d, i) in days' :key='i') {{d}}
+                    v-col.mt-5(cols='12')
+                        v-textarea(
+                            v-model='description'
+                            :label='$vuetify.lang.t("$vuetify.description")' outlined auto-grow
+                        )
         v-card-actions
             v-spacer
             v-btn(color='blue darken-1' text @click='close')
@@ -24,9 +34,16 @@ import { mapState, mapActions, mapMutations } from "vuex";
 export default {
     // props: ["dialog"],
     data: () => ({
-        centerName: "",
+        title: "",
+        working_days: [0, 1, 2, 3, 4],
+        description: "",
     }),
-    computed: mapState(["addCenterForm"]),
+    computed: {
+        ...mapState(["addCenterForm"]),
+        days() {
+            return JSON.parse(this.$vuetify.lang.t("$vuetify.weekDays"));
+        },
+    },
     methods: {
         ...mapMutations(["updateModel"]),
         ...mapActions(["createCenter"]),
@@ -35,7 +52,9 @@ export default {
         },
         async add() {
             await this.createCenter({
-                name: this.centerName,
+                title: this.title,
+                working_days: this.working_days,
+                description: this.description,
             });
             this.close();
         },

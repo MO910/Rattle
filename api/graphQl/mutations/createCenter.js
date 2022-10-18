@@ -3,6 +3,7 @@ const {
     GraphQLInt,
     GraphQLID,
     GraphQLBoolean,
+    GraphQLList,
 } = require("graphql");
 const Centers_Schema = require("../../models/Centers"),
     Center_type = require("../types/Center");
@@ -11,8 +12,10 @@ module.exports = {
     type: Center_type,
     args: {
         organization_id: { type: GraphQLID },
-        admin_id: { type: GraphQLID },
-        name: { type: GraphQLString },
+        admin_ids: { type: new GraphQLList(GraphQLID) },
+        title: { type: GraphQLString },
+        working_days: { type: new GraphQLList(GraphQLInt) },
+        description: { type: GraphQLString },
     },
     async resolve(_, args) {
         return Centers_Schema.create(args);

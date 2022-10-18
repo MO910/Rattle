@@ -65,7 +65,7 @@ export default {
     pagesPerDay: "عدد الاوجه في اليوم",
     hasRabt: "الخطة تحتوي على الربط",
     rabtPages: "عدد اوجه الربط اليومي",
-    workingDays: "ايام التسميع",
+    workingDays: "ايام العمل",
     startingDate: "تاريخ البداية",
     //
     type: "النوع",
@@ -81,4 +81,5 @@ export default {
     //
     users: "المنتسبين",
     addUser: "اضف منتسب جديد",
+    description: "وصف",
 };

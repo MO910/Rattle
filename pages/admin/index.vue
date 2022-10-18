@@ -18,8 +18,8 @@ export default {
                 /\/$/,
                 ""
             );
-            // if (control.match(/(teachers)|(students)/g))
-            //     control = `users?mode=${control}`;
+            if (control.match(/(users)|(centers)/g))
+                control = `entity?mode=${control}`;
             return `${fullPath}/${control}`;
         },
     },

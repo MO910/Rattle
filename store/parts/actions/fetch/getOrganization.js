@@ -16,6 +16,9 @@ export default async function ({ state, commit }) {
                             centers {
                                 id
                                 title
+                                working_days
+                                admin_ids
+                                description
                                 groups {
                                     id
                                     title
