@@ -34,7 +34,11 @@ const // Goals
     // rule convert function
     rulesConverter = require("./types/shared/rulesConverter"),
     // Center
-    createCenter = require("./mutations/createCenter");
+    createCenter = require("./mutations/createCenter"),
+    // Groups
+    createSubgroup = require("./mutations/Groups/createSubgroup"),
+    removeSubgroup = require("./mutations/Groups/removeSubgroup"),
+    transportToSubgroup = require("./mutations/Groups/transportToSubgroup");
 /*
     removeGoal = require("./mutations/Goals/removeGoal"),
     updateGoalsHistory = require("./mutations/Goals/updateHistory"),
@@ -119,6 +123,10 @@ const query = new GraphQLObjectType({
             removePlan,
             // centers
             createCenter,
+            // groups
+            createSubgroup,
+            removeSubgroup,
+            transportToSubgroup,
         },
     });
 // exports

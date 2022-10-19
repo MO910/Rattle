@@ -82,4 +82,5 @@ export default {
     users: "المنتسبين",
     addUser: "اضف منتسب جديد",
     description: "وصف",
+    transport: "نقل",
 };

@@ -14,6 +14,6 @@ module.exports = {
         owner_id: { type: GraphQLID },
     },
     async resolve(_, args) {
-        return Organizations_Schema.create(args);
+        return await Organizations_Schema.create(args);
     },
 };

@@ -65,4 +65,5 @@ export default {
     users: "associate",
     addUser: "add a new user",
     description: "description",
+    transport: "transport",
 };

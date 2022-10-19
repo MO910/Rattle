@@ -1,41 +1,38 @@
 <template lang="pug" key="index">
 v-container
-    .text-h3 الطلاب
     v-row
-        v-col(cols='2' v-for='student in group.floatingStudents' :key='student.id')
-            folder(:folder='student' icon='mdi-account' :router='subgroupRouter(student.id)')
-    .text-h3 المجموعات الفرعية
-    v-row.pt-10
-        v-col(
-            cols='12'
-            v-for='item in course.subgroups'
-            :key='item.id'
+        v-col.text-h3(cols='12') الطلاب
+        v-col.col-md-4.col-sm-6.col-xs-12(
+            v-for='student in group.floatingStudents'
+            v-if='!student.hide'
+            :key='student.id'
         )
-            v-card.items.px-10(
-                :class='item.color'
-                rounded router :to='subgroupRouter(item.id)'
-                v-ripple="{ class: item.ripple}"
+            custom-card(:entity='student' :subgroups='subgroups')
+    v-row.pt-10
+        v-col.text-h3(cols='12')
+            | المجموعات الفرعية
+            v-btn.mx-5(
+                @click='openSubgroupDialog'
+                color='success' icon outlined
             )
-                .card-icon.d-flex.py-4
-                    //- include ../../../static/img/quran.pug
-                    //- v-icon.mr-5(:color='item.color' large) mdi-{{item.icon}}
-                v-card-title.text-capitalize.pt-6 {{$vuetify.lang.t(item.title)}}
-                v-row
-                    v-col(cols='3' v-for='student in item.students' :key='student.id')
-                        folder(:folder='student' icon='mdi-account')
-        v-col(cols='3' v-for='student in group.students' :key='student.id')
-            folder(:folder='student' icon='mdi-account')
+                v-icon mdi-plus
+        v-col.col-md-4.col-sm-6.col-xs-12(
+            v-for='subgroup in course.subgroups'
+            v-if='!subgroup.hide'
+            :key='subgroup.id'
+        )
+            custom-card(:entity='subgroup' :chips='subgroup.students')
+    //- dialog
+    add-subgroup-dialog(:course_id='course.id')
 </template>
 <script>
-import { mapState } from "vuex";
+import { mapState, mapMutations } from "vuex";
 export default {
     middleware: ["fetchGroups"],
-    mounted() {
-        console.log(this.course);
-        console.log(this.group);
-    },
-    // data: () => ({}),
+    mounted() {},
+    data: () => ({}),
     computed: {
+        ...mapState(["groups"]),
         group() {
             const { groupId } = this.$route.params;
             const group = this.groups?.filter((g) => g.id == groupId)?.[0];
@@ -44,15 +41,16 @@ export default {
         course() {
             const { courseId } = this.$route.params;
             const group = this.group;
-            const course = group?.courses?.filter((s) => s.id == courseId)?.[0];
-
-            return course;
+            return group?.courses?.filter((s) => s.id == courseId)?.[0];
         },
-        ...mapState(["groups"]),
+        subgroups() {
+            return this.course?.subgroups;
+        },
     },
     methods: {
-        subgroupRouter(subgroupId) {
-            return `${this.$router.currentRoute.path}/${subgroupId}`;
+        ...mapMutations(["updateModel"]),
+        openSubgroupDialog() {
+            this.updateModel(["addSubgroupForm.dialog", true]);
         },
     },
 };

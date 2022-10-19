@@ -22,6 +22,9 @@ import updateUser from "./parts/actions/Users/updateUser";
 import createOrganization from "./parts/actions/createOrganization";
 // Center
 import createCenter from "./parts/actions/createCenter";
+// Groups
+import createSubgroup from "./parts/actions/groups/createSubgroup";
+import removeSubgroup from "./parts/actions/groups/removeSubgroup";
 // export
 export default {
     state: () => ({
@@ -58,6 +61,9 @@ export default {
             pagesValue: 1,
             rabtPagesValue: 1,
         },
+        addSubgroupForm: {
+            dialog: false,
+        },
         //
         selectedDateHistory: [],
     }),
@@ -82,6 +88,9 @@ export default {
         createOrganization,
         // Center
         createCenter,
+        // Groups
+        createSubgroup,
+        removeSubgroup,
         // concatenate full name
         fullName(user) {
             return `${user.first_name} ${user.parent_name || ""}`;

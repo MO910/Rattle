@@ -18,6 +18,6 @@ module.exports = {
         description: { type: GraphQLString },
     },
     async resolve(_, args) {
-        return Centers_Schema.create(args);
+        return await Centers_Schema.create(args);
     },
 };
