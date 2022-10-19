@@ -1,13 +1,17 @@
 <template lang="pug" key="index">
 v-container
-    v-row
+    v-row(v-if='floatingStudentsExists')
         v-col.text-h3(cols='12') الطلاب
         v-col.col-md-4.col-sm-6.col-xs-12(
             v-for='student in group.floatingStudents'
             v-if='!student.hide'
             :key='student.id'
         )
-            custom-card(:entity='student' :subgroups='subgroups')
+            custom-card(
+                :entity='student'
+                :subgroups='subgroups'
+                type='floatingStudents'
+            )
     v-row.pt-10
         v-col.text-h3(cols='12')
             | المجموعات الفرعية
@@ -45,6 +49,9 @@ export default {
         },
         subgroups() {
             return this.course?.subgroups;
+        },
+        floatingStudentsExists() {
+            return this.group?.floatingStudents?.length;
         },
     },
     methods: {

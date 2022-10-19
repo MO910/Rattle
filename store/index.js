@@ -25,6 +25,7 @@ import createCenter from "./parts/actions/createCenter";
 // Groups
 import createSubgroup from "./parts/actions/groups/createSubgroup";
 import removeSubgroup from "./parts/actions/groups/removeSubgroup";
+import transportToSubgroup from "./parts/actions/groups/transportToSubgroup";
 // export
 export default {
     state: () => ({
@@ -66,6 +67,15 @@ export default {
         },
         //
         selectedDateHistory: [],
+        // context menu
+        contextmenu: {
+            show: false,
+            type: "",
+            dialog: { show: false },
+            entity: {},
+            subgroups: [],
+            list: ["transport", "edit", "remove"],
+        },
     }),
     actions: {
         // authentication
@@ -91,6 +101,7 @@ export default {
         // Groups
         createSubgroup,
         removeSubgroup,
+        transportToSubgroup,
         // concatenate full name
         fullName(user) {
             return `${user.first_name} ${user.parent_name || ""}`;

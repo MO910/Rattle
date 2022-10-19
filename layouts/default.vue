@@ -43,6 +43,7 @@ v-app(dark)
     v-main
         v-container
             Nuxt
+            contextmenu
     //- script(src="~/js/menu.js")
 </template>
 

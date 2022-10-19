@@ -51,10 +51,24 @@ v-container
         v-col.text-h4(cols='12') {{$vuetify.lang.t('$vuetify.students')}}
         v-col.px-0.col-xs-12.col-sm-12.col-md-6(
             cols='6'
-            v-for='student in subgroup.students'
-            :key='student.id'
+            v-for='student, i in subgroup.students'
+            :key='i'
         )
-            v-card.mx-5(:loading="fetching")
+            custom-card.mx-5(
+                :entity='student'
+                :subgroups='course.subgroups'
+                type='subgroup'
+            )
+                advantage(
+                    v-for='plan, pi in plansOfDate'
+                    :key='pi'
+                    v-if='plan.day && !fetching && !plan.hide'
+                    :plan='plan'
+                    :student_id='student.id'
+                    :selectedDate='selectedDate'
+                    :divider='advantageDivider(pi)'
+                )
+            //- v-card.mx-5(:loading="fetching")
                 template(slot="progress")
                     v-progress-linear(indeterminate)
                 div.py-5.px-10
