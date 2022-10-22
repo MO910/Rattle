@@ -12,9 +12,8 @@ const planTable = ({
 }) => {
     let plans = [],
         plansToTables = [];
-    console.log("subgroup", subgroup);
     // generate plans
-    subgroup.plans.forEach((plan) => {
+    subgroup?.plans?.forEach((plan) => {
         // preprocess custom plans
         let customPlan;
         if (plan.custom_plans?.length) {

@@ -1,50 +1,11 @@
 <template lang="pug">
 v-app(dark)
-    //- v-navigation-drawer(
-    //-     v-model="drawer"
-    //-     :mini-variant="miniVariant"
-    //-     :clipped="clipped"
-    //-     fixed
-    //-     app
-    //- )
-        v-list
-            v-list-item(
-                v-for="(item, i) in items"
-                :key="i"
-                :to="item.to"
-                router
-                exact
-            )
-                v-list-item-action
-                    v-icon {{ item.icon }}
-                v-list-text lkjfasdlk;j
-    v-app-bar(:clipped-left="clipped" fixed app)
-        v-app-bar-nav-icon(@click.stop="drawer = !drawer")
-        v-btn(icon @click.stop="miniVariant = !miniVariant")
-            v-icon mdi-{{`chevron-${miniVariant ? "right" : "left"}`}}
-        v-btn(icon @click.stop="clipped = !clipped")
-            v-icon mdi-application
-        v-btn(icon @click.stop="fixed = !fixed")
-            v-icon mdi-minus
-        //- sign in
-        div(v-if="$auth.loggedIn") {{ $auth.user }}
-            v-btn(
-                color="error"
-                outlined
-                small
-                router
-                to="/login"
-                @click="logout()"
-            ) logout
-            //- notifications list
-            //- notificationsCenter
-        div(v-else)
-            v-btn(color="success" outlined small router to="/login") login
+    navigation-drawer
     v-main
         v-container
+            v-btn(v-if="!$auth.loggedIn" nuxt to="/login") login
             Nuxt
             contextmenu
-    //- script(src="~/js/menu.js")
 </template>
 
 <script>
@@ -64,18 +25,6 @@ export default {
         clipped: false,
         drawer: true,
         fixed: false,
-        items: [
-            {
-                icon: "mdi-apps",
-                title: "Welcome",
-                to: "/",
-            },
-            {
-                icon: "mdi-chart-bubble",
-                title: "Inspire",
-                to: "/inspire",
-            },
-        ],
         miniVariant: false,
         right: true,
         rightDrawer: false,
@@ -92,7 +41,6 @@ export default {
 </script>
 <style lang="sass">
 @import "@/assets/general"
-
 // background noise
 #noise
     width: 100vw

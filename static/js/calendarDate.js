@@ -35,18 +35,6 @@ const calendarDate = ({
             )
         );
     });
-    console.log(
-        "plans",
-        stringify({
-            title: plans[0].title,
-            day: plans[0].days[0],
-            courseTitle,
-            versesPerPage,
-            surahAdj,
-            $vuetify,
-            showDate: false,
-        })
-    );
     // style to fit calendar
     plans.forEach((plan) => {
         plan.days.forEach((day) => {

@@ -57,17 +57,19 @@ v-container
             custom-card.mx-5(
                 :entity='student'
                 :subgroups='course.subgroups'
+                :advantage='plansOfDate'
+                :notRouter='true'
                 type='subgroup'
             )
-                advantage(
-                    v-for='plan, pi in plansOfDate'
-                    :key='pi'
-                    v-if='plan.day && !fetching && !plan.hide'
-                    :plan='plan'
-                    :student_id='student.id'
-                    :selectedDate='selectedDate'
-                    :divider='advantageDivider(pi)'
-                )
+                //- advantage(
+                //-     v-for='plan, pi in plansOfDate'
+                //-     :key='pi'
+                //-     v-if='plan.day && !fetching && !plan.hide'
+                //-     :plan='plan'
+                //-     :student_id='student.id'
+                //-     :selectedDate='selectedDate'
+                //-     :divider='advantageDivider(pi)'
+                //- )
             //- v-card.mx-5(:loading="fetching")
                 template(slot="progress")
                     v-progress-linear(indeterminate)
@@ -82,7 +84,7 @@ v-container
                         :selectedDate='selectedDate'
                         :divider='advantageDivider(pi)'
                     )
-    v-row.mt-10(v-else)
+    //- v-row.mt-10(v-else)
         v-col.px-0(
             cols='12'
             v-if='dayExist'
@@ -108,7 +110,11 @@ import { planTable } from "~/static/js/planTable";
 import { stringify } from "~/static/js/stringify";
 import { DAY_MILL_SEC, getDefInDays } from "~/static/js/generatePlanDays";
 export default {
-    middleware: ["fetchGroups"],
+    // middleware: ["fetchGroups"],
+    async fetch({ $auth, store, redirect }) {
+        if (!$auth.$state.loggedIn || !$auth.$state.user) redirect("/login");
+        else await store.dispatch("getGroups");
+    },
     data: () => ({
         selectedDay: "2022-10-04",
         margePlans: [],
@@ -147,7 +153,7 @@ export default {
                 )?.[0],
                 student =
                     sub ||
-                    this.group.floatingStudents.filter(
+                    this.course.floatingStudents.filter(
                         (s) => s.id == subgroupId
                     )?.[0];
             this.isStudent = !sub;
@@ -225,7 +231,6 @@ export default {
                 $vuetify: this.$vuetify,
                 stringify,
             });
-            console.log(plans, plansToTables);
             // update states
             this.updateModel(["plansToTables", plansToTables]);
             this.updateModel(["plans", plans]);

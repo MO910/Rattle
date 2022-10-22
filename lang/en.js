@@ -66,4 +66,8 @@ export default {
     addUser: "add a new user",
     description: "description",
     transport: "transport",
+    //
+    settings: "settings",
+    dark_mode: "dark_mode",
+    logout: "logout",
 };

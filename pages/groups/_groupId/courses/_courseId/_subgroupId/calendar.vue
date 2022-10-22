@@ -69,7 +69,11 @@ import { calendarDate } from "~/static/js/calendarDate";
 import { stringify } from "~/static/js/stringify";
 // import { DAY_MILL_SEC, getDefInDays } from "~/static/js/generatePlanDays";
 export default {
-    middleware: ["fetchGroups"],
+    // middleware: ["fetchGroups"],
+    async fetch({ $auth, store, redirect }) {
+        if (!$auth.$state.loggedIn || !$auth.$state.user) redirect("/login");
+        else await store.dispatch("getGroups");
+    },
     async mounted() {
         // console.log(this.groups);
         await this.fetchPlansDate();
@@ -150,7 +154,7 @@ export default {
                 )?.[0],
                 student =
                     sub ||
-                    this.group.floatingStudents.filter(
+                    this.course.floatingStudents.filter(
                         (s) => s.id == subgroupId
                     )?.[0];
             this.isStudent = !sub;

@@ -24,7 +24,11 @@ v-container
 <script>
 import { mapState } from "vuex";
 export default {
-    middleware: ["fetchGroups"],
+    // middleware: ["fetchGroups"],
+    async fetch({ $auth, store, redirect }) {
+        if (!$auth.$state.loggedIn || !$auth.$state.user) redirect("/login");
+        else await store.dispatch("getGroups");
+    },
     data: () => ({}),
     computed: {
         courses() {

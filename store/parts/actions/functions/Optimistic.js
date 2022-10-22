@@ -20,18 +20,17 @@ export default class {
                 branch: state,
             });
         let fullPath = nodePath;
-        // console.log(fullPath);
         if (targetArray) fullPath += `.${targetArray}`;
         // push the object to it
-        // console.log(`state.${fullPath}?.length`);
         const itemIndex = eval(`state.${fullPath}?.length`);
-        commit("push", [`${fullPath}`, requestData]);
+        commit("push", [fullPath, requestData]);
         // try the request
         try {
             this.data = await this.request();
             const itemId = this.data[this.dataKey]?.id;
             // update state and add ID (real response)
-            commit("updateModel", [`${fullPath}[${itemIndex}].id`, itemId]);
+            if (itemId)
+                commit("updateModel", [`${fullPath}[${itemIndex}].id`, itemId]);
         } catch (err) {
             // if error delete the added item
             commit("remove", [fullPath, itemIndex]);
@@ -52,24 +51,27 @@ export default class {
             }),
             indexRegExp = /\[\d+\]$/,
             allListPath = nodePath.replace(indexRegExp, "");
-        // console.log(nodePath, allListPath);
         // hide temporary until it is cleared from DB (optimistic response)
         commit("updateModel", [`${nodePath}.hide`, true]);
         commit("refreshObj", allListPath);
-        // console.log(nodePath);
         try {
             this.data = await this.request();
             // if not deleted threw error
             if (!this.data[this.dataKey]) throw "error";
             // delete the element form list (real response)
             const index = nodePath.match(indexRegExp)[0].replace(/\[|\]/g, "");
+            // unhide the element
+            commit("updateModel", [`${nodePath}.hide`, false]);
+            // and store it for returning
+            const element = { ...eval(`state.${allListPath}[${index}]`) };
+            // actually remove the element
             commit("remove", [allListPath, index]);
+            return element;
         } catch (err) {
             // if error restore the item
             commit("updateModel", [`${nodePath}.hide`, false]);
             commit("refreshObj", nodePath.replace(/\[\d+\]$/, ""));
         }
-        // console.log(this.data);
     }
 }
 //

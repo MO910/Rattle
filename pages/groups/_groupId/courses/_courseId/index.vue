@@ -3,7 +3,7 @@ v-container
     v-row(v-if='floatingStudentsExists')
         v-col.text-h3(cols='12') الطلاب
         v-col.col-md-4.col-sm-6.col-xs-12(
-            v-for='student in group.floatingStudents'
+            v-for='student in course.floatingStudents'
             v-if='!student.hide'
             :key='student.id'
         )
@@ -32,7 +32,11 @@ v-container
 <script>
 import { mapState, mapMutations } from "vuex";
 export default {
-    middleware: ["fetchGroups"],
+    // middleware: ["fetchGroups"],
+    async fetch({ $auth, store, redirect }) {
+        if (!$auth.$state.loggedIn || !$auth.$state.user) redirect("/login");
+        else await store.dispatch("getGroups");
+    },
     mounted() {},
     data: () => ({}),
     computed: {
@@ -51,7 +55,7 @@ export default {
             return this.course?.subgroups;
         },
         floatingStudentsExists() {
-            return this.group?.floatingStudents?.length;
+            return this.course?.floatingStudents?.length;
         },
     },
     methods: {

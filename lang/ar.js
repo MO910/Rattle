@@ -83,4 +83,8 @@ export default {
     addUser: "اضف منتسب جديد",
     description: "وصف",
     transport: "نقل",
+    //
+    settings: "الاعدادات",
+    dark_mode: "الوضع الليلي",
+    logout: "تسجيل خروج",
 };

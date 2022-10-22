@@ -8,11 +8,23 @@ v-card(
         v-btn(icon)
             v-icon mdi-dots-vertical
     v-card-title {{fullName(entity)}}
-    v-card-text
+    //- chips
+    v-card-text(v-if='chips')
         v-chip.mx-2(
             v-for='chip, i in chips'
             :key='i'
         ) {{fullName(chip)}}
+    //- Advantage
+    v-card-text(v-if='advantage')
+        advantage(
+            v-for='plan, pi in advantage'
+            :key='pi'
+            v-if='plan.day && !fetching && !plan.hide'
+            :plan='plan'
+            :student_id='entity.id'
+            :selectedDate='selectedDate'
+            :divider='advantageDivider(pi)'
+        )
 </template>
 <script>
 import { mapState, mapMutations } from "vuex";
@@ -21,12 +33,22 @@ export default {
         this.selectedSubgroup = 0;
     },
     data: () => ({}),
-    props: ["entity", "chips", "organization", "subgroups", "type"],
+    props: [
+        "entity",
+        "chips",
+        "organization",
+        "subgroups",
+        "type",
+        "advantage",
+        "notRouter",
+    ],
     computed: {},
     methods: {
         ...mapMutations(["updateModel"]),
         subgroupRouter(subgroupId) {
-            return `${this.$router.currentRoute.path}/${subgroupId}`;
+            return !this.notRouter
+                ? `${this.$router.currentRoute.path}/${subgroupId}`
+                : "";
         },
         openContext(e) {
             e.preventDefault();
@@ -42,9 +64,13 @@ export default {
         },
         // get full name or title
         fullName(entity) {
-            if (entity.first_name)
+            if (entity?.first_name)
                 return `${entity.first_name} ${entity.parent_name || ""}`;
-            return entity.title;
+            return entity?.title;
+        },
+        // advantage divider
+        advantageDivider(pi) {
+            return pi + 1 != this.advantage.length;
         },
     },
 };

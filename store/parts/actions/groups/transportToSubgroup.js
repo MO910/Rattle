@@ -6,8 +6,10 @@ import stringify from "../functions/stringify";
 export default async function ({ state, commit }, args) {
     // if (this.$auth.loggedIn && this.$auth.user && !state.user.id) {
     // state.userId = this.$auth.user._id;
-    const tree = args.tree;
-    delete args.tree;
+    const { treeFrom, treeTo, isFloating } = args;
+    delete args.treeFrom;
+    delete args.treeTo;
+    delete args.isFloating;
     const sArgs = stringify(args);
     // GraphQl request
     const request = async () => {
@@ -22,21 +24,22 @@ export default async function ({ state, commit }, args) {
     };
     // let data = await request();
     // console.log(data);
-    // add optimistic response to the new goal
+    // add optimistic response
     const optimistic = new Optimistic({
         state,
         commit,
         request,
-        dataKey: "removeSubgroup",
+        dataKey: "transportToSubgroup",
     });
-    console.log();
-    await optimistic.remove({
+    const requestData = await optimistic.remove({
         id: args.student_id,
-        tree,
+        tree: treeFrom,
     });
+    // console.log("requestData", requestData);
     await optimistic.add({
-        id: args.subgroup_id,
-        tree: ["groups", "courses", "subgroups"],
-        targetArray: "students",
+        id: args.subgroup_id || args.course_id,
+        requestData,
+        tree: treeTo.slice(0, -1),
+        targetArray: treeTo.at(-1),
     });
 }

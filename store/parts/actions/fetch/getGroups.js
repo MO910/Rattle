@@ -2,7 +2,9 @@
 import gql from "graphql-tag";
 import treeFinder from "../functions/treeFinder";
 // function
-export default async function ({ state, commit }) {
+export default async function (th) {
+    const { state, commit } = th;
+    // if (state.groups?.length) return;
     // if (this.$auth.loggedIn && this.$auth.user && !state.user.id) {
     // state.userId = this.$auth.user._id;
     // GraphQl request
@@ -17,39 +19,40 @@ export default async function ({ state, commit }) {
                         title
                         working_days
                         description
-                        floatingStudents {
-                            id
-                            first_name
-                            parent_name
-                            email
-                            phone
-                            gender
-                            plans {
-                                id
-                                title
-                                color
-                                order_reversed
-                                from
-                                amount
-                                weeks
-                                rabt_amount
-                                working_days
-                                starting_at
-                                custom_plans {
-                                    id
-                                    from
-                                    to
-                                    date
-                                }
-                            }
-                            plans_history {
-                                amount_done
-                            }
-                        }
                         courses {
                             id
                             title
                             description
+                            floatingStudents {
+                                id
+                                first_name
+                                parent_name
+                                email
+                                phone
+                                gender
+                                plans {
+                                    id
+                                    title
+                                    color
+                                    order_reversed
+                                    from
+                                    amount
+                                    weeks
+                                    rabt_amount
+                                    working_days
+                                    starting_at
+                                    custom_plans {
+                                        id
+                                        from
+                                        to
+                                        date
+                                    }
+                                }
+                                plans_history {
+                                    amount_done
+                                    grade
+                                }
+                            }
                             subgroups {
                                 id
                                 title
@@ -80,6 +83,7 @@ export default async function ({ state, commit }) {
                                     gender
                                     plans_history {
                                         amount_done
+                                        grade
                                     }
                                 }
                             }
@@ -88,6 +92,7 @@ export default async function ({ state, commit }) {
                 }
             `,
         });
+    // console.log(groups);
     // update store
     commit("updateModel", ["groups", groups]);
     // }

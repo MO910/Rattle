@@ -17,6 +17,7 @@ export default async function ({ state, commit, dispatch }) {
             // redirect
             this.$router.push("/");
         } catch (err) {
+            console.log(err);
             commit("updateModel", [
                 "loginForm.error",
                 "email or password is wrong",

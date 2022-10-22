@@ -31,7 +31,7 @@ export default {
     state: () => ({
         user: {},
         users: [],
-        groups: {},
+        groups: null,
         plans: [],
         plansToTables: [],
         versesPerPage,

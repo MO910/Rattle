@@ -84,16 +84,39 @@ export default {
             // do action
             if (this.contextmenu.dialog.type == "remove")
                 await this.removeSubgroup(this.contextmenu.entity.id);
-            if (this.contextmenu.dialog.type == "transport")
-                await this.transportToSubgroup({
-                    student_id: this.contextmenu.entity.id,
-                    subgroup_id:
-                        this.contextmenu.subgroups[this.selectedSubgroup].id,
-                    tree:
-                        this.contextmenu.type === "floatingStudents"
-                            ? ["groups", "floatingStudents"]
-                            : ["groups", "courses", "subgroups", "students"],
+            if (this.contextmenu.dialog.type == "transport") {
+                let student_id = this.contextmenu.entity.id,
+                    subgroup_id =
+                        this.contextmenu.subgroups?.[this.selectedSubgroup]?.id,
+                    { courseId: course_id } = this.$route.params;
+                // floating
+                let isFloating = this.contextmenu.type === "floatingStudents",
+                    treeFrom = isFloating
+                        ? ["groups", "courses", "floatingStudents"]
+                        : ["groups", "courses", "subgroups", "students"],
+                    treeTo = subgroup_id
+                        ? ["groups", "courses", "subgroups", "students"]
+                        : ["groups", "courses", "floatingStudents"];
+                console.log("model subgroup_id: ", {
+                    student_id,
+                    subgroup_id,
+                    course_id,
+                    //
+                    isFloating,
+                    treeFrom,
+                    treeTo,
                 });
+                // do action
+                await this.transportToSubgroup({
+                    student_id,
+                    subgroup_id,
+                    course_id,
+                    //
+                    isFloating,
+                    treeFrom,
+                    treeTo,
+                });
+            }
             // stop loading and close dialog
             this.loading = false;
             this.close();
