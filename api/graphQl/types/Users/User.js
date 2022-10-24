@@ -55,10 +55,16 @@ const User_type = new GraphQLObjectType({
                 return await Subgroups_schema.find({ student_ids: id });
             },
         },
-        attendances: {
-            type: new GraphQLList(Attendance_type),
-            async resolve({ id: user_id }) {
-                return await Attendances_schema.find({ user_id });
+        attendance_Date: { type: GraphQLString },
+        attendance: {
+            type: Attendance_type,
+            async resolve(args) {
+                let { id: user_id, attendance_Date } = args;
+                // console.log(args);
+                return await Attendances_schema.findOne({
+                    user_id,
+                    date: attendance_Date,
+                });
             },
         },
         plans_history: {

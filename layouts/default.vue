@@ -11,7 +11,13 @@ v-app(dark)
 <script>
 import { mapActions } from "vuex";
 export default {
-    middleware: ["fetchUser"],
+    // async fetch({ $auth, store, redirect }) {
+    //     console.log("000000000");
+    //     console.log(!$auth.$state.loggedIn || !$auth.$state.user);
+    //     if (!$auth.$state.loggedIn || !$auth.$state.user)
+    //         return redirect("/login");
+    //     await store.dispatch("getUserData");
+    // },
     mounted() {
         // this.socket = this.$nuxtSocket({
         //     channel: "/index",

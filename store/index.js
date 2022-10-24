@@ -8,6 +8,7 @@ import getUserData from "./parts/actions/fetch/getUserData";
 import getGroups from "./parts/actions/fetch/getGroups";
 import getSubgroupHistoryAtDate from "./parts/actions/fetch/getSubgroupHistoryAtDate";
 import getOrganization from "./parts/actions/fetch/getOrganization";
+import groupAttendanceAtDate from "./parts/actions/fetch/groupAttendanceAtDate";
 // import getTeachers from "./parts/actions/fetch/getTeachers";
 // import getStudents from "./parts/actions/fetch/getUsers";
 import getUsers from "./parts/actions/fetch/getUsers";
@@ -26,6 +27,8 @@ import createCenter from "./parts/actions/createCenter";
 import createSubgroup from "./parts/actions/groups/createSubgroup";
 import removeSubgroup from "./parts/actions/groups/removeSubgroup";
 import transportToSubgroup from "./parts/actions/groups/transportToSubgroup";
+// attendance
+import updateAttendance from "./parts/actions/attendance/updateAttendance";
 // export
 export default {
     state: () => ({
@@ -67,6 +70,7 @@ export default {
         },
         //
         selectedDateHistory: [],
+        AttendanceHistory: [],
         // context menu
         contextmenu: {
             show: false,
@@ -75,6 +79,10 @@ export default {
             entity: {},
             subgroups: [],
             list: ["transport", "edit", "remove"],
+        },
+        datePicker: {
+            selectedDate: null,
+            fetching: false,
         },
     }),
     actions: {
@@ -87,6 +95,7 @@ export default {
         getSubgroupHistoryAtDate,
         getOrganization,
         getUsers,
+        groupAttendanceAtDate,
         // Advancements
         updateHistory,
         addPlan,
@@ -102,10 +111,8 @@ export default {
         createSubgroup,
         removeSubgroup,
         transportToSubgroup,
-        // concatenate full name
-        fullName(user) {
-            return `${user.first_name} ${user.parent_name || ""}`;
-        },
+        // attendance
+        updateAttendance,
     },
     mutations: {
         updateModel(state, [obj, value]) {

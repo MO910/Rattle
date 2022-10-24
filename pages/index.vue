@@ -9,8 +9,14 @@ v-container
 import { mapState } from "vuex";
 export default {
     data: () => ({}),
+    async fetch({ $auth, store, redirect }) {
+        console.log(!$auth.$state.loggedIn || !$auth.$state.user);
+        if (!$auth.$state.loggedIn || !$auth.$state.user)
+            return redirect("/login");
+        await store.dispatch("getUserData");
+    },
     mounted() {
-        console.log(this.user);
+        // console.log("uer", this.user);
     },
     computed: {
         ...mapState(["user"]),

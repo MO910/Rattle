@@ -9,6 +9,9 @@ const // user
     User_type = require("./types/Users/User"),
     Users_schema = require("../models/Users/Users"),
     Rules_schema = require("../models/Users/Rules"),
+    // Attendance
+    Attendance_type = require("./types/Users/Attendance"),
+    Attendances_schema = require("../models/Users/Attendances"),
     // Plans
     Plan_Schema = require("../models/Plans/Plans"),
     Plan_type = require("./types/Plans/Plan"),
@@ -38,7 +41,9 @@ const // Goals
     // Groups
     createSubgroup = require("./mutations/Groups/createSubgroup"),
     removeSubgroup = require("./mutations/Groups/removeSubgroup"),
-    transportToSubgroup = require("./mutations/Groups/transportToSubgroup");
+    transportToSubgroup = require("./mutations/Groups/transportToSubgroup"),
+    // attendance
+    updateAttendance = require("./mutations/attendance/updateAttendance");
 /*
     removeGoal = require("./mutations/Goals/removeGoal"),
     updateGoalsHistory = require("./mutations/Goals/updateHistory"),
@@ -69,6 +74,23 @@ const query = new GraphQLObjectType({
                     }, {});
                     // search and return
                     return await Users_schema.find(query);
+                },
+            },
+            // get group attendance
+            groupAttendanceAtDate: {
+                type: new GraphQLList(User_type),
+                args: {
+                    group_id: { type: GraphQLID },
+                    date: { type: GraphQLID },
+                },
+                async resolve(_, { group_id, date }) {
+                    let students = await Users_schema.find({ group_id });
+                    students = students.map((s) => {
+                        s.attendance_Date = date;
+                        return s;
+                    });
+                    // console.log(students);
+                    return students;
                 },
             },
             groups: {
@@ -127,6 +149,8 @@ const query = new GraphQLObjectType({
             createSubgroup,
             removeSubgroup,
             transportToSubgroup,
+            // attendance
+            updateAttendance,
         },
     });
 // exports

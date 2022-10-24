@@ -2,8 +2,10 @@
 import gql from "graphql-tag";
 // function
 export default async function ({ state, commit }, { id: userId } = {}) {
+    // console.log(this.$auth.loggedIn && this.$auth.user && !state.user?.id);
     if (this.$auth.loggedIn && this.$auth.user && !state.user?.id) {
         userId = userId || this.$auth.user._id;
+        // console.log("userId", userId);
         // GraphQl request
         const client = this.app.apolloProvider.defaultClient,
             {
@@ -19,11 +21,6 @@ export default async function ({ state, commit }, { id: userId } = {}) {
                             email
                             phone
                             gender
-                            attendances {
-                                id
-                                attended
-                                date
-                            }
                             rules {
                                 id
                                 title

@@ -9,7 +9,15 @@ export default class {
         this.dataKey = dataKey;
     }
     // add item response
-    async add({ requestData, id, nodePath, tree, targetArray, refresh }) {
+    async add({
+        requestData,
+        id,
+        nodePath,
+        tree,
+        targetArray,
+        refresh,
+        doRequest = true,
+    }) {
         const { state, commit } = this;
         // search for node if not provided
         nodePath =
@@ -26,11 +34,12 @@ export default class {
         commit("push", [fullPath, requestData]);
         // try the request
         try {
-            this.data = await this.request();
-            const itemId = this.data[this.dataKey]?.id;
-            // update state and add ID (real response)
-            if (itemId)
+            if (doRequest) {
+                this.data = await this.request();
+                const itemId = this.data[this.dataKey]?.id;
+                // update state and add ID (real response)
                 commit("updateModel", [`${fullPath}[${itemIndex}].id`, itemId]);
+            }
         } catch (err) {
             // if error delete the added item
             commit("remove", [fullPath, itemIndex]);
@@ -43,7 +52,6 @@ export default class {
     // remove item response
     async remove({ id, tree, targetArray }) {
         const { state, commit } = this;
-        //
         const nodePath = treeFinder({
                 id,
                 tree,
@@ -72,6 +80,45 @@ export default class {
             commit("updateModel", [`${nodePath}.hide`, false]);
             commit("refreshObj", nodePath.replace(/\[\d+\]$/, ""));
         }
+    }
+    //
+    async update({ id, requestData, tree, targetArray }) {
+        const { state, commit } = this;
+        const nodePath = treeFinder({
+            id,
+            tree,
+            branch: state,
+        });
+        /*
+            
+        */
+        let fullPath = nodePath;
+        if (targetArray) fullPath += `.${targetArray}`;
+        console.log(fullPath);
+        const oldValue = eval(`state.${fullPath}`);
+        // update state optimistically
+        commit("updateModel", [fullPath, requestData]);
+        // try the request
+        try {
+            this.data = await this.request();
+        } catch (err) {
+            // undo optimistic
+            commit("updateModel", [fullPath, oldValue]);
+            console.log(err);
+        }
+    }
+    // transport from array to another
+    async transport({ removeId, addId, treeFrom, treeTo }) {
+        // remove the existing entity
+        const requestData = await this.remove({ id: removeId, tree: treeFrom });
+        // add it to ...
+        await this.add({
+            doRequest: false,
+            id: addId,
+            requestData,
+            tree: treeTo.slice(0, -1),
+            targetArray: treeTo.at(-1),
+        });
     }
 }
 //

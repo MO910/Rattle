@@ -22,8 +22,6 @@ export default async function ({ state, commit }, args) {
             });
         return data;
     };
-    // let data = await request();
-    // console.log(data);
     // add optimistic response
     const optimistic = new Optimistic({
         state,
@@ -31,15 +29,11 @@ export default async function ({ state, commit }, args) {
         request,
         dataKey: "transportToSubgroup",
     });
-    const requestData = await optimistic.remove({
-        id: args.student_id,
-        tree: treeFrom,
-    });
-    // console.log("requestData", requestData);
-    await optimistic.add({
-        id: args.subgroup_id || args.course_id,
-        requestData,
-        tree: treeTo.slice(0, -1),
-        targetArray: treeTo.at(-1),
+    // transport (remove then add)
+    await optimistic.transport({
+        removeId: args.student_id,
+        addId: args.subgroup_id || args.course_id,
+        treeFrom,
+        treeTo,
     });
 }

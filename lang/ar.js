@@ -44,6 +44,7 @@ export default {
     // titles
     teachers: "المعلمين",
     students: "الطلاب",
+    student: "الطالب",
     centers: "المراكز",
     //
     weekDays:
@@ -87,4 +88,12 @@ export default {
     settings: "الاعدادات",
     dark_mode: "الوضع الليلي",
     logout: "تسجيل خروج",
+    //
+    attendance_status: "حالة الحضور",
+    note: "ملاحظة",
+    typeYourNote: "اكتب ملاحظتك هنا",
+    attended: "حاضر",
+    absent: "غائب",
+    late: "متأخر",
+    excused: "معذور",
 };

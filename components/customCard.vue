@@ -3,6 +3,7 @@ v-card(
     :class='entity.color'
     @contextmenu='openContext'
     rounded nuxt :to='subgroupRouter(entity.id)'
+    :loading='loading'
 )
     v-app-bar(color="rgba(0, 0, 0, 0)" flat)
         v-btn(icon)
@@ -19,7 +20,7 @@ v-card(
         advantage(
             v-for='plan, pi in advantage'
             :key='pi'
-            v-if='plan.day && !fetching && !plan.hide'
+            v-if='plan.day && !loading && !plan.hide'
             :plan='plan'
             :student_id='entity.id'
             :selectedDate='selectedDate'
@@ -40,6 +41,8 @@ export default {
         "subgroups",
         "type",
         "advantage",
+        "selectedDate",
+        "loading",
         "notRouter",
     ],
     computed: {},

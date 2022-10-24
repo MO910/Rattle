@@ -58,33 +58,12 @@ v-container
                 :entity='student'
                 :subgroups='course.subgroups'
                 :advantage='plansOfDate'
+                :selectedDate='selectedDate'
                 :notRouter='true'
+                :loading="fetching"
                 type='subgroup'
             )
-                //- advantage(
-                //-     v-for='plan, pi in plansOfDate'
-                //-     :key='pi'
-                //-     v-if='plan.day && !fetching && !plan.hide'
-                //-     :plan='plan'
-                //-     :student_id='student.id'
-                //-     :selectedDate='selectedDate'
-                //-     :divider='advantageDivider(pi)'
-                //- )
-            //- v-card.mx-5(:loading="fetching")
-                template(slot="progress")
-                    v-progress-linear(indeterminate)
-                div.py-5.px-10
-                    v-card-title.text-capitalize.text-h4.pt-6 {{fullName(student)}}
-                    advantage(
-                        v-for='plan, pi in plansOfDate'
-                        :key='student.id + plan.id + selectedDay'
-                        v-if='plan.day && !fetching && !plan.hide'
-                        :plan='plan'
-                        :student_id='student.id'
-                        :selectedDate='selectedDate'
-                        :divider='advantageDivider(pi)'
-                    )
-    //- v-row.mt-10(v-else)
+    v-row.mt-10(v-else)
         v-col.px-0(
             cols='12'
             v-if='dayExist'
@@ -96,7 +75,7 @@ v-container
                     //- v-card-title.text-capitalize.text-h4.pt-6 {{fullName(subgroup)}}
                     advantage(
                         v-for='plan, pi in plansOfDate'
-                        :key='subgroup.id + plan.id + selectedDay'
+                        :key='pi'
                         v-if='plan.day && !fetching && !plan.hide'
                         :plan='plan'
                         :student_id='subgroup.id'

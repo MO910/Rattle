@@ -1,7 +1,8 @@
 // function
 const treeFinder = ({ id, tree, out, branch, counter = 0, foundIn = [] }) => {
     counter++;
-    branch = branch[tree[counter - 1]];
+    branch = eval(`branch.${tree[counter - 1]}`);
+    console.log(`branch.${tree[counter - 1]}`, branch);
     // if the branch is not iterable
     // branch = Array.isArray(branch) ? branch : [branch];
     // loop throw the array

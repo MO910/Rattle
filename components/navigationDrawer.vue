@@ -21,8 +21,9 @@ v-navigation-drawer(
                     ) 
                         v-icon.white--text.text--secondary {{ item.icon }}
                 span.text-capitalize {{item.title}}
-        v-row.d-flex.align-end(v-if="$auth.loggedIn")
+        v-row.d-flex.align-end
             v-menu(
+                v-if="$auth.loggedIn"
                 transition="scroll-x-reverse-transition"
                 :close-on-content-click='false'
                 open-on-hover left top offset-x
@@ -92,8 +93,6 @@ export default {
 <style lang="sass" scoped>
 .container
     height: 100% !important
-.v-navigation-drawer
-    width
 .v-btn--active .text--secondary
     color: white !important
 </style>

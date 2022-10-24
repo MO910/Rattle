@@ -27,6 +27,7 @@ export default {
     // titles
     teachers: "teachers",
     students: "students",
+    student: "student",
     centers: "centers",
     //
     weekDays:
@@ -70,4 +71,12 @@ export default {
     settings: "settings",
     dark_mode: "dark_mode",
     logout: "logout",
+    //
+    attendance_status: "attendance_status",
+    note: "note",
+    typeYourNote: "type your note here",
+    attended: "attended",
+    absent: "absent",
+    late: "late",
+    excused: "excused",
 };

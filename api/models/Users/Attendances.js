@@ -4,7 +4,7 @@ const Attendances = new Schema(
     {
         user_id: mongoose.ObjectId,
         updated_by: mongoose.ObjectId,
-        attended: Boolean,
+        attendance_status: String,
         date: Date,
         note: String,
     },
