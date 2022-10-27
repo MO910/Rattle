@@ -82,7 +82,7 @@ v-dialog(v-model='dialog' width="570")
                         :init='addPlanForm.pagesValue || 1'
                     )
                 v-col.d-flex.justify-start.align-center.text-h6(cols='6')
-                    | {{$vuetify.lang.t('$vuetify.weeks')}}
+                    | {{$vuetify.lang.t('$vuetify.weeks')}}: {{weeks}}
                 v-col.d-flex.justify-end.align-center(cols='6')
                     v-slider.align-center(v-model='weeks' :min='min' :max='maxWeeks' hide-details)
                         template(v-slot:thumb-label="props") {{props.value}}

@@ -15,7 +15,7 @@ import getUsers from "./parts/actions/fetch/getUsers";
 // Plans
 import addPlan from "./parts/actions/Plans/addPlan";
 import removePlan from "./parts/actions/Plans/removePlan";
-import updateHistory from "./parts/actions/Plans/updateHistory";
+import updatePlanHistory from "./parts/actions/Plans/updatePlanHistory";
 // User
 import createUser from "./parts/actions/Users/createUser";
 import updateUser from "./parts/actions/Users/updateUser";
@@ -97,7 +97,7 @@ export default {
         getUsers,
         groupAttendanceAtDate,
         // Advancements
-        updateHistory,
+        updatePlanHistory,
         addPlan,
         removePlan,
         // User

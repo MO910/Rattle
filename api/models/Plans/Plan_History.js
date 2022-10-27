@@ -3,8 +3,8 @@ const mongoose = require("mongoose"),
 const Plan_History = new Schema(
     {
         plan_id: mongoose.ObjectId,
-        updated_by: mongoose.ObjectId,
         student_id: mongoose.ObjectId,
+        updated_by: mongoose.ObjectId,
         amount_done: Number,
         grade: Number,
 

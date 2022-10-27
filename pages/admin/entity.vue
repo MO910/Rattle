@@ -63,6 +63,7 @@ export default {
     async middleware({ store, redirect, route, $auth }) {
         if (!$auth.$state.loggedIn || !$auth.$state.user) redirect("/login");
         const mode = route.query?.mode;
+        console.log(mode);
         await store.dispatch("getOrganization");
         if (mode === "users") await store.dispatch("getUsers");
     },

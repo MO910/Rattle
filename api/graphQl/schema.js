@@ -81,7 +81,7 @@ const query = new GraphQLObjectType({
                 type: new GraphQLList(User_type),
                 args: {
                     group_id: { type: GraphQLID },
-                    date: { type: GraphQLID },
+                    date: { type: GraphQLString },
                 },
                 async resolve(_, { group_id, date }) {
                     let students = await Users_schema.find({ group_id });
@@ -117,17 +117,27 @@ const query = new GraphQLObjectType({
                     date: { type: GraphQLString },
                 },
                 async resolve(_, { subgroup_id, date }) {
+                    const $gte = new Date(date),
+                        $lte = new Date(
+                            new Date($gte).setDate($gte.getDate() + 1)
+                        );
                     // get plans
                     const plans = await Plan_Schema.find({ subgroup_id }),
                         allHistories = await Promise.all(
                             plans.map(async (plan) => {
                                 const history = await Plan_History_Schema.find({
                                     plan_id: plan.id,
+                                    date: { $gte, $lte },
+                                });
+                                console.log({
+                                    plan_id: plan.id,
                                     date: new Date(date),
                                 });
                                 return history;
                             })
                         );
+                    // console.log(plans);
+                    console.log(allHistories);
                     return allHistories.flat();
                 },
             },

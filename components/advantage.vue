@@ -17,7 +17,7 @@ v-row
         //- v-col(cols='12')
             v-card-text {{selectedDateHistory}}
         v-col(cols='4')
-            v-card-text {{$vuetify.lang.t("$vuetify.grade")}}: {{this.history.grade}} / 10
+            v-card-text {{$vuetify.lang.t("$vuetify.grade")}}: {{this.history && this.history.grade}} / 10
         v-col.d-flex.justify-end.align-center(cols='8')
             v-rating.d-flex.justify-space-between.align-center(
                 @input="changeRating"
@@ -35,6 +35,7 @@ v-row
 <script>
 import { mapState, mapMutations, mapActions } from "vuex";
 import { verseKeyToName } from "~/static/js/stringify";
+import { extractISODate } from "~/static/js/extractISODate";
 export default {
     data: () => ({
         ratingLength: 5,
@@ -71,66 +72,77 @@ export default {
             return new Date(this.selectedDate).toLocaleString().split(",")[0];
         },
         history() {
-            return (
-                this.selectedDateHistory?.filter((h, i) => {
-                    if (
-                        h.plan_id == this.plan.id &&
-                        h.student_id == this.student_id
-                    )
-                        this.historyIndex = i;
-                    return (
-                        h.plan_id == this.plan.id &&
-                        h.student_id == this.student_id
-                    );
-                })?.[0] || {}
-            );
+            return this.selectedDateHistory?.filter((h, i) => {
+                // console.log(h.date);
+                let date = extractISODate({ date: h.date, time: true }),
+                    selectedDate = extractISODate({
+                        date: this.selectedDate,
+                        time: true,
+                    });
+                let conditions =
+                    date == selectedDate &&
+                    h.plan_id == this.plan.id &&
+                    h.student_id == this.student_id;
+                if (conditions) this.historyIndex = i;
+                return conditions;
+            })?.[0];
         },
         ratingRatio() {
-            return (this.history.grade || 0) / 10;
+            return (this.history?.grade || 0) / 10;
         },
         amount_done() {
             return this.history?.amount_done || 1;
         },
     },
     methods: {
-        ...mapActions(["updateHistory", "getSubgroupHistoryAtDate"]),
+        ...mapActions(["updatePlanHistory", "getSubgroupHistoryAtDate"]),
         ...mapMutations(["updateModel", "push"]),
         updateHistoryWrapper(obj, key, locallyOnly) {
+            obj = {
+                student_id: this.student_id,
+                plan_id: this.plan.id,
+                date: extractISODate({
+                    date: this.selectedDate,
+                    fullDate: true,
+                }),
+                // default values
+                amount_done: 0,
+                grade: 0,
+                //
+                ...obj,
+            };
             // update locally
-            if (Object.keys(this.history).length)
+            console.log(!!this.history);
+            if (this.history)
                 this.updateModel([
                     `selectedDateHistory[${this.historyIndex}].${key}`,
                     obj[key],
                 ]);
             else {
                 this.historyIndex = this.selectedDateHistory.length;
-                this.push([`selectedDateHistory`, obj]);
+                let newObj = {
+                    ...obj,
+                    date: new Date(obj.date).getTime() + "",
+                };
+                this.push([`selectedDateHistory`, newObj]);
             }
             // update DB
-            if (!locallyOnly) this.updateHistory(obj);
+            if (!locallyOnly) this.updatePlanHistory(obj);
         },
         // change sliders
-        changeAmount(n, locallyOnly) {
-            const obj = {
-                student_id: this.student_id,
-                plan_id: this.plan.id,
-                date: this.date,
-                amount_done: n,
-            };
+        changeAmount(amount_done, locallyOnly) {
             // update
-            this.updateHistoryWrapper(obj, "amount_done", locallyOnly);
+            this.updateHistoryWrapper(
+                { amount_done },
+                "amount_done",
+                locallyOnly
+            );
         },
         changeRating(n) {
             // if (!this.selectedDateHistory.length) return;
             const grade = (n / this.ratingLength) * 10;
-            const obj = {
-                student_id: this.student_id,
-                plan_id: this.plan.id,
-                date: this.date,
-                grade,
-            };
             // update
-            this.updateHistoryWrapper(obj, "grade");
+            this.updateHistoryWrapper({ grade }, "grade");
         },
     },
 };

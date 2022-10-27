@@ -11,16 +11,18 @@ v-dialog(v-model='dialog' width="290px")
     v-date-picker(
         :value='datePicker.selectedDate'
         @input='getHistory'
+        :allowedDates='allowedDates'
         color="primary"
     )
 </template>
 <script>
 import { mapState, mapMutations } from "vuex";
+import { extractISODate } from "~/static/js/extractISODate";
 export default {
     async mounted() {
         this.selectedSubgroup = 0;
         // set the pointer to todays date
-        const today = this.extractDate(new Date());
+        let today = extractISODate();
         // this.updateModel(["datePicker.selectedDate", today]);
         //
         await this.getHistory(today);
@@ -28,7 +30,7 @@ export default {
     data: () => ({
         dialog: false,
     }),
-    props: ["historyAction", "historyParams"],
+    props: ["historyAction", "historyParams", "allowedDates"],
     computed: {
         ...mapState(["datePicker"]),
         dateStyled() {
@@ -41,20 +43,20 @@ export default {
     },
     methods: {
         ...mapMutations(["updateModel"]),
-        extractDate(date) {
-            console.log(date);
-            return date.toISOString().substr(0, 10);
-        },
         // get history
         async getHistory(newDate) {
             this.dialog = false;
             this.updateModel(["datePicker.fetching", true]);
             // style the date to from
             this.updateModel(["datePicker.selectedDate", newDate]);
+            let date = new Date(newDate).toISOString();
+            console.log(date);
             // do action
+            console.log(this.historyParams);
             await this.historyAction({
                 ...this.historyParams,
-                date: this.datePicker.selectedDate,
+                date,
+                // date: this.datePicker.selectedDate,
             });
             this.updateModel(["datePicker.fetching", false]);
         },

@@ -34,7 +34,8 @@ v-container
                         v-textarea(
                             name="Note" rows="1" auto-grow
                             :value='getNote(student)'
-                            @change='changeNote(student, $event)'
+                            hint='saving...'
+                            @input='changeNote(student, $event)'
                             :placeholder="$vuetify.lang.t(`$vuetify.typeYourNote`)"
                         )
                             v-btn flk;dsja
@@ -48,6 +49,7 @@ export default {
             return redirect("/login");
     },
     data: () => ({
+        timeout: null,
         status: [
             {
                 title: "attended",
@@ -103,6 +105,7 @@ export default {
         },
         async changeAttendance(user_id, args) {
             // if (isActive) return;
+            console.log("changed: ", args);
             await this.updateAttendance({
                 user_id,
                 ...args,
@@ -113,8 +116,12 @@ export default {
             if (isActive) return;
             return await this.changeAttendance(user.id, { attendance_status });
         },
-        async changeNote(user, note) {
-            return await this.changeAttendance(user.id, { note });
+        changeNote(user, note, delay = 1000) {
+            // debounce algorithm to save request and speed up the experience
+            const callback = () =>
+                this.changeAttendance(user.id, { note }, delay);
+            clearTimeout(this.timeout);
+            this.timeout = setTimeout(callback, delay);
         },
         getNote(student) {
             return student.attendance?.note;

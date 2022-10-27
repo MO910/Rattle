@@ -3,7 +3,7 @@ import gql from "graphql-tag";
 import Optimistic from "../functions/Optimistic";
 import stringify from "../functions/stringify";
 // function
-export default async function ({ state, commit }, args) {
+export default async function ({ state, commit }, id) {
     // if (this.$auth.loggedIn && this.$auth.user && !state.user.id) {
     // state.userId = this.$auth.user._id;
     // GraphQl request

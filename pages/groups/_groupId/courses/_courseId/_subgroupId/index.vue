@@ -2,20 +2,16 @@
 v-container 
     v-row
         v-col.text-h3(cols='12') {{ subgroup.title || fullName(subgroup)}}
-        v-dialog(v-model='dateMenu' width="290px")
-            template(v-slot:activator='{ on, attrs }')
-                v-col.text-h5(cols='12' v-text='dateStyled' v-bind='attrs' v-on='on')
-            v-date-picker(
-                v-model='selectedDay'
-                @input='getHistory'
-                :allowed-dates="allowedDates"
-                color="primary"
-            )
+        date-picker(
+            :historyAction='getSubgroupHistoryAtDate'
+            :historyParams='historyParams'
+            :allowedDates='allowedDates'
+        )
     //- plans
     v-row.mt-10
         v-col
             v-btn(
-                router :to='calendarRouter'
+                nuxt :to='calendarRouter'
                 color='primary lighten-2'
                 outlined block x-large
             )
@@ -35,15 +31,12 @@ v-container
             v-for='(plan, pi) in plansOfDate'
             :key='plan.id'
             v-if='!plan.hide'
-        ) 
-            v-card.mx-5(@click='openTable(pi, $event)' :color='plan.color')
+        )
+            v-card.mx-5(:color='plan.color')
                 v-btn(@click='deletePlan(plan.id)' icon)
                     v-icon mdi-delete
                 v-card-title.d-block.text-center {{$vuetify.lang.t(`$vuetify.${plan.title}`)}}
                 v-card-text {{getPlanString(plan, false)}}
-        v-dialog(v-model='tableDialog')
-            template(v-slot:activator='{ on, attrs }')
-            plan-table(:plansToTables='plansToTables[tableIndex]' :weekDays='weekDays')
     v-row(v-else)
         v-col.text-h5(cols='12') there is no plans. do you want to add one!
     //- student
@@ -58,9 +51,9 @@ v-container
                 :entity='student'
                 :subgroups='course.subgroups'
                 :advantage='plansOfDate'
-                :selectedDate='selectedDate'
+                :selectedDate='datePicker.selectedDate'
                 :notRouter='true'
-                :loading="fetching"
+                :loading="datePicker.fetching"
                 type='subgroup'
             )
     v-row.mt-10(v-else)
@@ -68,7 +61,7 @@ v-container
             cols='12'
             v-if='dayExist'
         )
-            v-card.mx-5(:loading="fetching")
+            v-card.mx-5(:loading="datePicker.fetching")
                 template(slot="progress")
                     v-progress-linear(indeterminate)
                 div.py-5.px-10
@@ -76,10 +69,10 @@ v-container
                     advantage(
                         v-for='plan, pi in plansOfDate'
                         :key='pi'
-                        v-if='plan.day && !fetching && !plan.hide'
+                        v-if='plan.day && !datePicker.fetching && !plan.hide'
                         :plan='plan'
                         :student_id='subgroup.id'
-                        :selectedDate='selectedDate'
+                        :selectedDate='datePicker.selectedDate'
                         :divider='advantageDivider(pi)'
                     )
 </template>
@@ -88,6 +81,7 @@ import { mapState, mapMutations, mapActions } from "vuex";
 import { planTable } from "~/static/js/planTable";
 import { stringify } from "~/static/js/stringify";
 import { DAY_MILL_SEC, getDefInDays } from "~/static/js/generatePlanDays";
+import { extractISODate } from "~/static/js/extractISODate";
 export default {
     // middleware: ["fetchGroups"],
     async fetch({ $auth, store, redirect }) {
@@ -95,17 +89,13 @@ export default {
         else await store.dispatch("getGroups");
     },
     data: () => ({
-        selectedDay: "2022-10-04",
         margePlans: [],
         tableIndex: null,
         tableDialog: false,
-        dateMenu: false,
-        fetching: false,
         isStudent: false,
     }),
     async mounted() {
         await this.fetchPlansDate();
-        this.selectedDay = this.getClosestWorkingDay();
     },
     computed: {
         ...mapState([
@@ -115,16 +105,20 @@ export default {
             "selectedDateHistory",
             "plansToTables",
             "plans",
+            "datePicker",
         ]),
+        // get the Group
         group() {
             const { groupId } = this.$route.params;
             return this.groups.filter((g) => g.id == groupId)?.[0];
         },
+        // get the Course
         course() {
             const { courseId } = this.$route.params;
             if (this.group)
                 return this.group.courses.filter((c) => c.id == courseId)?.[0];
         },
+        // get the Subgroup
         subgroup() {
             const { subgroupId } = this.$route.params,
                 sub = this.course.subgroups.filter(
@@ -138,39 +132,26 @@ export default {
             this.isStudent = !sub;
             return sub || student;
         },
+        // week days name in the current language
         weekDays() {
             let weekDays = JSON.parse(this.$vuetify.lang.locales.en.weekDays);
-            // let weekDays = JSON.parse(
-            //     this.$vuetify.lang.t("$vuetify.weekDays")
-            // );
             return this.group.working_days.map((di) => weekDays[di]);
         },
         groupWorkingDays() {
             return this.group?.working_days;
         },
-        //
-        selectedDate() {
-            return new Date(this.selectedDay);
-        },
-        // rating
+        // get plans of the selected date
         plansOfDate() {
             return this.plans.map((p) => {
                 let pClone = { ...p };
                 pClone.day = pClone.days.filter(
                     (d) =>
-                        this.zeroClock(d.date).getTime() ==
-                        this.zeroClock(this.selectedDate).getTime()
+                        extractISODate({ date: d.date }) ==
+                        this.datePicker.selectedDate
                 )?.[0];
                 delete pClone.days;
                 return pClone;
             });
-        },
-        dateStyled() {
-            // if (!this.plansOfDate.length) return;
-            let lang = this.$vuetify.lang.current == "en" ? "en-GB" : "ar-EG";
-            const options = { dateStyle: "full" },
-                formatter = new Intl.DateTimeFormat(lang, options);
-            return formatter.format(this.selectedDate);
         },
         // check if day in plans exists
         dayExist() {
@@ -180,10 +161,15 @@ export default {
         calendarRouter() {
             return `${this.$router.currentRoute.path}/calendar`;
         },
+        // for date picker
+        historyParams() {
+            return { subgroup_id: this.subgroup.id };
+        },
     },
     methods: {
         ...mapMutations(["updateModel"]),
         ...mapActions(["getSubgroupHistoryAtDate", "removePlan"]),
+        // get the start day of the closest week
         getClosestWorkingDay(day = new Date()) {
             const today = day.getDay();
             let diff = this.group.working_days.map((day) =>
@@ -195,10 +181,11 @@ export default {
             // to string
             return new Date(closestDay).toISOString().substr(0, 10);
         },
+        // get users full name
         fullName(user) {
             return `${user.first_name} ${user.parent_name || ""}`;
         },
-        //
+        // get plans of selected date
         async fetchPlansDate() {
             const { plans, plansToTables } = planTable({
                 group: this.group,
@@ -213,35 +200,8 @@ export default {
             // update states
             this.updateModel(["plansToTables", plansToTables]);
             this.updateModel(["plans", plans]);
-            // marge plans
-            // this.marge();
-            // get history
-            await this.getHistory();
         },
-        // marge all plans to one block
-        marge() {
-            // get longest plan
-            let maxLen = this.plansToTables.reduce(
-                (curr, p, i) => {
-                    const max = Math.max(p.length, curr[1]);
-                    return [max > curr[1] ? i : curr[0], max];
-                },
-                [0, 0]
-            );
-            // make it reference
-            this.margePlans = [...this.plansToTables[maxLen[0]]];
-            // remove it
-            this.plansToTables.splice(maxLen[0], 1);
-            // loop
-            this.plansToTables.forEach((plan) => {
-                plan.forEach((week, wi) => {
-                    for (let day in week) {
-                        this.margePlans[wi][day] += `\n${week[day]}`;
-                    }
-                });
-            });
-        },
-        //
+        // convert today plan to string
         getPlanString(plan, details = true) {
             const forToday = stringify({
                 courseTitle: this.course.title,
@@ -255,40 +215,11 @@ export default {
                 forToday || this.$vuetify.lang.t("$vuetify.nothingTodayMessage")
             );
         },
-        //
-        openTable(i, e) {
-            if (
-                e.target.classList.contains("v-btn--icon") ||
-                e.target.classList.contains("v-icon")
-            )
-                return;
-            this.tableIndex = i;
-            this.tableDialog = true;
-        },
-        // date
-        zeroClock(date) {
-            date = new Date(date);
-            date.setHours(0);
-            date.setMinutes(0);
-            date.setSeconds(0);
-            date.setMilliseconds(0);
-            return date;
-        },
-        // advantage divider
+        // advantage divider unless it is the last one
         advantageDivider(pi) {
             return pi + 1 != this.plansOfDate.length;
         },
-        // get history
-        async getHistory() {
-            this.dateMenu = false;
-            this.fetching = true;
-            await this.getSubgroupHistoryAtDate({
-                subgroup_id: this.subgroup.id,
-                date: this.selectedDate.toLocaleString().split(",")[0],
-            });
-            this.fetching = false;
-        },
-        //
+        // get allowed dates in calender (avoiding not working days)
         allowedDates(val) {
             const weekDay = new Date(val).getDay();
             return weekDay in this.groupWorkingDays;

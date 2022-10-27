@@ -89,15 +89,12 @@ export default class {
             tree,
             branch: state,
         });
-        /*
-            
-        */
         let fullPath = nodePath;
         if (targetArray) fullPath += `.${targetArray}`;
-        console.log(fullPath);
+        // console.log(fullPath);
         const oldValue = eval(`state.${fullPath}`);
         // update state optimistically
-        commit("updateModel", [fullPath, requestData]);
+        commit("updateModel", [fullPath, { ...oldValue, ...requestData }]);
         // try the request
         try {
             this.data = await this.request();
