@@ -2,9 +2,10 @@
 import treeFinder from "./treeFinder";
 // export
 export default class {
-    constructor({ state, commit, request, dataKey }) {
+    constructor({ state, commit, dispatch, request, dataKey }) {
         this.state = state;
         this.commit = commit;
+        this.dispatch = dispatch;
         this.request = request;
         this.dataKey = dataKey;
     }
@@ -50,7 +51,7 @@ export default class {
         commit("refreshObj", refresh);
     }
     // remove item response
-    async remove({ id, tree, targetArray }) {
+    async remove({ id, tree, callback }) {
         const { state, commit } = this;
         const nodePath = treeFinder({
                 id,
@@ -59,6 +60,7 @@ export default class {
             }),
             indexRegExp = /\[\d+\]$/,
             allListPath = nodePath.replace(indexRegExp, "");
+        console.log(nodePath);
         // hide temporary until it is cleared from DB (optimistic response)
         commit("updateModel", [`${nodePath}.hide`, true]);
         commit("refreshObj", allListPath);
@@ -71,11 +73,15 @@ export default class {
             // unhide the element
             commit("updateModel", [`${nodePath}.hide`, false]);
             // and store it for returning
+            console.log(`state.${allListPath}[${index}]`);
             const element = { ...eval(`state.${allListPath}[${index}]`) };
+            // do action before actually removing
+            if (callback) await callback(element);
             // actually remove the element
             commit("remove", [allListPath, index]);
             return element;
         } catch (err) {
+            console.log(err);
             // if error restore the item
             commit("updateModel", [`${nodePath}.hide`, false]);
             commit("refreshObj", nodePath.replace(/\[\d+\]$/, ""));

@@ -25,7 +25,11 @@ v-container
             v-if='!subgroup.hide'
             :key='subgroup.id'
         )
-            custom-card(:entity='subgroup' :chips='subgroup.students')
+            custom-card(
+                :entity='subgroup'
+                :chips='subgroup.students'
+                type='subgroup'
+            )
     //- dialog
     add-subgroup-dialog(:course_id='course.id')
 </template>

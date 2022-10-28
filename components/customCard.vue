@@ -8,10 +8,10 @@ v-card(
     v-app-bar(color="rgba(0, 0, 0, 0)" flat)
         v-btn(icon)
             v-icon mdi-dots-vertical
-    v-card-title {{fullName(entity)}}
+    v-card-title.text-h5 {{fullName(entity)}}
     //- chips
     v-card-text(v-if='chips')
-        v-chip.mx-2(
+        v-chip.ma-2(
             v-for='chip, i in chips'
             :key='i'
         ) {{fullName(chip)}}
@@ -31,7 +31,7 @@ v-card(
 import { mapState, mapMutations } from "vuex";
 export default {
     mounted() {
-        this.selectedSubgroup = 0;
+        // this.selectedSubgroup = 0;
     },
     data: () => ({}),
     props: [

@@ -99,16 +99,7 @@ export default {
         //     { text: "Mon, Wed, Fri", value: [1, 3] },
         // ],
         value: "",
-        events: [
-            {
-                start: new Date().getTime(),
-                end: new Date().setDate(15),
-                name: "quran",
-                color: "red",
-                timed: true,
-                details: "fksdlajflksadjfas;lkjfdlsak",
-            },
-        ],
+        events: [],
         colors: [
             "blue",
             "indigo",
@@ -130,14 +121,7 @@ export default {
         ],
     }),
     computed: {
-        ...mapState([
-            "groups",
-            "surahAdj",
-            "versesPerPage",
-            "selectedDateHistory",
-            "plansToTables",
-            "plans",
-        ]),
+        ...mapState(["groups", "surahAdj", "versesPerPage", "plans"]),
         group() {
             const { groupId } = this.$route.params;
             return this.groups.filter((g) => g.id == groupId)?.[0];

@@ -40,10 +40,11 @@ export default {
             this.updateModel(["addSubgroupForm.dialog", false]);
         },
         async add() {
+            const { courseId } = this.$route.params;
             this.loading = true;
             await this.createSubgroup({
                 title: this.title,
-                course_id: this.course_id,
+                course_id: courseId,
             });
             this.loading = false;
             this.close();

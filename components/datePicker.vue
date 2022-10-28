@@ -52,7 +52,6 @@ export default {
             let date = new Date(newDate).toISOString();
             console.log(date);
             // do action
-            console.log(this.historyParams);
             await this.historyAction({
                 ...this.historyParams,
                 date,

@@ -8,6 +8,7 @@ export default async function ({ state, commit }, args) {
     //     tree = args.tree;
     // delete args.group_id;
     // delete args.tree;
+    console.log(args);
     // if (this.$auth.loggedIn && this.$auth.user && !state.user.id) {
     // state.userId = this.$auth.user._id;
     const stringifyArgs = stringify(args);
@@ -31,7 +32,7 @@ export default async function ({ state, commit }, args) {
     // let tree = ['AttendanceHistory[${}]']
     let index;
     state.AttendanceHistory.some((h, i) => {
-        let condition = h.date === args.date;
+        let condition = h.date.slice(0, 10) === args.date;
         if (condition) index = i;
         return condition;
     });

@@ -83,7 +83,7 @@ export default {
         ...mapState(["AttendanceHistory", "datePicker"]),
         selectedDateHistory() {
             return this.AttendanceHistory.filter(
-                (h) => h.date == this.datePicker.selectedDate
+                (h) => h.date.slice(0, 10) == this.datePicker.selectedDate
             )?.[0]?.students;
         },
         historyParams() {

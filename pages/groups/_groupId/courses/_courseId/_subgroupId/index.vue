@@ -54,8 +54,12 @@ v-container
                 :selectedDate='datePicker.selectedDate'
                 :notRouter='true'
                 :loading="datePicker.fetching"
-                type='subgroup'
+                type='student'
             )
+        v-col(v-if='!subgroup.students.length' cols='12')
+            .text-h5 there is no students in this subgroup. do you want to add one!
+            v-btn add students
+            v-btn remove subgroup
     v-row.mt-10(v-else)
         v-col.px-0(
             cols='12'
@@ -83,7 +87,6 @@ import { stringify } from "~/static/js/stringify";
 import { DAY_MILL_SEC, getDefInDays } from "~/static/js/generatePlanDays";
 import { extractISODate } from "~/static/js/extractISODate";
 export default {
-    // middleware: ["fetchGroups"],
     async fetch({ $auth, store, redirect }) {
         if (!$auth.$state.loggedIn || !$auth.$state.user) redirect("/login");
         else await store.dispatch("getGroups");
@@ -163,7 +166,7 @@ export default {
         },
         // for date picker
         historyParams() {
-            return { subgroup_id: this.subgroup.id };
+            return { subgroup_id: this.subgroup?.id };
         },
     },
     methods: {

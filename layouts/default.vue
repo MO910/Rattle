@@ -4,39 +4,23 @@ v-app(dark)
     v-main
         v-container
             v-btn(v-if="!$auth.loggedIn" nuxt to="/login") login
+            v-breadcrumbs(:items="breadcrumbs")
+                template(v-slot:divider)
+                    v-icon mdi-chevron-{{$vuetify.rtl ? 'left' : 'right'}}
             Nuxt
             contextmenu
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapState, mapActions } from "vuex";
 export default {
-    // async fetch({ $auth, store, redirect }) {
-    //     console.log("000000000");
-    //     console.log(!$auth.$state.loggedIn || !$auth.$state.user);
-    //     if (!$auth.$state.loggedIn || !$auth.$state.user)
-    //         return redirect("/login");
-    //     await store.dispatch("getUserData");
-    // },
-    mounted() {
-        // this.socket = this.$nuxtSocket({
-        //     channel: "/index",
-        // });
-        // /* Listen for events: */
-        // this.socket.on("someEvent", (msg, cb) => {
-        //     /* Handle event */
-        // });
+    middleware: ["fillingBreadcrumbs"],
+    data: () => ({ items: [] }),
+    mounted() {},
+    computed: {
+        ...mapState(["breadcrumbs"]),
     },
-    data: () => ({
-        clipped: false,
-        drawer: true,
-        fixed: false,
-        miniVariant: false,
-        right: true,
-        rightDrawer: false,
-    }),
     methods: {
-        ...mapActions(["logout"]),
         openMenu() {
             const menu = document.querySelector(".menu");
             menu.classList.add("open");

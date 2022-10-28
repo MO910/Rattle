@@ -1,9 +1,9 @@
 // Dependencies
 import gql from "graphql-tag";
 import Optimistic from "../functions/Optimistic";
-import stringify from "../functions/stringify";
+import transportToSubgroup from "./transportToSubgroup";
 // function
-export default async function ({ state, commit }, id) {
+export default async function ({ state, commit, dispatch }, { id, course_id }) {
     // if (this.$auth.loggedIn && this.$auth.user && !state.user.id) {
     // state.userId = this.$auth.user._id;
     // GraphQl request
@@ -56,11 +56,25 @@ export default async function ({ state, commit }, id) {
     const optimistic = new Optimistic({
         state,
         commit,
+        dispatch,
         request,
         dataKey: "removeSubgroup",
     });
+    // callback before actually removing the subgroup
+    const callback = async (element) => {
+        await Promise.all(
+            element.students?.map(async (student) => {
+                await dispatch("transportToSubgroup", {
+                    student_id: student.id,
+                    course_id,
+                });
+            })
+        );
+    };
+    // remove
     await optimistic.remove({
         id,
         tree: ["groups", "courses", "subgroups"],
+        callback,
     });
 }

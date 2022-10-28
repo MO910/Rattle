@@ -27,6 +27,7 @@ import createCenter from "./parts/actions/createCenter";
 import createSubgroup from "./parts/actions/groups/createSubgroup";
 import removeSubgroup from "./parts/actions/groups/removeSubgroup";
 import transportToSubgroup from "./parts/actions/groups/transportToSubgroup";
+import decodeId from "./parts/actions/groups/decodeId";
 // attendance
 import updateAttendance from "./parts/actions/attendance/updateAttendance";
 // export
@@ -34,6 +35,7 @@ export default {
     state: () => ({
         user: {},
         users: [],
+        breadcrumbs: [],
         groups: null,
         plans: [],
         plansToTables: [],
@@ -75,10 +77,10 @@ export default {
         contextmenu: {
             show: false,
             type: "",
-            dialog: { show: false },
+            dialog: { show: false, type: "" },
             entity: {},
             subgroups: [],
-            list: ["transport", "edit", "remove"],
+            // list: ["transport", "edit", "remove"],
         },
         datePicker: {
             selectedDate: null,
@@ -111,6 +113,7 @@ export default {
         createSubgroup,
         removeSubgroup,
         transportToSubgroup,
+        decodeId,
         // attendance
         updateAttendance,
     },

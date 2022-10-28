@@ -49,7 +49,6 @@ export default async function ({ state, commit }, args) {
                     }
                 `,
             });
-        console.log(data);
         return data;
     };
     // let data = await request();
@@ -62,7 +61,7 @@ export default async function ({ state, commit }, args) {
     });
     await optimistic.add({
         id: args.course_id,
-        requestData: args,
+        requestData: { students: [], plans: [], ...args },
         tree: ["groups", "courses"],
         targetArray: "subgroups",
     });

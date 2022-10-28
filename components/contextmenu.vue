@@ -8,9 +8,16 @@ div
         absolute
         offset-y
     )
-        v-list
-            v-list-item(v-for='item in contextmenu.list' :key='item' @click='openDialog(item)')
-                v-list-item-title {{item}}
+        v-list(width='200')
+            v-list-item(
+                v-for='item in contextmenuList' :key='item.title'
+                @click='openDialog(item.title)'
+                :class='`${item.color}--text`'
+                
+            )
+                v-list-item-icon
+                    v-icon(:class='`${item.color}--text`') {{item.icon}}
+                v-list-item-title {{$vuetify.lang.t(`$vuetify.${item.title}`)}}
     //- dialog
         @input='contextmenu.dialog.show'
     v-dialog(
@@ -19,7 +26,7 @@ div
     )
         //- Transport
         v-card
-            v-card-title {{contextmenu.dialog.type == "transport" ? transportTitle : confirmationMessage}}
+            v-card-title {{cardTitle}}
             v-card-text(v-if='contextmenu.dialog.type == "transport"')
                 v-list(dense)
                     v-list-item-group(v-model='selectedSubgroup' color='primary')
@@ -56,6 +63,28 @@ export default {
         confirmationMessage() {
             return `are you sure you want to remove ${this.contextmenu.entity.title} subgroup`;
         },
+        contextmenuList() {
+            console.log(this.contextmenu.type);
+            if (this.contextmenu.type === "subgroup")
+                return [
+                    { title: "edit", icon: "mdi-pencil" },
+                    {
+                        title: "remove",
+                        icon: "mdi-trash-can-outline",
+                        color: "red",
+                    },
+                ];
+            else if (this.contextmenu.type.match(/student/gi))
+                return [{ title: "transport", icon: "mdi-arrow-decision" }];
+            return [];
+        },
+        cardTitle() {
+            console.log(this.contextmenu.dialog);
+            if (this.contextmenu.dialog.type === "transport")
+                return this.transportTitle;
+            else if (this.contextmenu.dialog.type === "remove")
+                return this.confirmationMessage;
+        },
     },
     methods: {
         ...mapMutations(["updateModel"]),
@@ -79,42 +108,29 @@ export default {
             this.updateModel(["contextmenu.dialog.show", false]);
             // this.contextmenu.dialog.show = false;
         },
+        icon(item) {},
         async action() {
+            const { courseId: course_id } = this.$route.params;
             this.loading = true;
             // do action
             if (this.contextmenu.dialog.type == "remove")
-                await this.removeSubgroup(this.contextmenu.entity.id);
+                await this.removeSubgroup({
+                    id: this.contextmenu.entity.id,
+                    course_id,
+                });
             if (this.contextmenu.dialog.type == "transport") {
-                let student_id = this.contextmenu.entity.id,
+                const student_id = this.contextmenu.entity.id,
                     subgroup_id =
                         this.contextmenu.subgroups?.[this.selectedSubgroup]?.id,
-                    { courseId: course_id } = this.$route.params;
-                // floating
-                let isFloating = this.contextmenu.type === "floatingStudents",
-                    treeFrom = isFloating
-                        ? ["groups", "courses", "floatingStudents"]
-                        : ["groups", "courses", "subgroups", "students"],
-                    treeTo = subgroup_id
-                        ? ["groups", "courses", "subgroups", "students"]
-                        : ["groups", "courses", "floatingStudents"];
-                console.log("model subgroup_id: ", {
-                    student_id,
-                    subgroup_id,
-                    course_id,
-                    //
-                    isFloating,
-                    treeFrom,
-                    treeTo,
-                });
+                    // floating
+                    isFloating = this.contextmenu.type === "floatingStudents";
                 // do action
                 await this.transportToSubgroup({
                     student_id,
                     subgroup_id,
                     course_id,
-                    //
+                    // guid ones
                     isFloating,
-                    treeFrom,
-                    treeTo,
                 });
             }
             // stop loading and close dialog

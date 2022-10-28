@@ -3,7 +3,7 @@ const mongoose = require("mongoose"),
 const Subgroups = new Schema(
     {
         title: String,
-        group_id: mongoose.ObjectId,
+        course_id: mongoose.ObjectId,
         student_ids: Array,
     },
     { timestamps: true, collection: "Subgroups" }

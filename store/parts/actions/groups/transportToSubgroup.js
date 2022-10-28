@@ -6,9 +6,14 @@ import stringify from "../functions/stringify";
 export default async function ({ state, commit }, args) {
     // if (this.$auth.loggedIn && this.$auth.user && !state.user.id) {
     // state.userId = this.$auth.user._id;
-    const { treeFrom, treeTo, isFloating } = args;
-    delete args.treeFrom;
-    delete args.treeTo;
+    const { subgroup_id, isFloating } = args;
+    const treeFrom = isFloating
+            ? ["groups", "courses", "floatingStudents"]
+            : ["groups", "courses", "subgroups", "students"],
+        treeTo = subgroup_id
+            ? ["groups", "courses", "subgroups", "students"]
+            : ["groups", "courses", "floatingStudents"];
+    // delete args.treeTo;
     delete args.isFloating;
     const sArgs = stringify(args);
     // GraphQl request

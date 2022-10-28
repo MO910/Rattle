@@ -14,8 +14,6 @@ v-row
             hide-details
         )
     template(v-if='!disableRatting')
-        //- v-col(cols='12')
-            v-card-text {{selectedDateHistory}}
         v-col(cols='4')
             v-card-text {{$vuetify.lang.t("$vuetify.grade")}}: {{this.history && this.history.grade}} / 10
         v-col.d-flex.justify-end.align-center(cols='8')

@@ -4,7 +4,7 @@ import treeFinder from "../functions/treeFinder";
 // function
 export default async function (th) {
     const { state, commit } = th;
-    // if (state.groups?.length) return;
+    if (state.groups?.length) return;
     // if (this.$auth.loggedIn && this.$auth.user && !state.user.id) {
     // state.userId = this.$auth.user._id;
     // GraphQl request

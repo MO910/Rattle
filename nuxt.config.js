@@ -43,6 +43,9 @@ export default {
             {
                 src: "/js/inputNumber.js",
             },
+            // {
+            //     src: "~/store/parts/actions/functions/treeFinder.js",
+            // },
         ],
     },
 
