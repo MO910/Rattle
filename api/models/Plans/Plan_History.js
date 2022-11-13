@@ -2,7 +2,7 @@ const mongoose = require("mongoose"),
     Schema = mongoose.Schema;
 const Plan_History = new Schema(
     {
-        plan_id: mongoose.ObjectId,
+        custom_plan_id: mongoose.ObjectId,
         student_id: mongoose.ObjectId,
         updated_by: mongoose.ObjectId,
         amount_done: Number,
@@ -10,7 +10,7 @@ const Plan_History = new Schema(
 
         rabt: Boolean,
         note: String,
-        date: Date,
+        // date: Date,
         // rabt_amount_done: Number,
         // rabt_grade: Number,
     },

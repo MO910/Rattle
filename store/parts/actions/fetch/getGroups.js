@@ -2,11 +2,10 @@
 import gql from "graphql-tag";
 import treeFinder from "../functions/treeFinder";
 // function
-export default async function (th) {
-    const { state, commit } = th;
+export default async function ({ state, commit }) {
     if (state.groups?.length) return;
     // if (this.$auth.loggedIn && this.$auth.user && !state.user.id) {
-    // state.userId = this.$auth.user._id;
+    const userId = this.$auth.user._id;
     // GraphQl request
     const client = this.app.apolloProvider.defaultClient,
         {
@@ -14,7 +13,7 @@ export default async function (th) {
         } = await client.query({
             query: gql`
                 query groups {
-                    groups(userId: "6336d7f1a99d2cb48dab444a") {
+                    groups(userId: "${userId}") {
                         id
                         title
                         working_days

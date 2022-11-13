@@ -1,12 +1,11 @@
 <template lang="pug">
 v-row
-    //- |{{selectedDateHistory}}
     v-col(cols='4')
         v-card-text {{verseName}}
     v-col.d-flex.justify-end.align-center(cols='8')
         v-slider.align-center(
             @end="changeAmount($event)"
-            @input="changeAmount($event, true)"
+            @change="changeAmount($event, true)"
             :value="amount_done"
             min=1
             :max='versesKeys.length'
@@ -47,9 +46,10 @@ export default {
                 this.windowWidth = window.innerWidth;
             };
         */
+        console.log(this.plan);
     },
     computed: {
-        ...mapState(["versesPerPage", "selectedDateHistory"]),
+        ...mapState(["versesPerPage", "surahAdj", "selectedDateHistory"]),
         versesKeys() {
             const { from, to } = this.plan.day;
             let allVerses = [];
@@ -60,7 +60,7 @@ export default {
         },
         verseName() {
             const currentVerse = this.versesKeys[this.amount_done - 1];
-            return currentVerse && verseKeyToName(currentVerse);
+            return currentVerse && verseKeyToName(currentVerse, this);
         },
         disableRatting() {
             // this.ratingRatio = 0;
@@ -99,18 +99,14 @@ export default {
             obj = {
                 student_id: this.student_id,
                 plan_id: this.plan.id,
-                date: extractISODate({
-                    date: this.selectedDate,
-                    fullDate: true,
-                }),
+                custom_plan_id: this.plan.day.id,
                 // default values
-                amount_done: 0,
-                grade: 0,
-                //
+                amount_done: this.amount_done,
+                grade: this.history?.grade || 0,
+                // new value
                 ...obj,
             };
             // update locally
-            console.log(!!this.history);
             if (this.history)
                 this.updateModel([
                     `selectedDateHistory[${this.historyIndex}].${key}`,
@@ -118,9 +114,10 @@ export default {
                 ]);
             else {
                 this.historyIndex = this.selectedDateHistory.length;
+                let date = extractISODate({ date: obj.date });
                 let newObj = {
                     ...obj,
-                    date: new Date(obj.date).getTime() + "",
+                    date,
                 };
                 this.push([`selectedDateHistory`, newObj]);
             }

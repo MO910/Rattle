@@ -54,7 +54,9 @@ const counter = (content) => {
             parseFloat(content.css("transition-duration")) * 1000,
         dragLimit = 27,
         max = +content.attr("data-max") || 10000,
-        digits = max.toString().length,
+        min = +content.attr("data-min") || 0,
+        digitWidth = +content.attr("data-digitWidth") || max.toString().length,
+        digits = digitWidth,
         format = content.attr("data-format");
     let down,
         focus,
@@ -79,7 +81,7 @@ const counter = (content) => {
         preventChange = true;
         if (xValue >= dragLimit && current < max) {
             content.addClass("increase");
-        } else if (xValue <= -dragLimit && current > 0) {
+        } else if (xValue <= -dragLimit && current > min) {
             content.addClass("decrease");
         } else {
             preventChange = false;
@@ -118,9 +120,10 @@ const counter = (content) => {
                 );
                 // style the arrows to max
                 if (current == max) inputNumber.addClass("max");
+                // else if (current == min) inputNumber.addClass("min");
                 else inputNumber.removeClass("max");
                 // style the arrows to min
-                if (current == 0) inputNumber.addClass("min");
+                if (current == min) inputNumber.addClass("min");
                 else inputNumber.removeClass("min");
             } else if (mutation.attributeName == "data-freeze")
                 freeze = mutation.target.dataset.freeze;
@@ -196,7 +199,7 @@ const counter = (content) => {
             focus = false;
             // range bounding
             const contentText = +$(content).text(),
-                isForbidden = contentText > max;
+                isForbidden = contentText > max || contentText < min;
             current = isForbidden ? current : contentText;
             isForbidden && forbiddenChange(content);
             content[0].dataset.current = current;

@@ -16,15 +16,13 @@ v-card(
             :key='i'
         ) {{fullName(chip)}}
     //- Advantage
-    v-card-text(v-if='advantage')
+    v-card-text(v-for='plan, i in eachDay' :key='i')
         advantage(
-            v-for='plan, pi in advantage'
-            :key='pi'
-            v-if='plan.day && !loading && !plan.hide'
+            v-if='!loading && !plan.hide'
             :plan='plan'
             :student_id='entity.id'
-            :selectedDate='selectedDate'
-            :divider='advantageDivider(pi)'
+            :selectedDate='datePicker.selectedDate'
+            :divider='advantageDivider(i)'
         )
 </template>
 <script>
@@ -41,11 +39,26 @@ export default {
         "subgroups",
         "type",
         "advantage",
-        "selectedDate",
         "loading",
         "notRouter",
     ],
-    computed: {},
+    computed: {
+        ...mapState(["datePicker"]),
+        eachDay() {
+            // let advantage = this.advantage.map((plan) => plan.day);
+            return (
+                this.advantage?.reduce((acc, plan) => {
+                    plan.day?.forEach((day) => {
+                        acc.push({
+                            ...plan,
+                            day,
+                        });
+                    });
+                    return acc;
+                }, []) || []
+            );
+        },
+    },
     methods: {
         ...mapMutations(["updateModel"]),
         subgroupRouter(subgroupId) {
@@ -73,7 +86,7 @@ export default {
         },
         // advantage divider
         advantageDivider(pi) {
-            return pi + 1 != this.advantage.length;
+            return pi + 1 != this.eachDay.length;
         },
     },
 };

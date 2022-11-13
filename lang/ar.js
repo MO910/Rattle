@@ -98,4 +98,6 @@ export default {
     absent: "غائب",
     late: "متأخر",
     excused: "معذور",
+    //
+    drag2Arrow: "اسحب باتجاه السهم",
 };

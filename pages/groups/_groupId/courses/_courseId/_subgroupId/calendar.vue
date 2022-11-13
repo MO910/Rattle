@@ -166,7 +166,7 @@ export default {
                 $vuetify: this.$vuetify,
                 stringify,
             });
-            // console.log(plans, events);
+            console.log(plans, events);
             // update states
             // this.updateModel(["events", events]);
             this.events = events;

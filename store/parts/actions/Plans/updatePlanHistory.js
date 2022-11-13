@@ -5,9 +5,8 @@ import stringify from "../functions/stringify";
 export default async function ({ commit }, args) {
     // if (this.$auth.loggedIn && this.$auth.user && !state.user.id) {
     // state.userId = this.$auth.user._id;
-
+    delete args.plan_id;
     const stringifyArgs = stringify(args);
-    console.log(stringifyArgs);
     // GraphQl request
     const client = this.app.apolloProvider.defaultClient,
         { data } = await client.mutate({

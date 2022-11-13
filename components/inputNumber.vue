@@ -1,11 +1,18 @@
 <template lang="pug">
     .inputNumber.d-flex(:class='textColor' :id='id_key')
-        v-icon.decrease(v-show='!freeze' :class='textColor') {{arithmetic ? 'mdi-minus' : 'mdi-chevron-left'}}
-        v-icon.increase.order-2(v-show='!freeze' :class='textColor') {{arithmetic ? 'mdi-plus' : 'mdi-chevron-right'}}
+        v-icon.decrease(
+            v-show='!freeze'
+            :class='`${textColor} order-${isEn ? 0 : 2}`'
+        ) {{arithmetic ? 'mdi-minus' : 'mdi-chevron-left'}}
+        v-icon.increase(
+            v-show='!freeze'
+            :class='`${textColor} order-${isEn ? 2 : 0}`'
+        ) {{arithmetic ? 'mdi-plus' : 'mdi-chevron-right'}}
         //- :open-on-click='true'
         v-tooltip(
             v-model='tooltip'
             :open-on-hover='false'
+            top
             transition="scroll-y-transition"
         )
             template(v-slot:activator="{ on, attrs }")
@@ -13,6 +20,8 @@
                     :data-current='init' 
                     :data-before='+init - 1' 
                     :data-after='+init + 1'
+                    :data-digitWidth='digitWidth'
+                    :data-min='min'
                     :data-max='max'
                     :data-format='format'
                     :data-freeze='freeze'
@@ -30,8 +39,7 @@
                     @touchend='tooltip = false'
                 ) 
                     div(v-text='init')
-            span Drag toward the arrows
-        //- script(src='./js/inputNumber.js')
+            span {{$vuetify.lang.t('$vuetify.drag2Arrow')}}
 </template>
 
 <script>
@@ -50,21 +58,13 @@ export default {
         "init",
         "before",
         "after",
+        "digitWidth",
+        "min",
         "max",
         "format",
         "freeze",
         "arithmetic",
     ],
-    computed: {
-        ...mapState(["books"]),
-        textColor() {
-            return this.text_color
-                ?.split(" ")
-                .map((c) => c + "--text")
-                .join(" ");
-        },
-    },
-    methods: mapMutations(["updateModel"]),
     mounted() {
         const $this = this,
             content = $(`.inputNumber#${this.id_key} .content`);
@@ -97,6 +97,19 @@ export default {
         // initialize the function
         counter(content);
     },
+    computed: {
+        ...mapState(["books"]),
+        textColor() {
+            return this.text_color
+                ?.split(" ")
+                .map((c) => c + "--text")
+                .join(" ");
+        },
+        isEn() {
+            return this.$vuetify.lang.current == "en";
+        },
+    },
+    methods: mapMutations(["updateModel"]),
 };
 </script>
 

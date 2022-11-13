@@ -1,66 +1,95 @@
 const DAY_MILL_SEC = 24 * 60 * 60 * 1000;
 // the function
-const generatePlanDays = (group, plan, custom) => {
+const generatePlanDays = (group, plan) => {
     let working_days = plan.working_days?.length
         ? plan.working_days
         : group.working_days;
-    let days = [],
-        pagePointer = plan.from;
+    plan.days = [];
+    let pagePointer = plan.from;
+    // rabt
+    let rabtPlan = plan.rabt_amount && {
+        ...plan,
+        title: `rabt of ${plan.title}`,
+        days: [],
+    };
     // some calcs
     let { starting_at, decreaseMillSec } = calcs({
-        custom,
         working_days,
         starting_at: plan.starting_at,
     });
-    // total days
-    const ending_at =
-            custom && getDayInWeek(plan.ending_at, working_days.at(-1), custom),
-        weeks = Math.ceil(((ending_at - starting_at) / DAY_MILL_SEC + 1) / 7),
-        totalDays = custom
-            ? weeks * working_days.length
-            : plan.weeks * working_days.length;
-    //  fill days array
+    // total mainDays
+    // const ending_at = getDayInWeek(plan.ending_at, working_days.at(-1)),
+    // weeks = Math.ceil(((ending_at - starting_at) / DAY_MILL_SEC + 1) / 7),
+    const totalDays = plan.weeks * working_days.length;
+    // fill mainDays array
     for (let i = 0; i < totalDays; i++) {
-        let day = {};
-        if (!custom) {
-            // add main range and date
-            day = {
-                date:
-                    starting_at +
-                    decreaseMillSec[i % decreaseMillSec.length] * +!!i,
-                from: pagePointer,
-                to:
-                    pagePointer +
-                    (plan.amount - 1) * (-1) ** plan.order_reversed,
-            };
-            // add rabt
-            if (plan.rabt_amount)
-                day.rabt_from = Math.max(
-                    day.from - plan.rabt_amount,
-                    plan.from
-                );
-            // close
-            starting_at = day.date;
-            pagePointer += plan.amount * (-1) ** plan.order_reversed;
-        } else {
-            let date = starting_at + DAY_MILL_SEC * i,
-                custom =
-                    plan.custom_plans.filter((c) => +c.date === +date)?.[0] ||
-                    {};
-            day = { date, ...custom };
+        // let day = {};
+        // add main range and date
+        let mainDay = {
+            date:
+                starting_at +
+                decreaseMillSec[i % decreaseMillSec.length] * +!!i,
+            from: pagePointer,
+            to:
+                pagePointer +
+                (plan.amount - 1 * !(plan.amount % 1)) *
+                    (-1) ** plan.order_reversed,
+        };
+        // add rabt
+        if (rabtPlan) {
+            if (!i)
+                rabtPlan.days.push({
+                    date: mainDay.date,
+                });
+            else {
+                let from = Math[plan.order_reversed ? "min" : "max"](
+                        mainDay.from -
+                            plan.rabt_amount * (-1) ** plan.order_reversed,
+                        plan.from
+                    ),
+                    to =
+                        from +
+                        (plan.rabt_amount - 1 * !(plan.amount % 1)) *
+                            (-1) ** plan.order_reversed;
+                var rabtDay = {
+                    date: mainDay.date,
+                    from,
+                    to,
+                };
+                // !for testing
+                // mainDay = {
+                //     ...mainDay,
+                //     rabt_from: from,
+                //     rabt_to: to,
+                // };
+                // !^^^^^^^^^^^^^^^
+                // push to days
+                rabtPlan.days.push(rabtDay);
+            }
         }
-        // push
-        days.push(day);
+        // close
+        starting_at = mainDay.date;
+        pagePointer += plan.amount * (-1) ** plan.order_reversed;
+        // push to days
+        plan.days.push(mainDay);
     }
     // format date to Date Object
-    days.map((d) => (d.date = new Date(+d.date)));
-    return { ...plan, days };
+    plan.days.map((d) => (d.date = new Date(+d.date)));
+    // rabt styling the object
+    if (rabtPlan) {
+        rabtPlan.days.map((d) => (d.date = new Date(+d.date)));
+        delete rabtPlan.rabt_amount;
+        rabtPlan.rabt_for = plan.id;
+    }
+    // style for DB
+    delete plan.rabt_amount;
+    // return
+    return [plan, rabtPlan].filter((x) => x);
 };
 // get deferent in days
-const getDefInDays = (d1, d2, custom) =>
-    d1 >= d2 || custom ? d1 - d2 : 7 - d2 + d1;
+const getDefInDays = (d1, d2) => (d1 >= d2 ? d1 - d2 : 7 - d2 + d1);
 // isolate some calc
-const calcs = ({ custom, working_days, starting_at }) => {
+const calcs = ({ working_days, starting_at }) => {
     let decreaseMillSec = [];
     // calculate decrease in MillSec
     working_days = working_days.map((d) => ++d);
@@ -69,14 +98,14 @@ const calcs = ({ custom, working_days, starting_at }) => {
     });
     decreaseMillSec = decreaseMillSec.map((d) => d * DAY_MILL_SEC);
     // set pointer to first day in week
-    starting_at = getDayInWeek(starting_at, working_days[0], custom);
+    starting_at = getDayInWeek(starting_at, working_days[0]);
     return { starting_at, decreaseMillSec };
 };
-const getDayInWeek = (date, dayI, custom) => {
+const getDayInWeek = (date, dayI) => {
     date = new Date(+date);
     let decreaseBy = 0;
     if (date.getDay() + 1 !== dayI) {
-        const defInDay = getDefInDays(dayI, date.getDay() + 1, custom);
+        const defInDay = getDefInDays(dayI, date.getDay() + 1);
         decreaseBy = defInDay * DAY_MILL_SEC;
     }
     return new Date(+date + decreaseBy).getTime();

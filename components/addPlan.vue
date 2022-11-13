@@ -70,6 +70,9 @@ v-dialog(v-model='dialog' width="570")
                         model='addPlanForm.ayahValue'
                         key='ayahValue'
                         id_key='ayahValue'
+                        :digitWidth='5'
+                        :min='1'
+                        :max='10'
                         :init='addPlanForm.ayahValue || 1'
                     )
                 v-col.d-flex.justify-start.align-center.text-h6(cols='6')
@@ -79,6 +82,8 @@ v-dialog(v-model='dialog' width="570")
                         model='addPlanForm.pagesValue'
                         key='pagesValue'
                         id_key='pagesValue'
+                        :digitWidth='5'
+                        :min='1'
                         :init='addPlanForm.pagesValue || 1'
                     )
                 v-col.d-flex.justify-start.align-center.text-h6(cols='6')
@@ -101,6 +106,8 @@ v-dialog(v-model='dialog' width="570")
                         model='addPlanForm.rabtPagesValue'
                         key='rabtPagesValue'
                         id_key='rabtPagesValue'
+                        :digitWidth='5'
+                        :min='1'
                         :init='addPlanForm.rabtPagesValue || 1'
                     )
             v-row
@@ -123,6 +130,7 @@ v-dialog(v-model='dialog' width="570")
 </template>
 <script>
 import { mapState, mapActions } from "vuex";
+import { generatePlanDays } from "~/static/js/generatePlanDays";
 export default {
     data: () => ({
         dialog: false,
@@ -134,11 +142,11 @@ export default {
         type_selected: 0,
         types: ["new", "old", "tajweed", "tafseer", "custom"],
         colors: [
-            "red",
             "indigo",
             "deep-purple",
             "teal",
             "lime darken-3",
+            "red",
             "orange",
             "blue-grey",
             "brown",
@@ -159,7 +167,7 @@ export default {
             .substr(0, 10),
         days_selected: [0],
     }),
-    props: ["default_days", "subgroup_id", "group_id", "after", "isStudent"],
+    props: ["default_days", "subgroup_id", "group", "after", "isStudent"],
     mounted() {
         this.days_selected = this.default_days;
         this.randomValidColor();
@@ -179,9 +187,13 @@ export default {
                     this.surahSearch.replace(/\s/g, "")
                 ),
                 cleanReg = new RegExp("[^\u0621-\u063A^\u0641-\u064A]", "g");
-            return this.surahsNames.filter((s) =>
+            // get results
+            let results = this.surahsNames.filter((s) =>
                 s.name.replace(cleanReg, "").match(searchForReg)
             );
+            // reversed
+            if (this.direction_selected) results = results.reverse();
+            return results;
         },
         days() {
             return JSON.parse(this.$vuetify.lang.t("$vuetify.weekDays"));
@@ -199,9 +211,9 @@ export default {
             this.versesPerPage.pages.forEach((p, pi) => {
                 if (p.some((v) => v.verse_key === verse)) pageNumber = pi;
             });
-            // add
-            await this.addPlan({
-                group_id: this.group_id,
+            // inputted data
+            let inputPlanData = {
+                group_id: this.group.id,
                 subgroup_id: this.subgroup_id,
                 title: this.types[this.type_selected],
                 order_reversed: !!this.direction_selected,
@@ -217,9 +229,14 @@ export default {
                     ? ["groups", "floatingStudents"]
                     : ["groups", "courses", "subgroups"],
                 color: this.selectedColor,
-            });
+            };
+            // spread customs
+            let plans = generatePlanDays(this.group, inputPlanData);
+            console.log({ plans });
+            // add
+            for (let plan of plans) await this.addPlan(plan);
             // fetch data again
-            await this.after();
+            // await this.after();
         },
         // colors
         randomValidColor() {

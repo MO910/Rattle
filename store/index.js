@@ -1,5 +1,6 @@
 import surahAdj from "./parts/surahAdj";
 import versesPerPage from "./parts/versesPerPage";
+import stringify from "./parts/actions/functions/stringify";
 // Authentication
 import login from "./parts/actions/authentication/login";
 import logout from "./parts/actions/authentication/logout";
@@ -131,8 +132,14 @@ export default {
                 }`
             );
         },
-        push(state, [obj, value, method = "push"]) {
+        push(state, [obj, value, method = "push", spread = false]) {
             const target = eval(`state.${obj}`);
+            if (spread)
+                return eval(
+                    `state.${obj} = [...${JSON.stringify(
+                        target || []
+                    )}, ...${JSON.stringify(value)}]`
+                );
             target[method](value);
         },
         remove(state, [obj, index]) {

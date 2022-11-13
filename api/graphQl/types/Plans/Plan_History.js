@@ -13,6 +13,7 @@ module.exports = new GraphQLObjectType({
     fields: () => ({
         id: { type: GraphQLID },
         plan_id: { type: GraphQLID },
+        custom_plan_id: { type: GraphQLID },
         student_id: { type: GraphQLID },
         updated_by: { type: GraphQLID },
         amount_done: { type: GraphQLInt },

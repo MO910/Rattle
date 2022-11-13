@@ -32,7 +32,8 @@ export default class {
         if (targetArray) fullPath += `.${targetArray}`;
         // push the object to it
         const itemIndex = eval(`state.${fullPath}?.length`);
-        commit("push", [fullPath, requestData]);
+        let spread = requestData instanceof Array;
+        commit("push", [fullPath, requestData, "push", spread]);
         // try the request
         try {
             if (doRequest) {
@@ -49,6 +50,7 @@ export default class {
         // refresh
         refresh = refresh || fullPath;
         commit("refreshObj", refresh);
+        return this.data?.[this.dataKey];
     }
     // remove item response
     async remove({ id, tree, callback }) {

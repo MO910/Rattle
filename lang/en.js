@@ -81,4 +81,6 @@ export default {
     absent: "absent",
     late: "late",
     excused: "excused",
+    //
+    drag2Arrow: "Drag toward the arrows",
 };

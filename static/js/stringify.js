@@ -1,4 +1,15 @@
 let cons = { lang: {} };
+const setConstants = ({ versesPerPage, surahAdj, $vuetify }) => {
+    cons.lang.isEn = $vuetify.lang.current == "en";
+    cons.versesPerPage = versesPerPage;
+    cons.surahAdj = surahAdj;
+    // translations
+    cons.$vuetify = $vuetify;
+    cons.lang.from = $vuetify.lang.t("$vuetify.from");
+    cons.lang.to = $vuetify.lang.t("$vuetify.to");
+    cons.lang.ayah = $vuetify.lang.t("$vuetify.ayah");
+    cons.lang.rabt = $vuetify.lang.t("$vuetify.rabt");
+};
 // day to string
 const stringify = ({
     courseTitle,
@@ -10,22 +21,15 @@ const stringify = ({
     $vuetify,
     showDate,
 }) => {
-    cons.lang.isEn = $vuetify.lang.current == "en";
     // if there is nothing
     if (!title || !day) return;
-    // translations
-    cons.versesPerPage = versesPerPage;
-    cons.surahAdj = surahAdj;
-    cons.$vuetify = $vuetify;
-    cons.lang.from = $vuetify.lang.t("$vuetify.from");
-    cons.lang.to = $vuetify.lang.t("$vuetify.to");
-    cons.lang.ayah = $vuetify.lang.t("$vuetify.ayah");
-    cons.lang.rabt = $vuetify.lang.t("$vuetify.rabt");
     title = $vuetify.lang.t(`$vuetify.${title}`);
+    // set all the constants
+    setConstants({ versesPerPage, surahAdj, $vuetify });
     // if the course is quran
     if (courseTitle.toLowerCase() === "quran") {
         let str = pageToVerse(day);
-        if (details) str = `${title}: ${str}`;
+        // if (details) str = `${title}: ${str}`;
         if (showDate) {
             let lang = cons.lang.isEn ? "en-GB" : "ar-EG",
                 spread = cons.lang.isEn ? "," : "،",
@@ -40,19 +44,22 @@ const stringify = ({
         let de = [];
         let str = `${title}: from page ${day.from} to ${day.to}\n`;
         // details
-        if (!details) str = `${title}: ${str}`;
-        else de.push({ title: title, str });
+        // if (!details) str = `${title}: ${str}`;
+        de.push({ title: title, str });
         // rabt
-        if (day.rabt_from) {
-            if (!details) str = `${title} ${cons.lang.rabt}: `;
-            str += `from page ${day.rabt_from} to ${Math.max(day.from - 1, 1)}`;
-            if (details) de.push({ title: `${title} ${cons.lang.rabt}`, str });
-        }
+        // if (day.rabt_from) {
+        //     if (!details) str = `${title} ${cons.lang.rabt}: `;
+        //     str += `from page ${day.rabt_from} to ${Math.max(day.from - 1, 1)}`;
+        //     if (details) de.push({ title: `${title} ${cons.lang.rabt}`, str });
+        // }
         return details ? de : str;
     }
 };
 // get verses from pages
 const pageToVerse = ({ from, to }) => {
+    // if noting
+    if (!from || !to) return "--------";
+    // if out of range
     if (
         !cons.versesPerPage.pages[from - 1] ||
         !cons.versesPerPage.pages[to - 1]
@@ -64,7 +71,9 @@ const pageToVerse = ({ from, to }) => {
     toVerse = verseKeyToName(toVerse);
     return `${cons.lang.from} ${fromVerse} ${cons.lang.to} ${toVerse}`;
 };
-const verseKeyToName = (verse_key) => {
+const verseKeyToName = (verse_key, consValues) => {
+    // set all the constants
+    if (consValues) setConstants(consValues);
     // console.log(verse_key);
     const [surah, ayah] = verse_key.split(":"),
         lang = cons.$vuetify.lang.current,

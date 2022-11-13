@@ -64,7 +64,6 @@ export default {
             return `are you sure you want to remove ${this.contextmenu.entity.title} subgroup`;
         },
         contextmenuList() {
-            console.log(this.contextmenu.type);
             if (this.contextmenu.type === "subgroup")
                 return [
                     { title: "edit", icon: "mdi-pencil" },
@@ -79,7 +78,6 @@ export default {
             return [];
         },
         cardTitle() {
-            console.log(this.contextmenu.dialog);
             if (this.contextmenu.dialog.type === "transport")
                 return this.transportTitle;
             else if (this.contextmenu.dialog.type === "remove")

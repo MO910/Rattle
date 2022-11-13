@@ -22,11 +22,12 @@ import { mapState, mapActions } from "vuex";
 export default {
     // middleware: ["fetchGroups"],
     async fetch({ $auth, store, redirect }) {
+        console.log(!$auth.$state.loggedIn || !$auth.$state.user);
         if (!$auth.$state.loggedIn || !$auth.$state.user) redirect("/login");
         else await store.dispatch("getGroups");
     },
     mounted() {
-        console.log(this.surah);
+        console.log(this.groups);
     },
     data: () => ({}),
     computed: mapState(["groups", "surah"]),

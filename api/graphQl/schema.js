@@ -17,6 +17,8 @@ const // user
     Plan_type = require("./types/Plans/Plan"),
     Plan_History_Schema = require("../models/Plans/Plan_History"),
     Plan_History_type = require("./types/Plans/Plan_History"),
+    Custom_Plans_Schema = require("../models/Plans/Custom_Plans"),
+    Custom_Plans_type = require("./types/Plans/Custom_Plan"),
     // group
     Group_type = require("./types/Groups/Group"),
     Groups_schema = require("../models/Groups/Groups"),
@@ -31,6 +33,7 @@ const // Goals
     addPlan = require("./mutations/Plans/addPlan"),
     removePlan = require("./mutations/Plans/removePlan"),
     updatePlanHistory = require("./mutations/Plans/updateHistory"),
+    spreadPlan = require("./mutations/Plans/spreadPlan"),
     // Users
     createUser = require("./mutations/Users/createUser"),
     updateUser = require("./mutations/Users/updateUser"),
@@ -125,20 +128,30 @@ const query = new GraphQLObjectType({
                     const plans = await Plan_Schema.find({ subgroup_id }),
                         allHistories = await Promise.all(
                             plans.map(async (plan) => {
-                                const history = await Plan_History_Schema.find({
-                                    plan_id: plan.id,
-                                    date: { $gte, $lte },
-                                });
-                                console.log({
-                                    plan_id: plan.id,
-                                    date: new Date(date),
-                                });
-                                return history;
+                                // get all custom plans in this date
+                                let custom_plans =
+                                    await Custom_Plans_Schema.find({
+                                        plan_id: plan.id,
+                                        date: { $gte, $lte },
+                                    });
+                                // get the history of these custom plans
+                                return await Promise.all(
+                                    await custom_plans.map(async (cp) => {
+                                        let custom_history =
+                                            await Plan_History_Schema.find({
+                                                custom_plan_id: cp.id,
+                                            });
+                                        // add extra info
+                                        return custom_history.map((h) => ({
+                                            ...h._doc,
+                                            plan_id: plan.id,
+                                            date,
+                                        }));
+                                    })
+                                );
                             })
                         );
-                    // console.log(plans);
-                    console.log(allHistories);
-                    return allHistories.flat();
+                    return allHistories.flat().flat();
                 },
             },
         },
@@ -153,6 +166,7 @@ const query = new GraphQLObjectType({
             addPlan,
             updatePlanHistory,
             removePlan,
+            spreadPlan,
             // centers
             createCenter,
             // groups

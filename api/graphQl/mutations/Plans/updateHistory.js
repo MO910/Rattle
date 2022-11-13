@@ -10,10 +10,10 @@ module.exports = {
     type: GraphQLBoolean,
     args: {
         student_id: { type: GraphQLID },
-        plan_id: { type: GraphQLID },
+        custom_plan_id: { type: GraphQLID },
         updated_by: { type: GraphQLID },
         amount_done: { type: GraphQLInt },
-        date: { type: GraphQLString },
+        // date: { type: GraphQLString },
         grade: { type: GraphQLInt },
         rabt: { type: GraphQLBoolean },
         note: { type: GraphQLString },
@@ -23,8 +23,8 @@ module.exports = {
         const exists = await History_Schema.findOneAndUpdate(
             {
                 student_id: args.student_id,
-                plan_id: args.plan_id,
-                date: new Date(args.date),
+                custom_plan_id: args.custom_plan_id,
+                // date: new Date(args.date),
             },
             args
         );

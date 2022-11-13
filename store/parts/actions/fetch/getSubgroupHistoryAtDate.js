@@ -7,7 +7,6 @@ export default async function ({ state, commit }, args) {
     // userId = userId || this.$auth.user._id;
     const stringifyArgs = stringify(args);
     // GraphQl request
-    // GraphQl request
     const client = this.app.apolloProvider.defaultClient,
         {
             data: { subgroupHistoryAtDate },
@@ -16,6 +15,7 @@ export default async function ({ state, commit }, args) {
                 query user {
                     subgroupHistoryAtDate(${stringifyArgs}) {
                         plan_id
+                        custom_plan_id
                         student_id
                         date
                         amount_done
