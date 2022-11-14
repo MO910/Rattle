@@ -1,7 +1,7 @@
 <template lang="pug" key="index">
 v-container
     v-row
-        v-col.text-h3(cols='12') {{ subgroup.title || fullName(subgroup)}}
+        //- v-col.text-h3(cols='12') {{ subgroup.title || fullName(subgroup)}}
         date-picker(
             :historyAction='getSubgroupHistoryAtDate'
             :historyParams='historyParams'
@@ -9,6 +9,14 @@ v-container
         )
     //- plans
     v-row.mt-10
+        v-col(cols='12')
+            v-btn(
+                nuxt :to='calendarRouter'
+                color='primary lighten-2'
+                outlined block x-large
+            )
+                v-icon.mx-5 mdi-calendar-today
+                | {{$vuetify.lang.t('$vuetify.showCalendar')}}
         v-col.text-h4(cols='12')
             p.d-inline-block {{$vuetify.lang.t('$vuetify.plans')}}
             addPlan(
@@ -28,8 +36,10 @@ v-container
                 v-btn(@click='deletePlan(plan.id)' icon)
                     v-icon mdi-delete
                 v-card-title.d-block.text-center {{$vuetify.lang.t(`$vuetify.${plan.title}`)}}
-                v-card-text(v-for='strings, i in getPlanString(plan, false)' :key='i') 
-                    div {{strings}}
+                v-card-text(
+                    v-for='strings, i in getPlanString(plan, false)' :key='i'
+                    v-text='strings'
+                ) 
     v-row(v-else)
         v-col.text-h5(cols='12') there is no plans. do you want to add one!
     //- students of subgroup
@@ -71,10 +81,10 @@ v-container
 </template>
 <script>
 import { mapState, mapMutations, mapActions } from "vuex";
-import { customPlans } from "~/static/js/customPlans";
 import { stringify } from "~/static/js/stringify";
-import { DAY_MILL_SEC, getDefInDays } from "~/static/js/generatePlanDays";
 import { extractISODate } from "~/static/js/extractISODate";
+import { generatePlanDays } from "~/static/js/generatePlanDays";
+import { pageToVerse } from "~/static/js/stringify";
 export default {
     async fetch({ $auth, store, redirect }) {
         if (!$auth.$state.loggedIn || !$auth.$state.user) redirect("/login");
@@ -86,7 +96,19 @@ export default {
         tableDialog: false,
         isStudent: false,
     }),
-    async mounted() {},
+    async mounted() {
+        let plans = generatePlanDays(this.group, this.subgroup.plans[0]);
+        plans = plans[0].days.map((day) => ({
+            ...day,
+            ...pageToVerse({
+                ...day,
+                verseKeyObj: true,
+                consValues: this,
+            }),
+        }));
+        console.log(plans);
+        console.log(this.versesPerPage);
+    },
     computed: {
         ...mapState([
             "groups",
@@ -150,6 +172,10 @@ export default {
         // check if day in plans exists
         dayExist() {
             return this.plansOfDate?.some((p) => p.day);
+        },
+        // rout to calendar
+        calendarRouter() {
+            return `${this.$router.currentRoute.path}/calendar`;
         },
     },
     methods: {

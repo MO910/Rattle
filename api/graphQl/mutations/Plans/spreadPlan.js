@@ -7,18 +7,13 @@ const {
     GraphQLInputObjectType,
 } = require("graphql");
 const Custom_Plans_Schema = require("../../../models/Plans/Custom_Plans"),
-    Custom_Plan_Fields = require("../../types/Plans/Custom_Plan");
-//
-const Custom_Plan_Input_Type = new GraphQLInputObjectType({
-    name: "Input_Custom_Plan",
-    fields: () => Custom_Plan_Fields,
-});
+    Input_Custom_Plan = require("../../types/Plans/Input_Custom_Plan");
 // Function
 module.exports = {
     type: GraphQLBoolean,
     args: {
         plan_id: { type: GraphQLID },
-        custom_plans: { type: new GraphQLList(Custom_Plan_Input_Type) },
+        custom_plans: { type: new GraphQLList(Input_Custom_Plan) },
     },
     async resolve(_, { plan_id, custom_plans }) {
         // delete the old days

@@ -18,7 +18,6 @@ const // user
     Plan_History_Schema = require("../models/Plans/Plan_History"),
     Plan_History_type = require("./types/Plans/Plan_History"),
     Custom_Plans_Schema = require("../models/Plans/Custom_Plans"),
-    Custom_Plans_type = require("./types/Plans/Custom_Plan"),
     // group
     Group_type = require("./types/Groups/Group"),
     Groups_schema = require("../models/Groups/Groups"),
@@ -34,6 +33,7 @@ const // Goals
     removePlan = require("./mutations/Plans/removePlan"),
     updatePlanHistory = require("./mutations/Plans/updateHistory"),
     spreadPlan = require("./mutations/Plans/spreadPlan"),
+    editCustomPlan = require("./mutations/Plans/editCustomPlan"),
     // Users
     createUser = require("./mutations/Users/createUser"),
     updateUser = require("./mutations/Users/updateUser"),
@@ -167,6 +167,7 @@ const query = new GraphQLObjectType({
             updatePlanHistory,
             removePlan,
             spreadPlan,
+            editCustomPlan,
             // centers
             createCenter,
             // groups

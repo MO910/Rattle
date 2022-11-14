@@ -36,7 +36,7 @@ export default {
         dateStyled() {
             // if (!this.plansOfDate.length) return;
             let lang = this.$vuetify.lang.current == "en" ? "en-GB" : "ar-EG";
-            const options = { dateStyle: "full" },
+            const options = { dateStyle: "full", numberingSystem: "latn" },
                 formatter = new Intl.DateTimeFormat(lang, options);
             return formatter.format(new Date(this.datePicker.selectedDate));
         },

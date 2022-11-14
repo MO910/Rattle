@@ -9,13 +9,8 @@ const {
 //
 const history_type = require("./Plan_History"),
     history_schema = require("../../../models/Plans/Plan_History"),
-    Custom_Plan_Fields = require("./Custom_Plan"),
+    output_Custom_Plan = require("./output_Custom_Plan"),
     custom_plans_schema = require("../../../models/Plans/Custom_Plans");
-//
-const custom_plan_type = new GraphQLObjectType({
-    name: "Custom_Plan",
-    fields: () => Custom_Plan_Fields,
-});
 // User Type
 module.exports = new GraphQLObjectType({
     name: "Plans",
@@ -37,7 +32,7 @@ module.exports = new GraphQLObjectType({
         note: { type: GraphQLString },
         custom: { type: GraphQLBoolean },
         custom_plans: {
-            type: new GraphQLList(custom_plan_type),
+            type: new GraphQLList(output_Custom_Plan),
             // type: GraphQLBoolean,
             async resolve({ id, custom }) {
                 // if (!custom) return [];

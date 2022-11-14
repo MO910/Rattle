@@ -232,11 +232,8 @@ export default {
             };
             // spread customs
             let plans = generatePlanDays(this.group, inputPlanData);
-            console.log({ plans });
             // add
             for (let plan of plans) await this.addPlan(plan);
-            // fetch data again
-            // await this.after();
         },
         // colors
         randomValidColor() {

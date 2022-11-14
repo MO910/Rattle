@@ -1,14 +1,14 @@
 let cons = { lang: {} };
-const setConstants = ({ versesPerPage, surahAdj, $vuetify }) => {
-    cons.lang.isEn = $vuetify.lang.current == "en";
+const setConstants = ({ versesPerPage, surahAdj, $vuetify = {} }) => {
+    cons.lang.isEn = $vuetify.lang?.current == "en";
     cons.versesPerPage = versesPerPage;
     cons.surahAdj = surahAdj;
     // translations
     cons.$vuetify = $vuetify;
-    cons.lang.from = $vuetify.lang.t("$vuetify.from");
-    cons.lang.to = $vuetify.lang.t("$vuetify.to");
-    cons.lang.ayah = $vuetify.lang.t("$vuetify.ayah");
-    cons.lang.rabt = $vuetify.lang.t("$vuetify.rabt");
+    cons.lang.from = $vuetify.lang?.t("$vuetify.from");
+    cons.lang.to = $vuetify.lang?.t("$vuetify.to");
+    cons.lang.ayah = $vuetify.lang?.t("$vuetify.ayah");
+    cons.lang.rabt = $vuetify.lang?.t("$vuetify.rabt");
 };
 // day to string
 const stringify = ({
@@ -56,7 +56,9 @@ const stringify = ({
     }
 };
 // get verses from pages
-const pageToVerse = ({ from, to }) => {
+const pageToVerse = ({ from, to, verseKeyObj, consValues }) => {
+    // set all the constants
+    if (consValues) setConstants(consValues);
     // if noting
     if (!from || !to) return "--------";
     // if out of range
@@ -67,8 +69,11 @@ const pageToVerse = ({ from, to }) => {
         return;
     let fromVerse = cons.versesPerPage.pages[from - 1][0].verse_key,
         toVerse = cons.versesPerPage.pages[to - 1].at(-1).verse_key;
-    fromVerse = verseKeyToName(fromVerse);
-    toVerse = verseKeyToName(toVerse);
+    if (!verseKeyObj) {
+        // translate verse key to a name
+        fromVerse = verseKeyToName(fromVerse);
+        toVerse = verseKeyToName(toVerse);
+    } else return { from: fromVerse, to: toVerse };
     return `${cons.lang.from} ${fromVerse} ${cons.lang.to} ${toVerse}`;
 };
 const verseKeyToName = (verse_key, consValues) => {
@@ -83,4 +88,4 @@ const verseKeyToName = (verse_key, consValues) => {
     } ${ayah}`;
 };
 // export
-export { stringify, verseKeyToName };
+export { stringify, pageToVerse, verseKeyToName };

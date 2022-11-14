@@ -38,16 +38,7 @@ export default {
         ratingLength: 5,
     }),
     props: ["plan", "student_id", "selectedDate", "divider"],
-    async mounted() {
-        // rating length
-        /*
-            this.windowWidth = window.innerWidth;
-            window.onresize = () => {
-                this.windowWidth = window.innerWidth;
-            };
-        */
-        console.log(this.plan);
-    },
+    async mounted() {},
     computed: {
         ...mapState(["versesPerPage", "surahAdj", "selectedDateHistory"]),
         versesKeys() {

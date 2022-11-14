@@ -20,8 +20,6 @@ div
         v-btn.ma-2(icon @click='$refs.calendar.next()')
             v-icon mdi-chevron-right
     v-sheet
-        //- v-toolbar-title(v-if="$refs.calendar")
-                |{{ $refs.calendar.title }}
         v-calendar(
             ref='calendar'
             v-model='value'
@@ -36,6 +34,21 @@ div
             @click:more="viewDay"
             @click:date="viewDay"
         )
+        v-dialog(v-model='eventForm.dialog' width="500px")
+            v-card
+                v-card-title edit custom plan
+                v-card-text {{eventForm.data}}
+                v-card-text 
+                    v-form(v-model="eventForm.valid")
+                        v-row
+                            v-col(cols="12")
+                                v-row.text-h1
+                                    v-text-field(
+                                        label="f"
+                                    )
+                v-card-actions
+                    v-spacer
+                    v-btn(color='primary' text @click='add') {{$vuetify.lang.t('$vuetify.add')}}
         //- @change='getEvents'
         v-menu(v-model='daySelected.dialog' width="290px" :activator='daySelected.element' offset-x)
             v-card
@@ -65,9 +78,8 @@ div
 
 <script>
 import { mapState, mapMutations, mapActions } from "vuex";
-import { calendarDate } from "~/static/js/calendarDate";
+import { calendarEvents } from "~/static/js/calendarEvents";
 import { stringify } from "~/static/js/stringify";
-// import { DAY_MILL_SEC, getDefInDays } from "~/static/js/generatePlanDays";
 export default {
     // middleware: ["fetchGroups"],
     async fetch({ $auth, store, redirect }) {
@@ -75,7 +87,7 @@ export default {
         else await store.dispatch("getGroups");
     },
     async mounted() {
-        // console.log(this.groups);
+        console.log("calender -==-==--=-=--=");
         await this.fetchPlansDate();
     },
     data: () => ({
@@ -89,6 +101,9 @@ export default {
             dialog: false,
             element: null,
             data: [],
+        },
+        eventForm: {
+            dialog: false,
         },
         selectedEvent: {},
         weekday: [0, 1, 2, 3, 4, 5, 6],
@@ -156,25 +171,19 @@ export default {
         ...mapMutations(["updateModel"]),
         // fetch plans
         async fetchPlansDate() {
-            const { plans, events } = calendarDate({
+            const events = calendarEvents({
                 group: this.group,
                 courseTitle: this.course.title,
-                subgroup: this.subgroup,
+                plans: this.subgroup.plans,
                 weekDays: this.weekDays,
                 versesPerPage: this.versesPerPage,
                 surahAdj: this.surahAdj,
                 $vuetify: this.$vuetify,
                 stringify,
             });
-            console.log(plans, events);
+            console.log({ events });
             // update states
-            // this.updateModel(["events", events]);
             this.events = events;
-            this.updateModel(["plans", plans]);
-            // marge plans
-            // this.marge();
-            // get history
-            // await this.getHistory();
         },
         viewDay({ date, nativeEvent }) {
             const open = () => {
@@ -197,7 +206,6 @@ export default {
                     )
                 );
             };
-
             // animation
             if (this.daySelected.dialog) {
                 this.daySelected.dialog = false;
@@ -226,24 +234,30 @@ export default {
             this.$refs.calendar.next();
         },
         showEvent({ nativeEvent, event }) {
-            const open = () => {
-                this.selectedEvent = event;
-                this.selectedElement = nativeEvent.target;
-                requestAnimationFrame(() =>
-                    requestAnimationFrame(() => (this.selectedOpen = true))
-                );
-            };
+            this.eventForm.dialog = true;
+            let custom_plans = this.subgroup.plans
+                .map((plan) => plan.custom_plans)
+                .flat();
+            custom_plans = custom_plans.filter((cp) => cp.id === event.id)?.[0];
+            this.eventForm.data = custom_plans;
+            // const open = () => {
+            //     this.selectedEvent = event;
+            //     this.selectedElement = nativeEvent.target;
+            //     requestAnimationFrame(() =>
+            //         requestAnimationFrame(() => (this.selectedOpen = true))
+            //     );
+            // };
 
-            if (this.selectedOpen) {
-                this.selectedOpen = false;
-                requestAnimationFrame(() =>
-                    requestAnimationFrame(() => open())
-                );
-            } else {
-                open();
-            }
+            // if (this.selectedOpen) {
+            //     this.selectedOpen = false;
+            //     requestAnimationFrame(() =>
+            //         requestAnimationFrame(() => open())
+            //     );
+            // } else {
+            //     open();
+            // }
 
-            nativeEvent.stopPropagation();
+            // nativeEvent.stopPropagation();
         },
         getColor() {
             return this.selectedEvent?.color || "";
