@@ -3,8 +3,8 @@ const mongoose = require("mongoose"),
 const Custom_Plans = new Schema(
     {
         plan_id: mongoose.ObjectId,
-        from: Number,
-        to: Number,
+        from: String,
+        to: String,
 
         date: Date,
         note: String,

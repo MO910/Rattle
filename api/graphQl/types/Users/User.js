@@ -60,7 +60,6 @@ const User_type = new GraphQLObjectType({
             type: Attendance_type,
             async resolve(args) {
                 let { id: user_id, attendance_Date } = args;
-                // console.log(args);
                 return await Attendances_schema.findOne({
                     user_id,
                     date: attendance_Date,

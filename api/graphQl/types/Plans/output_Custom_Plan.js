@@ -11,8 +11,8 @@ module.exports = new GraphQLObjectType({
     name: "output_Custom_Plan",
     fields: () => ({
         id: { type: GraphQLID },
-        from: { type: GraphQLInt },
-        to: { type: GraphQLInt },
+        from: { type: GraphQLString },
+        to: { type: GraphQLString },
 
         date: { type: GraphQLString },
         note: { type: GraphQLString },

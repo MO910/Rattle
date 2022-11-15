@@ -4,7 +4,7 @@ v-row
         v-card-text {{verseName}}
     v-col.d-flex.justify-end.align-center(cols='8')
         v-slider.align-center(
-            @end="changeAmount($event)"
+            @end="changeAmount($event,)"
             @change="changeAmount($event, true)"
             :value="amount_done"
             min=1
@@ -43,18 +43,25 @@ export default {
         ...mapState(["versesPerPage", "surahAdj", "selectedDateHistory"]),
         versesKeys() {
             const { from, to } = this.plan.day;
+            const [fromSurah, fromAyah] = from.split(":");
+            const [toSurah, toAyah] = to.split(":");
             let allVerses = [];
-            for (let i = from - 1; i < to; i++)
-                allVerses.push(this.versesPerPage.pages[i]);
-            return allVerses.flat().map((v) => v?.verse_key);
-            // this.verseKeyToName()
+            // fill the array
+            for (let surahI = fromSurah - 1; surahI < toSurah; surahI++) {
+                let toInThisSurah =
+                    surahI == toSurah - 1
+                        ? toAyah
+                        : this.surahAdj[surahI].verses_count;
+                for (let ayahI = fromAyah - 1; ayahI < toInThisSurah; ayahI++)
+                    allVerses.push(`${surahI + 1}:${ayahI + 1}`);
+            }
+            return allVerses;
         },
         verseName() {
             const currentVerse = this.versesKeys[this.amount_done - 1];
             return currentVerse && verseKeyToName(currentVerse, this);
         },
         disableRatting() {
-            // this.ratingRatio = 0;
             return this.amount_done < this.versesKeys.length;
         },
         date() {
@@ -62,7 +69,6 @@ export default {
         },
         history() {
             return this.selectedDateHistory?.filter((h, i) => {
-                // console.log(h.date);
                 let date = extractISODate({ date: h.date, time: true }),
                     selectedDate = extractISODate({
                         date: this.selectedDate,
@@ -71,7 +77,8 @@ export default {
                 let conditions =
                     date == selectedDate &&
                     h.plan_id == this.plan.id &&
-                    h.student_id == this.student_id;
+                    h.student_id == this.student_id &&
+                    h.custom_plan_id == this.plan.day.id;
                 if (conditions) this.historyIndex = i;
                 return conditions;
             })?.[0];
@@ -105,7 +112,7 @@ export default {
                 ]);
             else {
                 this.historyIndex = this.selectedDateHistory.length;
-                let date = extractISODate({ date: obj.date });
+                let date = extractISODate({ date: this.selectedDate });
                 let newObj = {
                     ...obj,
                     date,

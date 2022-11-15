@@ -28,7 +28,7 @@ const stringify = ({
     setConstants({ versesPerPage, surahAdj, $vuetify });
     // if the course is quran
     if (courseTitle.toLowerCase() === "quran") {
-        let str = pageToVerse(day);
+        let str = rangeToStr(day);
         // if (details) str = `${title}: ${str}`;
         if (showDate) {
             let lang = cons.lang.isEn ? "en-GB" : "ar-EG",
@@ -76,6 +76,14 @@ const pageToVerse = ({ from, to, verseKeyObj, consValues }) => {
     } else return { from: fromVerse, to: toVerse };
     return `${cons.lang.from} ${fromVerse} ${cons.lang.to} ${toVerse}`;
 };
+//
+const rangeToStr = ({ from, to }) => {
+    // translate verse key to a name
+    from = verseKeyToName(from);
+    to = verseKeyToName(to);
+    return `${cons.lang.from} ${from} ${cons.lang.to} ${to}`;
+};
+//
 const verseKeyToName = (verse_key, consValues) => {
     // set all the constants
     if (consValues) setConstants(consValues);

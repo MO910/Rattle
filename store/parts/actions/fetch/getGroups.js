@@ -48,6 +48,7 @@ export default async function ({ state, commit }) {
                                     }
                                 }
                                 plans_history {
+                                    custom_plan_id
                                     amount_done
                                     grade
                                 }
@@ -81,6 +82,7 @@ export default async function ({ state, commit }) {
                                     phone
                                     gender
                                     plans_history {
+                                        custom_plan_id
                                         amount_done
                                         grade
                                     }

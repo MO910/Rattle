@@ -92,7 +92,6 @@ const query = new GraphQLObjectType({
                         s.attendance_Date = date;
                         return s;
                     });
-                    // console.log(students);
                     return students;
                 },
             },

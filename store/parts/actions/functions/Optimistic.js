@@ -38,9 +38,18 @@ export default class {
         try {
             if (doRequest) {
                 this.data = await this.request();
-                const itemId = this.data[this.dataKey]?.id;
+                const response = this.data[this.dataKey];
                 // update state and add ID (real response)
-                commit("updateModel", [`${fullPath}[${itemIndex}].id`, itemId]);
+                if (response instanceof Array) {
+                    console.log(`${fullPath}[${itemIndex}]`);
+                    commit("updateModel", [fullPath, response]);
+                } else {
+                    const itemId = this.data[this.dataKey]?.id;
+                    commit("updateModel", [
+                        `${fullPath}[${itemIndex}].id`,
+                        itemId,
+                    ]);
+                }
             }
         } catch (err) {
             // if error delete the added item
@@ -62,7 +71,6 @@ export default class {
             }),
             indexRegExp = /\[\d+\]$/,
             allListPath = nodePath.replace(indexRegExp, "");
-        console.log(nodePath);
         // hide temporary until it is cleared from DB (optimistic response)
         commit("updateModel", [`${nodePath}.hide`, true]);
         commit("refreshObj", allListPath);
@@ -75,7 +83,6 @@ export default class {
             // unhide the element
             commit("updateModel", [`${nodePath}.hide`, false]);
             // and store it for returning
-            console.log(`state.${allListPath}[${index}]`);
             const element = { ...eval(`state.${allListPath}[${index}]`) };
             // do action before actually removing
             if (callback) await callback(element);
@@ -99,7 +106,6 @@ export default class {
         });
         let fullPath = nodePath;
         if (targetArray) fullPath += `.${targetArray}`;
-        // console.log(fullPath);
         const oldValue = eval(`state.${fullPath}`);
         // update state optimistically
         commit("updateModel", [fullPath, { ...oldValue, ...requestData }]);

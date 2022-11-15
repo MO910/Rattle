@@ -97,16 +97,12 @@ export default {
         isStudent: false,
     }),
     async mounted() {
-        let plans = generatePlanDays(this.group, this.subgroup.plans[0]);
-        plans = plans[0].days.map((day) => ({
-            ...day,
-            ...pageToVerse({
-                ...day,
-                verseKeyObj: true,
-                consValues: this,
-            }),
-        }));
-        console.log(plans);
+        // let plans = generatePlanDays(
+        //     this.group,
+        //     this.subgroup.plans[0],
+        //     this.versesPerPage
+        // );
+        // console.log(plans);
         console.log(this.versesPerPage);
     },
     computed: {

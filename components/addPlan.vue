@@ -231,7 +231,11 @@ export default {
                 color: this.selectedColor,
             };
             // spread customs
-            let plans = generatePlanDays(this.group, inputPlanData);
+            let plans = generatePlanDays(
+                this.group,
+                inputPlanData,
+                this.versesPerPage
+            );
             // add
             for (let plan of plans) await this.addPlan(plan);
         },

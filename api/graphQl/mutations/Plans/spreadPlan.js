@@ -7,10 +7,11 @@ const {
     GraphQLInputObjectType,
 } = require("graphql");
 const Custom_Plans_Schema = require("../../../models/Plans/Custom_Plans"),
-    Input_Custom_Plan = require("../../types/Plans/Input_Custom_Plan");
+    Input_Custom_Plan = require("../../types/Plans/Input_Custom_Plan"),
+    Output_Custom_Plan = require("../../types/Plans/output_Custom_Plan");
 // Function
 module.exports = {
-    type: GraphQLBoolean,
+    type: new GraphQLList(Output_Custom_Plan),
     args: {
         plan_id: { type: GraphQLID },
         custom_plans: { type: new GraphQLList(Input_Custom_Plan) },
@@ -23,7 +24,6 @@ module.exports = {
             c.plan_id = plan_id;
             return c;
         });
-        await Custom_Plans_Schema.create(custom_plans);
-        return true;
+        return await Custom_Plans_Schema.create(custom_plans);
     },
 };

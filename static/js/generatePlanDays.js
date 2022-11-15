@@ -1,6 +1,8 @@
+import { pageToVerse } from "./stringify";
+//
 const DAY_MILL_SEC = 24 * 60 * 60 * 1000;
 // the function
-const generatePlanDays = (group, plan) => {
+const generatePlanDays = (group, plan, versesPerPage) => {
     let working_days = plan.working_days?.length
         ? plan.working_days
         : group.working_days;
@@ -75,6 +77,16 @@ const generatePlanDays = (group, plan) => {
     }
     // format date to Date Object
     plan.days.map((d) => (d.date = new Date(+d.date)));
+    // page numbers to verse keys
+    plan.days = plan.days.map((day) => ({
+        ...day,
+        ...pageToVerse({
+            ...day,
+            verseKeyObj: true,
+            consValues: { versesPerPage },
+        }),
+    }));
+    console.log(plan.days);
     // rabt styling the object
     if (rabtPlan) {
         rabtPlan.days.map((d) => (d.date = new Date(+d.date)));

@@ -39,7 +39,6 @@ module.exports = new GraphQLObjectType({
         subgroups: {
             type: new GraphQLList(subgroup_type),
             async resolve({ id: course_id }) {
-                console.log("course_id", course_id);
                 return await subgroups_schema.find({
                     course_id,
                 });
