@@ -11,6 +11,7 @@ const Plan_type = require("../../types/Plans/Plan"),
 module.exports = {
     type: Plan_type,
     args: {
+        rabt_for_plan_id: { type: GraphQLID },
         subgroup_id: { type: GraphQLID },
         title: { type: GraphQLString },
         color: { type: GraphQLString },

@@ -23,9 +23,16 @@ export default async function ({ state, commit }, id) {
         request,
         dataKey: "removePlan",
     });
-    await optimistic.remove({
+    const [path] = await optimistic.remove({
         id,
         tree: ["groups", "courses", "subgroups", "plans"],
     });
+    // remove rabt plan
+    const allPlansList = eval(`state.${path}`);
+    let rabtPlanIndex;
+    allPlansList.forEach((plan, i) => {
+        if (plan.rabt_for_plan_id === id) rabtPlanIndex = i;
+    });
+    commit("remove", [path, rabtPlanIndex]);
     // }
 }

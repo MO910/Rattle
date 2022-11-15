@@ -60,7 +60,7 @@ const pageToVerse = ({ from, to, verseKeyObj, consValues }) => {
     // set all the constants
     if (consValues) setConstants(consValues);
     // if noting
-    if (!from || !to) return "--------";
+    // if (!from || !to) return "--------";
     // if out of range
     if (
         !cons.versesPerPage.pages[from - 1] ||

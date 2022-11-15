@@ -88,7 +88,7 @@ export default class {
             if (callback) await callback(element);
             // actually remove the element
             commit("remove", [allListPath, index]);
-            return element;
+            return [allListPath, element];
         } catch (err) {
             console.log(err);
             // if error restore the item

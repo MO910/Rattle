@@ -16,6 +16,7 @@ module.exports = new GraphQLObjectType({
     name: "Plans",
     fields: () => ({
         id: { type: GraphQLID },
+        rabt_for_plan_id: { type: GraphQLID },
         title: { type: GraphQLString },
         color: { type: GraphQLString },
         order_reversed: { type: GraphQLBoolean },

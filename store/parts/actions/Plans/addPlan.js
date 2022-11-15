@@ -58,11 +58,6 @@ export default async function ({ state, commit }, args) {
             },
             true
         );
-        console.log(`
-        mutation {
-            spreadPlan(${spreadArgs})
-        }
-    `);
         const client = this.app.apolloProvider.defaultClient,
             { data } = await client.mutate({
                 mutation: gql`
@@ -92,5 +87,7 @@ export default async function ({ state, commit }, args) {
         tree: [...tree, "plans"],
         targetArray: "custom_plans",
     });
+    // return the plan
+    return newPlan;
     // }
 }

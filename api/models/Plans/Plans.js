@@ -2,6 +2,7 @@ const mongoose = require("mongoose"),
     Schema = mongoose.Schema;
 const Plans = new Schema(
     {
+        rabt_for_plan_id: mongoose.ObjectId,
         subgroup_id: mongoose.ObjectId,
         title: String,
         color: String,

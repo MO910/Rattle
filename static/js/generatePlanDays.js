@@ -12,6 +12,7 @@ const generatePlanDays = (group, plan, versesPerPage) => {
     let rabtPlan = plan.rabt_amount && {
         ...plan,
         title: `rabt of ${plan.title}`,
+        rabt_for_plan_id: plan.id,
         days: [],
     };
     // some calcs
@@ -20,12 +21,9 @@ const generatePlanDays = (group, plan, versesPerPage) => {
         starting_at: plan.starting_at,
     });
     // total mainDays
-    // const ending_at = getDayInWeek(plan.ending_at, working_days.at(-1)),
-    // weeks = Math.ceil(((ending_at - starting_at) / DAY_MILL_SEC + 1) / 7),
     const totalDays = plan.weeks * working_days.length;
     // fill mainDays array
     for (let i = 0; i < totalDays; i++) {
-        // let day = {};
         // add main range and date
         let mainDay = {
             date:
@@ -38,36 +36,36 @@ const generatePlanDays = (group, plan, versesPerPage) => {
                     (-1) ** plan.order_reversed,
         };
         // add rabt
-        if (rabtPlan) {
-            if (!i)
-                rabtPlan.days.push({
-                    date: mainDay.date,
-                });
-            else {
-                let from = Math[plan.order_reversed ? "min" : "max"](
-                        mainDay.from -
-                            plan.rabt_amount * (-1) ** plan.order_reversed,
-                        plan.from
-                    ),
-                    to =
-                        from +
-                        (plan.rabt_amount - 1 * !(plan.amount % 1)) *
-                            (-1) ** plan.order_reversed;
-                var rabtDay = {
-                    date: mainDay.date,
-                    from,
-                    to,
-                };
-                // !for testing
-                // mainDay = {
-                //     ...mainDay,
-                //     rabt_from: from,
-                //     rabt_to: to,
-                // };
-                // !^^^^^^^^^^^^^^^
-                // push to days
-                rabtPlan.days.push(rabtDay);
-            }
+        if (rabtPlan && i) {
+            // if (!i)
+            //     rabtPlan.days.push({
+            //         date: mainDay.date,
+            //     });
+            // else {
+            let from = Math[plan.order_reversed ? "min" : "max"](
+                    mainDay.from -
+                        plan.rabt_amount * (-1) ** plan.order_reversed,
+                    plan.from
+                ),
+                to =
+                    from +
+                    (plan.rabt_amount - 1 * !(plan.amount % 1)) *
+                        (-1) ** plan.order_reversed;
+            var rabtDay = {
+                date: mainDay.date,
+                from,
+                to,
+            };
+            // !for testing
+            // mainDay = {
+            //     ...mainDay,
+            //     rabt_from: from,
+            //     rabt_to: to,
+            // };
+            // !^^^^^^^^^^^^^^^
+            // push to days
+            rabtPlan.days.push(rabtDay);
+            // }
         }
         // close
         starting_at = mainDay.date;
@@ -77,26 +75,29 @@ const generatePlanDays = (group, plan, versesPerPage) => {
     }
     // format date to Date Object
     plan.days.map((d) => (d.date = new Date(+d.date)));
-    // page numbers to verse keys
-    plan.days = plan.days.map((day) => ({
-        ...day,
-        ...pageToVerse({
-            ...day,
-            verseKeyObj: true,
-            consValues: { versesPerPage },
-        }),
-    }));
-    console.log(plan.days);
     // rabt styling the object
     if (rabtPlan) {
         rabtPlan.days.map((d) => (d.date = new Date(+d.date)));
         delete rabtPlan.rabt_amount;
-        rabtPlan.rabt_for = plan.id;
+        // rabtPlan.rabt_for_plan_id = plan.id;
     }
+    // page numbers to verse keys
+    const allPlans = [plan];
+    if (allPlans) allPlans.push(rabtPlan);
+    allPlans.forEach((plan) => {
+        plan.days = plan.days.map((day) => ({
+            ...day,
+            ...pageToVerse({
+                ...day,
+                verseKeyObj: true,
+                consValues: { versesPerPage },
+            }),
+        }));
+    });
     // style for DB
     delete plan.rabt_amount;
     // return
-    return [plan, rabtPlan].filter((x) => x);
+    return allPlans;
 };
 // get deferent in days
 const getDefInDays = (d1, d2) => (d1 >= d2 ? d1 - d2 : 7 - d2 + d1);

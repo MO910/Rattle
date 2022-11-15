@@ -237,7 +237,12 @@ export default {
                 this.versesPerPage
             );
             // add
-            for (let plan of plans) await this.addPlan(plan);
+            let mainPlan;
+            for (let plan of plans)
+                mainPlan = await this.addPlan({
+                    ...plan,
+                    rabt_for_plan_id: mainPlan?.id,
+                });
         },
         // colors
         randomValidColor() {
