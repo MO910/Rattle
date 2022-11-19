@@ -23,7 +23,6 @@ v-container
                 :default_days='groupWorkingDays'
                 :group='group'
                 :subgroup_id='subgroup.id'
-                :after='fetchPlansDate'
                 :isStudent='isStudent'
             )
     v-row.mt-10(v-if='plansOfDate.length')
@@ -99,11 +98,19 @@ export default {
     async mounted() {
         // let plans = generatePlanDays(
         //     this.group,
-        //     this.subgroup.plans[0],
+        //     {
+        //         ...this.subgroup.plans[0],
+        //         from: 10,
+        //         amount: 2,
+        //         rabt_amount: 1,
+        //         // order_reversed: true,
+        //     },
         //     this.versesPerPage
         // );
         // console.log(plans);
-        console.log(this.versesPerPage);
+        // console.log(this.versesPerPage);
+        // const testVerse = pageToVerse({ from: 434.5, to: 435.5 });
+        // console.log("testVerse", testVerse);
     },
     computed: {
         ...mapState([
@@ -118,25 +125,23 @@ export default {
         // get the Group
         group() {
             const { groupId } = this.$route.params;
-            return this.groups.filter((g) => g.id == groupId)?.[0];
+            return this.groups.find((g) => g.id == groupId);
         },
         // get the Course
         course() {
             const { courseId } = this.$route.params;
             if (this.group)
-                return this.group.courses.filter((c) => c.id == courseId)?.[0];
+                return this.group.courses.find((c) => c.id == courseId);
         },
         // get the Subgroup
         subgroup() {
             const { subgroupId } = this.$route.params,
-                sub = this.course.subgroups.filter(
-                    (s) => s.id == subgroupId
-                )?.[0],
+                sub = this.course.subgroups.find((s) => s.id == subgroupId),
                 student =
                     sub ||
-                    this.course.floatingStudents.filter(
+                    this.course.floatingStudents.find(
                         (s) => s.id == subgroupId
-                    )?.[0];
+                    );
             this.isStudent = !sub;
             return sub || student;
         },
@@ -206,11 +211,9 @@ export default {
             const weekDay = new Date(val).getDay();
             return weekDay in this.groupWorkingDays;
         },
-        fetchPlansDate() {},
         // remove plan
         async deletePlan(id) {
             await this.removePlan(id);
-            this.fetchPlansDate();
         },
     },
 };

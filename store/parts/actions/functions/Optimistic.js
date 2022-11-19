@@ -86,6 +86,7 @@ export default class {
             const element = { ...eval(`state.${allListPath}[${index}]`) };
             // do action before actually removing
             if (callback) await callback(element);
+            console.log(allListPath, index);
             // actually remove the element
             commit("remove", [allListPath, index]);
             return [allListPath, element];

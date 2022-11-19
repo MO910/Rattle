@@ -17,6 +17,10 @@ module.exports = {
         newData: { type: Input_Custom_Plan },
     },
     async resolve(_, { custom_plan_id, newData }) {
+        if (!newData)
+            return !!(await Custom_Plans_Schema.findByIdAndDelete(
+                custom_plan_id
+            ));
         return !!(await Custom_Plans_Schema.findByIdAndUpdate(
             custom_plan_id,
             newData

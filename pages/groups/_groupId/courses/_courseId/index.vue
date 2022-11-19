@@ -47,13 +47,13 @@ export default {
         ...mapState(["groups"]),
         group() {
             const { groupId } = this.$route.params;
-            const group = this.groups?.filter((g) => g.id == groupId)?.[0];
+            const group = this.groups?.find((g) => g.id == groupId);
             return group;
         },
         course() {
             const { courseId } = this.$route.params;
             const group = this.group;
-            return group?.courses?.filter((s) => s.id == courseId)?.[0];
+            return group?.courses?.find((s) => s.id == courseId);
         },
         subgroups() {
             return this.course?.subgroups;

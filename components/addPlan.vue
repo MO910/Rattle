@@ -59,7 +59,7 @@ v-dialog(v-model='dialog' width="570")
                             v-list-item
                                 v-text-field.d-block(
                                     v-model="surahSearch"
-                                    name="email"
+                                    name="surah"
                                     :label="$vuetify.lang.t('$vuetify.search')"
                                 )
                             v-divider
@@ -117,13 +117,14 @@ v-dialog(v-model='dialog' width="570")
                     | {{$vuetify.lang.t('$vuetify.workingDays')}}
                 v-btn-toggle(v-model="days_selected" mandatory multiple group dense color="cyan darken-3")
                     v-btn.mr-3(v-for='(d, i) in days' :key='i') {{d}}
+                //- date
                 v-col.d-flex.justify-start.align-center.text-h6(cols='6')
                     | {{$vuetify.lang.t('$vuetify.startingDate')}}
                 v-col.d-flex.justify-start.align-center.text-h6(cols='6')
-                    v-menu(v-model='dateMenu' :close-on-content-click='false' :nudge-right='40' transition='scale-transition' offset-y min-width='auto')
+                    v-menu(transition='scroll-y-transition' offset-y)
                         template(v-slot:activator='{ on, attrs }')
-                            v-text-field(v-model='starting_at' readonly v-bind='attrs' v-on='on')
-                        v-date-picker(v-model='starting_at' @input='dateMenu = false')
+                            v-btn(v-bind='attrs' v-on='on' text block) {{starting_at}}
+                        v-date-picker(v-model='starting_at')
             v-card-actions
                 v-spacer
                 v-btn(color='primary' text @click='add') {{$vuetify.lang.t('$vuetify.add')}}
@@ -167,7 +168,7 @@ export default {
             .substr(0, 10),
         days_selected: [0],
     }),
-    props: ["default_days", "subgroup_id", "group", "after", "isStudent"],
+    props: ["default_days", "subgroup_id", "group", "isStudent"],
     mounted() {
         this.days_selected = this.default_days;
         this.randomValidColor();

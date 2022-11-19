@@ -17,6 +17,7 @@ import getUsers from "./parts/actions/fetch/getUsers";
 import addPlan from "./parts/actions/Plans/addPlan";
 import removePlan from "./parts/actions/Plans/removePlan";
 import updatePlanHistory from "./parts/actions/Plans/updatePlanHistory";
+import editCustomPlan from "./parts/actions/Plans/editCustomPlan";
 // User
 import createUser from "./parts/actions/Users/createUser";
 import updateUser from "./parts/actions/Users/updateUser";
@@ -87,6 +88,24 @@ export default {
             selectedDate: null,
             fetching: false,
         },
+
+        eventForm: {
+            dialog: false,
+            edit: false,
+            data: {},
+            form: {
+                date: "",
+                //
+                fromSurahIndex: null,
+                maxFrom: 1,
+                fromAyah: 1,
+                //
+                toSurahIndex: null,
+                maxTo: 1,
+                toAyah: 1,
+            },
+        },
+        calenderEvents: [],
     }),
     actions: {
         // authentication
@@ -103,6 +122,7 @@ export default {
         updatePlanHistory,
         addPlan,
         removePlan,
+        editCustomPlan,
         // User
         createUser,
         updateUser,
@@ -145,6 +165,20 @@ export default {
         remove(state, [obj, index]) {
             const target = eval(`state.${obj}`);
             target.splice(index, 1);
+        },
+        // reset form
+        resetEventForm(state) {
+            state.eventForm.form = {
+                date: "",
+                //
+                fromSurahIndex: null,
+                maxFrom: 1,
+                fromAyah: 1,
+                //
+                toSurahIndex: null,
+                maxTo: 1,
+                toAyah: 1,
+            };
         },
     },
 };

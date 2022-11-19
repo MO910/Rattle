@@ -52,6 +52,7 @@ export default {
     props: [
         "id_key",
         "model",
+        "maxModel",
         "action",
         "background",
         "text_color",
@@ -66,33 +67,23 @@ export default {
         "arithmetic",
     ],
     mounted() {
-        const $this = this,
-            content = $(`.inputNumber#${this.id_key} .content`);
+        const content = $(`.inputNumber#${this.id_key} .content`);
         $(window).on("mouseup", () => (this.tooltip = false));
         // observer to update the store every time the current attr changed
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
-                // take action when change
-                const originalCurrent =
-                        this.action == "updateBook" &&
-                        eval(`+$this.${this.model}`),
-                    newCurrent = mutation.target.dataset.current;
+                // update the current model when change
+                const newCurrent = mutation.target.dataset.current;
                 this.updateModel([this.model, newCurrent]);
-                // update current action in DB
-                if (
-                    this.action == "updateBook" &&
-                    originalCurrent != newCurrent
-                )
-                    this.$store.dispatch(this.action, [
-                        this.id_key,
-                        { current: newCurrent },
-                        originalCurrent,
-                    ]);
+                //
+                const newMax = mutation.target.dataset.max;
+                // console.log("data-max", newMax);
+                this.updateModel([this.maxModel, newMax]);
             });
         });
         observer.observe(content[0], {
             attributes: true,
-            attributeFilter: ["data-current"],
+            attributeFilter: ["data-current", "data-max"],
         });
         // initialize the function
         counter(content);

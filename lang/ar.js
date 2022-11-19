@@ -41,6 +41,7 @@ export default {
     newTeacher: "معلم جديد",
     cancel: "الغاء",
     add: "اضف",
+    date: "التاريخ",
     // titles
     teachers: "المعلمين",
     students: "الطلاب",

@@ -58,6 +58,7 @@ export default async function ({ state, commit }, args) {
             },
             true
         );
+        console.log(spreadArgs);
         const client = this.app.apolloProvider.defaultClient,
             { data } = await client.mutate({
                 mutation: gql`

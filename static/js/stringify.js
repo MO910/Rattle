@@ -56,28 +56,28 @@ const stringify = ({
     }
 };
 // get verses from pages
-const pageToVerse = ({ from, to, verseKeyObj, consValues }) => {
+const pageToVerse = ({ from, to, consValues }) => {
     // set all the constants
     if (consValues) setConstants(consValues);
-    // if noting
-    // if (!from || !to) return "--------";
-    // if out of range
-    if (
-        !cons.versesPerPage.pages[from - 1] ||
-        !cons.versesPerPage.pages[to - 1]
-    )
-        return;
-    let fromVerse = cons.versesPerPage.pages[from - 1][0].verse_key,
-        toVerse = cons.versesPerPage.pages[to - 1].at(-1).verse_key;
-    if (!verseKeyObj) {
-        // translate verse key to a name
-        fromVerse = verseKeyToName(fromVerse);
-        toVerse = verseKeyToName(toVerse);
-    } else return { from: fromVerse, to: toVerse };
-    return `${cons.lang.from} ${fromVerse} ${cons.lang.to} ${toVerse}`;
+    const amount = to - from;
+    // set from
+    if (from % 1)
+        // get the verse after middle one
+        from = cons.versesPerPage.pages[~~from - 1].reduce((acc, curr) => {
+            if (curr.isMiddle) return true;
+            if (acc === true) return curr;
+            return acc;
+        }, false);
+    else from = cons.versesPerPage.pages[from - 1][0];
+    // set to
+    if (to % 1) to = cons.versesPerPage.pages[~~to - 1].find((v) => v.isMiddle);
+    else to = cons.versesPerPage.pages[to - 1].at(-1);
+    // return
+    return { from: from?.verse_key, to: to?.verse_key };
 };
-//
+// verse range string
 const rangeToStr = ({ from, to }) => {
+    // var { from, to } = pageToVerse({ from, to });
     // translate verse key to a name
     from = verseKeyToName(from);
     to = verseKeyToName(to);

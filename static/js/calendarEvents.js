@@ -1,3 +1,4 @@
+import { extractISODate } from "./extractISODate";
 // function
 const calendarEvents = ({
     courseTitle,
@@ -10,22 +11,21 @@ const calendarEvents = ({
     let events = [];
     // style to fit calendar
     plans.forEach((plan) => {
-        console.log("color :", plan.color);
-        console.log("custom_plans :", plan.custom_plans);
         plan.custom_plans.forEach((day) => {
             const name = stringify({
-                title: plan.title,
-                day,
-                courseTitle,
-                versesPerPage,
-                surahAdj,
-                $vuetify,
-                showDate: false,
-            });
+                    title: plan.title,
+                    day,
+                    courseTitle,
+                    versesPerPage,
+                    surahAdj,
+                    $vuetify,
+                    showDate: false,
+                }),
+                date = extractISODate({ date: +day.date });
             events.push({
                 id: day.id,
-                start: new Date(+day.date),
-                end: new Date(+day.date),
+                start: date,
+                end: date,
                 name,
                 color: plan.color || "primary",
             });

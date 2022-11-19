@@ -24,6 +24,7 @@ export default {
     newTeacher: "new teacher",
     cancel: "cancel",
     add: "add",
+    date: "date",
     // titles
     teachers: "teachers",
     students: "students",

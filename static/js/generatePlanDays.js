@@ -32,7 +32,7 @@ const generatePlanDays = (group, plan, versesPerPage) => {
             from: pagePointer,
             to:
                 pagePointer +
-                (plan.amount - 1 * !(plan.amount % 1)) *
+                (plan.amount - 1 * !((plan.amount + pagePointer) % 1)) *
                     (-1) ** plan.order_reversed,
         };
         // add rabt
@@ -47,10 +47,12 @@ const generatePlanDays = (group, plan, versesPerPage) => {
                         plan.rabt_amount * (-1) ** plan.order_reversed,
                     plan.from
                 ),
-                to =
-                    from +
-                    (plan.rabt_amount - 1 * !(plan.amount % 1)) *
-                        (-1) ** plan.order_reversed;
+                to = mainDay.from - 1 * !((plan.amount + mainDay.from) % 1);
+            // to =
+            //     from +
+            //     (plan.rabt_amount -
+            //         1 * !((plan.amount + mainDay.from) % 1)) *
+            //         (-1) ** plan.order_reversed;
             var rabtDay = {
                 date: mainDay.date,
                 from,
@@ -69,7 +71,7 @@ const generatePlanDays = (group, plan, versesPerPage) => {
         }
         // close
         starting_at = mainDay.date;
-        pagePointer += plan.amount * (-1) ** plan.order_reversed;
+        pagePointer = mainDay.to + !(mainDay.to % 1);
         // push to days
         plan.days.push(mainDay);
     }
@@ -83,7 +85,7 @@ const generatePlanDays = (group, plan, versesPerPage) => {
     }
     // page numbers to verse keys
     const allPlans = [plan];
-    if (allPlans) allPlans.push(rabtPlan);
+    if (rabtPlan) allPlans.push(rabtPlan);
     allPlans.forEach((plan) => {
         plan.days = plan.days.map((day) => ({
             ...day,

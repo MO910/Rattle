@@ -53,10 +53,6 @@ const counter = (content) => {
         transition_duration =
             parseFloat(content.css("transition-duration")) * 1000,
         dragLimit = 27,
-        max = +content.attr("data-max") || 10000,
-        min = +content.attr("data-min") || 0,
-        digitWidth = +content.attr("data-digitWidth") || max.toString().length,
-        digits = digitWidth,
         format = content.attr("data-format");
     let down,
         focus,
@@ -67,6 +63,10 @@ const counter = (content) => {
         firstTap,
         current = +content.attr("data-current"),
         freeze = content.attr("data-freeze"),
+        max = +content.attr("data-max") || 10000,
+        min = +content.attr("data-min") || 0,
+        digitWidth = +content.attr("data-digitWidth") || max.toString().length,
+        digits = digitWidth,
         preventChange = false;
     // set dimension
     gsap.set(content, {
@@ -101,7 +101,7 @@ const counter = (content) => {
     // current attr observer
     const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
-            if (mutation.attributeName == "data-current") {
+            if (mutation.attributeName === "data-current") {
                 // update current text
                 current = +mutation.target.dataset.current;
                 content.children().text(numOp(current, 0, digits, format));
@@ -125,13 +125,15 @@ const counter = (content) => {
                 // style the arrows to min
                 if (current == min) inputNumber.addClass("min");
                 else inputNumber.removeClass("min");
-            } else if (mutation.attributeName == "data-freeze")
+            } else if (mutation.attributeName === "data-freeze")
                 freeze = mutation.target.dataset.freeze;
+            else if (mutation.attributeName === "data-max")
+                max = mutation.target.dataset.max || max;
         });
     });
     observer.observe(content[0], {
         attributes: true,
-        attributeFilter: ["data-current", "data-freeze"],
+        attributeFilter: ["data-current", "data-freeze", "data-max"],
     });
     // initial content setup
     content[0].dataset.current = current;
@@ -165,11 +167,10 @@ const counter = (content) => {
             }
         },
         focus() {
-            if (freeze) return;
-            focus = true;
-            $(this)
-                .children()
-                .text(+current);
+            if (!freeze) focus = true;
+            // $(this)
+            //     .children()
+            //     .text(+current);
         },
         keydown(e) {
             if (freeze) return;
