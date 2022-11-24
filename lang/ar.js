@@ -51,6 +51,7 @@ export default {
     weekDays:
         '["الاحد", "الاثنين", "الثلاثاء", "الاربعاء", "الخميس", "الجمعة", "السبت"]',
     //
+    removePlan: "احذف خطة",
     addPlan: "اضف خطة",
     plans: "الخطط",
     surah: "سورة",
@@ -101,4 +102,11 @@ export default {
     excused: "معذور",
     //
     drag2Arrow: "اسحب باتجاه السهم",
+    // remove plan messages
+    confirmRemoveMsg: "هل انت متأكد من حذفك لخطة ###",
+    someCustomsRemainingMsg:
+        "لم يتم حذف كل الخطة لان هناك بعض التقدم تم حفظه لبعض المستخدمين تابع لهذة الخطة مثل:",
+    confirmForceRemoveMsg:
+        "هل انت متأكد من رغبتك في حذف التقدم المحفوظ مع الخطة؟",
+    forceRemove: "حذف اجباري",
 };

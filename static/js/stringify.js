@@ -22,7 +22,7 @@ const stringify = ({
     showDate,
 }) => {
     // if there is nothing
-    if (!title || !day) return;
+    if (!title && !day) return;
     title = $vuetify.lang.t(`$vuetify.${title}`);
     // set all the constants
     setConstants({ versesPerPage, surahAdj, $vuetify });
@@ -30,14 +30,14 @@ const stringify = ({
     if (courseTitle.toLowerCase() === "quran") {
         let str = rangeToStr(day);
         // if (details) str = `${title}: ${str}`;
-        if (showDate) {
-            let lang = cons.lang.isEn ? "en-GB" : "ar-EG",
-                spread = cons.lang.isEn ? "," : "،",
-                date = new Intl.DateTimeFormat(lang, { dateStyle: "full" })
-                    .format(day.date)
-                    .split(spread)[1];
-            str = `<p>${date}</p> ${str}`;
-        }
+        // if (showDate) {
+        //     let lang = cons.lang.isEn ? "en-GB" : "ar-EG",
+        //         spread = cons.lang.isEn ? "," : "،",
+        //         date = new Intl.DateTimeFormat(lang, { dateStyle: "full" })
+        //             .format(day.date)
+        //             .split(spread)[1];
+        //     str = `<p>${date}</p> ${str}`;
+        // }
         return str;
     } // normal book
     else {

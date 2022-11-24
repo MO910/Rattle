@@ -42,7 +42,6 @@ export default async function ({ state, commit }, args) {
         request: addPlanRequest,
         dataKey: "addPlan",
     });
-    console.log(tree);
     const newPlan = await addPlanOptimistic.add({
         id: subgroup_id,
         requestData: { custom_plans: [], ...args },
@@ -58,7 +57,6 @@ export default async function ({ state, commit }, args) {
             },
             true
         );
-        console.log(spreadArgs);
         const client = this.app.apolloProvider.defaultClient,
             { data } = await client.mutate({
                 mutation: gql`

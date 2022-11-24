@@ -25,6 +25,8 @@ v-container
                 :subgroup_id='subgroup.id'
                 :isStudent='isStudent'
             )
+    //- plans
+    remove-plan-dialog(:plans='subgroup.plans')
     v-row.mt-10(v-if='plansOfDate.length')
         v-col.px-0.text-h4.col-md-4.col-sm-6.col-xs-12(
             v-for='(plan, pi) in plansOfDate'
@@ -38,7 +40,7 @@ v-container
                 v-card-text(
                     v-for='strings, i in getPlanString(plan, false)' :key='i'
                     v-text='strings'
-                ) 
+                )
     v-row(v-else)
         v-col.text-h5(cols='12') there is no plans. do you want to add one!
     //- students of subgroup
@@ -160,15 +162,17 @@ export default {
         // get this day plans
         plansOfDate() {
             const plans = [...this.subgroup.plans];
-            return plans.map((plan) => {
-                let pClone = { ...plan };
-                pClone.day = plan.custom_plans?.filter(
-                    (d) =>
-                        extractISODate({ date: d.date }) ==
-                        this.datePicker.selectedDate
-                );
-                return pClone;
-            });
+            return plans
+                .filter((plan) => !plan.hide)
+                .map((plan) => {
+                    let pClone = { ...plan };
+                    pClone.day = plan.custom_plans?.filter(
+                        (d) =>
+                            extractISODate({ date: d.date }) ==
+                            this.datePicker.selectedDate
+                    );
+                    return pClone;
+                });
         },
         // check if day in plans exists
         dayExist() {
@@ -213,7 +217,8 @@ export default {
         },
         // remove plan
         async deletePlan(id) {
-            await this.removePlan(id);
+            this.updateModel(["confirmRemovingPlan.dialog", true]);
+            this.updateModel(["confirmRemovingPlan.planId", id]);
         },
     },
 };

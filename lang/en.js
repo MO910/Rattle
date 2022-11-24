@@ -34,6 +34,7 @@ export default {
     weekDays:
         '["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]',
     //
+    removePlan: "removePlan",
     addPlan: "add plan",
     plans: "plans",
     surah: "surah",
@@ -84,4 +85,10 @@ export default {
     excused: "excused",
     //
     drag2Arrow: "Drag toward the arrows",
+    // remove plan messages
+    confirmRemoveMsg: "are you sure you want to remove ### plan",
+    someCustomsRemainingMsg:
+        "the plan was removed partially because there is some progress been made by other users like:",
+    confirmForceRemoveMsg: "do you want to force delete ### plan?",
+    forceRemove: "force remove",
 };

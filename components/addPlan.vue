@@ -1,5 +1,7 @@
 <template lang="pug" key="index">
-v-dialog(v-model='dialog' width="570")
+v-dialog(
+    v-model='dialog' width="570" :persistent='loading'
+)
     template(v-slot:activator='{ on, attrs }')
         v-btn.mx-5(
             color='primary lighten-2'
@@ -36,98 +38,106 @@ v-dialog(v-model='dialog' width="570")
                         v-icon(v-if='color == selectedColor') mdi-check-circle
         //- other fields
         v-card-text
-            v-row
-                v-col.text-h6(cols='12') {{$vuetify.lang.t('$vuetify.type')}}
-                v-col(cols='12')
-                    v-btn-toggle(v-model="type_selected" mandatory group borderless)
-                        v-btn.mr-3(v-for='type in types' :key='type') {{$vuetify.lang.t(`$vuetify.${type}`)}}
-            v-row
-                v-col.text-h6(cols='12') {{$vuetify.lang.t('$vuetify.direction')}}
-                v-col(cols='12')
-                    v-btn-toggle(v-model="direction_selected" mandatory group borderless)
-                        v-btn.mr-3(v-for='direction in directions' :key='direction') {{$vuetify.lang.t(`$vuetify.${direction}`)}}
-            v-row
-                v-col(cols='12')
-                    v-select(
-                        :label="$vuetify.lang.t('$vuetify.surah')"
-                        v-model='selectedSurahIndex'
-                        :items='surahSearchResults'
-                        item-text="name"
-                        item-value="index"
-                    )
-                        template(v-slot:prepend-item)
-                            v-list-item
-                                v-text-field.d-block(
-                                    v-model="surahSearch"
-                                    name="surah"
-                                    :label="$vuetify.lang.t('$vuetify.search')"
-                                )
-                            v-divider
-                v-col.d-flex.justify-start.align-center.text-h6(cols='6')
-                    | {{$vuetify.lang.t('$vuetify.from')}} {{$vuetify.lang.t('$vuetify.ayah')}}
-                v-col.d-flex.justify-end.align-center(cols='6')
-                    inputNumber(
-                        model='addPlanForm.ayahValue'
-                        key='ayahValue'
-                        id_key='ayahValue'
-                        :digitWidth='5'
-                        :min='1'
-                        :max='10'
-                        :init='addPlanForm.ayahValue || 1'
-                    )
-                v-col.d-flex.justify-start.align-center.text-h6(cols='6')
-                    | {{$vuetify.lang.t('$vuetify.pagesPerDay')}}
-                v-col.d-flex.justify-end.align-center(cols='6')
-                    inputNumber(
-                        model='addPlanForm.pagesValue'
-                        key='pagesValue'
-                        id_key='pagesValue'
-                        :digitWidth='5'
-                        :min='1'
-                        :init='addPlanForm.pagesValue || 1'
-                    )
-                v-col.d-flex.justify-start.align-center.text-h6(cols='6')
-                    | {{$vuetify.lang.t('$vuetify.weeks')}}: {{weeks}}
-                v-col.d-flex.justify-end.align-center(cols='6')
-                    v-slider.align-center(v-model='weeks' :min='min' :max='maxWeeks' hide-details)
-                        template(v-slot:thumb-label="props") {{props.value}}
-                v-col(cols='12')
-                    v-divider
-                v-col.text-h6(cols='12')
-                    v-switch(
-                        v-model="has_rabt"
-                        :label="$vuetify.lang.t('$vuetify.hasRabt')"
-                    )
-            v-row(v-if='has_rabt')
-                v-col.d-flex.justify-start.align-center.text-h6(cols='6')
-                    | {{$vuetify.lang.t('$vuetify.rabtPages')}}
-                v-col.d-flex.justify-end.align-center(cols='6')
-                    inputNumber(
-                        model='addPlanForm.rabtPagesValue'
-                        key='rabtPagesValue'
-                        id_key='rabtPagesValue'
-                        :digitWidth='5'
-                        :min='1'
-                        :init='addPlanForm.rabtPagesValue || 1'
-                    )
-            v-row
-                v-col(cols='12')
-                    v-divider
-                v-col(cols='12').text-h6.font-weight-regular.text-capitalize
-                    | {{$vuetify.lang.t('$vuetify.workingDays')}}
-                v-btn-toggle(v-model="days_selected" mandatory multiple group dense color="cyan darken-3")
-                    v-btn.mr-3(v-for='(d, i) in days' :key='i') {{d}}
-                //- date
-                v-col.d-flex.justify-start.align-center.text-h6(cols='6')
-                    | {{$vuetify.lang.t('$vuetify.startingDate')}}
-                v-col.d-flex.justify-start.align-center.text-h6(cols='6')
-                    v-menu(transition='scroll-y-transition' offset-y)
-                        template(v-slot:activator='{ on, attrs }')
-                            v-btn(v-bind='attrs' v-on='on' text block) {{starting_at}}
-                        v-date-picker(v-model='starting_at')
-            v-card-actions
-                v-spacer
-                v-btn(color='primary' text @click='add') {{$vuetify.lang.t('$vuetify.add')}}
+            v-form(:disabled='loading')
+                v-row
+                    v-col.text-h6(cols='12') {{$vuetify.lang.t('$vuetify.type')}}
+                    v-col(cols='12')
+                        v-btn-toggle(v-model="type_selected" mandatory group borderless)
+                            v-btn.mr-3(v-for='type in types' :key='type') {{$vuetify.lang.t(`$vuetify.${type}`)}}
+                v-row
+                    v-col.text-h6(cols='12') {{$vuetify.lang.t('$vuetify.direction')}}
+                    v-col(cols='12')
+                        v-btn-toggle(v-model="direction_selected" mandatory group borderless)
+                            v-btn.mr-3(v-for='direction in directions' :key='direction') {{$vuetify.lang.t(`$vuetify.${direction}`)}}
+                v-row
+                    v-col(cols='12')
+                        v-select(
+                            :label="$vuetify.lang.t('$vuetify.surah')"
+                            v-model='selectedSurahIndex'
+                            :items='surahSearchResults'
+                            item-text="name"
+                            item-value="index"
+                        )
+                            template(v-slot:prepend-item)
+                                v-list-item
+                                    v-text-field.d-block(
+                                        v-model="surahSearch"
+                                        name="surah"
+                                        :label="$vuetify.lang.t('$vuetify.search')"
+                                    )
+                                v-divider
+                    v-col.d-flex.justify-start.align-center.text-h6(cols='6')
+                        | {{$vuetify.lang.t('$vuetify.from')}} {{$vuetify.lang.t('$vuetify.ayah')}}
+                    v-col.d-flex.justify-end.align-center(cols='6')
+                        inputNumber(
+                            model='addPlanForm.ayahValue'
+                            key='ayahValue'
+                            id_key='ayahValue'
+                            :digitWidth='5'
+                            :min='1'
+                            :max='10'
+                            :init='addPlanForm.ayahValue || 1'
+                        )
+                    v-col.d-flex.justify-start.align-center.text-h6(cols='6')
+                        | {{$vuetify.lang.t('$vuetify.pagesPerDay')}}
+                    v-col.d-flex.justify-end.align-center(cols='6')
+                        inputNumber(
+                            model='addPlanForm.pagesValue'
+                            key='pagesValue'
+                            id_key='pagesValue'
+                            :digitWidth='5'
+                            :min='1'
+                            :init='addPlanForm.pagesValue || 1'
+                        )
+                    v-col.d-flex.justify-start.align-center.text-h6(cols='6')
+                        | {{$vuetify.lang.t('$vuetify.weeks')}}: {{weeks}}
+                    v-col.d-flex.justify-end.align-center(cols='6')
+                        v-slider.align-center(v-model='weeks' :min='min' :max='maxWeeks' hide-details)
+                            template(v-slot:thumb-label="props") {{props.value}}
+                    v-col(cols='12')
+                        v-divider
+                    v-col.text-h6(cols='12')
+                        v-switch(
+                            v-model="has_rabt"
+                            :label="$vuetify.lang.t('$vuetify.hasRabt')"
+                        )
+                v-row(v-if='has_rabt')
+                    v-col.d-flex.justify-start.align-center.text-h6(cols='6')
+                        | {{$vuetify.lang.t('$vuetify.rabtPages')}}
+                    v-col.d-flex.justify-end.align-center(cols='6')
+                        inputNumber(
+                            model='addPlanForm.rabtPagesValue'
+                            key='rabtPagesValue'
+                            id_key='rabtPagesValue'
+                            :digitWidth='5'
+                            :min='1'
+                            :init='addPlanForm.rabtPagesValue || 1'
+                        )
+                v-row
+                    v-col(cols='12')
+                        v-divider
+                    v-col(cols='12').text-h6.font-weight-regular.text-capitalize
+                        | {{$vuetify.lang.t('$vuetify.workingDays')}}
+                    v-btn-toggle(v-model="days_selected" mandatory multiple group dense color="cyan darken-3")
+                        v-btn.mr-3(v-for='(d, i) in days' :key='i') {{d}}
+                    //- date
+                    v-col.d-flex.justify-start.align-center.text-h6(cols='6')
+                        | {{$vuetify.lang.t('$vuetify.startingDate')}}
+                    v-col.d-flex.justify-start.align-center.text-h6(cols='6')
+                        v-menu(transition='scroll-y-transition' offset-y)
+                            template(v-slot:activator='{ on, attrs }')
+                                v-btn(v-bind='attrs' v-on='on' text block) {{starting_at}}
+                            v-date-picker(v-model='starting_at')
+                v-card-actions
+                    v-spacer
+                    v-btn(
+                        color='error' text
+                        @click='dialog = false' :disabled='loading'
+                    ) {{$vuetify.lang.t('$vuetify.cancel')}}
+                    v-btn(
+                        color='primary'
+                        @click='add' :loading='loading'
+                    ) {{$vuetify.lang.t('$vuetify.add')}}
 </template>
 <script>
 import { mapState, mapActions } from "vuex";
@@ -135,6 +145,7 @@ import { generatePlanDays } from "~/static/js/generatePlanDays";
 export default {
     data: () => ({
         dialog: false,
+        loading: false,
         has_rabt: false,
         dateMenu: false,
         selectedSurahIndex: null,
@@ -203,7 +214,7 @@ export default {
     methods: {
         ...mapActions(["addPlan"]),
         async add() {
-            this.dialog = false;
+            this.loading = true;
             // get starting page
             let pageNumber;
             const verse = `${this.selectedSurahIndex + 1}:${
@@ -244,6 +255,9 @@ export default {
                     ...plan,
                     rabt_for_plan_id: mainPlan?.id,
                 });
+            // close and stop loading
+            this.loading = false;
+            this.dialog = false;
         },
         // colors
         randomValidColor() {

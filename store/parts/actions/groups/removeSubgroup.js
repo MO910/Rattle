@@ -61,7 +61,7 @@ export default async function ({ state, commit, dispatch }, { id, course_id }) {
         dataKey: "removeSubgroup",
     });
     // callback before actually removing the subgroup
-    const callback = async (element) => {
+    const callbackBefore = async (element) => {
         await Promise.all(
             element.students?.map(async (student) => {
                 await dispatch("transportToSubgroup", {
@@ -75,6 +75,6 @@ export default async function ({ state, commit, dispatch }, { id, course_id }) {
     await optimistic.remove({
         id,
         tree: ["groups", "courses", "subgroups"],
-        callback,
+        callbackBefore,
     });
 }

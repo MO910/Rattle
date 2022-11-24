@@ -41,7 +41,6 @@ export default class {
                 const response = this.data[this.dataKey];
                 // update state and add ID (real response)
                 if (response instanceof Array) {
-                    console.log(`${fullPath}[${itemIndex}]`);
                     commit("updateModel", [fullPath, response]);
                 } else {
                     const itemId = this.data[this.dataKey]?.id;
@@ -62,7 +61,7 @@ export default class {
         return this.data?.[this.dataKey];
     }
     // remove item response
-    async remove({ id, tree, callback }) {
+    async remove({ id, tree, callbackBefore, callbackAfter }) {
         const { state, commit } = this;
         const nodePath = treeFinder({
                 id,
@@ -70,31 +69,47 @@ export default class {
                 branch: state,
             }),
             indexRegExp = /\[\d+\]$/,
-            allListPath = nodePath.replace(indexRegExp, "");
+            allListPath = nodePath.replace(indexRegExp, ""),
+            findItemPath = `${allListPath}.find(x => x.id =="${id}")`;
+        // and store it for returning
+        const element = { ...eval(`state.${findItemPath}`) };
+        // element.hide = false;
         // hide temporary until it is cleared from DB (optimistic response)
-        commit("updateModel", [`${nodePath}.hide`, true]);
+        commit("updateModel", [`${findItemPath}.hide`, true]);
+        // do action before actually removing
+        if (callbackBefore) await callbackBefore(element);
+        // refresh
         commit("refreshObj", allListPath);
+        // prepare output
+        let output = [allListPath, element];
         try {
             this.data = await this.request();
+            // add the data
+            output.push(this.data[this.dataKey]);
             // if not deleted threw error
             if (!this.data[this.dataKey]) throw "error";
+            // do action after actually removing
+            if (callbackAfter)
+                await callbackAfter(findItemPath, ...output.slice(1));
             // delete the element form list (real response)
-            const index = nodePath.match(indexRegExp)[0].replace(/\[|\]/g, "");
+            const index = eval(`state.${allListPath}`).reduce(
+                (acc, item, i) => {
+                    if (item.id == id) return i;
+                    return acc;
+                },
+                null
+            );
             // unhide the element
-            commit("updateModel", [`${nodePath}.hide`, false]);
-            // and store it for returning
-            const element = { ...eval(`state.${allListPath}[${index}]`) };
-            // do action before actually removing
-            if (callback) await callback(element);
-            console.log(allListPath, index);
+            commit("updateModel", [`${findItemPath}.hide`, false]);
             // actually remove the element
-            commit("remove", [allListPath, index]);
-            return [allListPath, element];
+            if (index != null) commit("remove", [allListPath, index]);
+            return output;
         } catch (err) {
             console.log(err);
             // if error restore the item
-            commit("updateModel", [`${nodePath}.hide`, false]);
-            commit("refreshObj", nodePath.replace(/\[\d+\]$/, ""));
+            commit("updateModel", [`${findItemPath}.hide`, false]);
+            commit("refreshObj", allListPath);
+            return output;
         }
     }
     //
@@ -114,15 +129,18 @@ export default class {
         try {
             this.data = await this.request();
         } catch (err) {
+            console.log(err);
             // undo optimistic
             commit("updateModel", [fullPath, oldValue]);
-            console.log(err);
         }
     }
     // transport from array to another
     async transport({ removeId, addId, treeFrom, treeTo }) {
         // remove the existing entity
-        const requestData = await this.remove({ id: removeId, tree: treeFrom });
+        const [_, requestData] = await this.remove({
+            id: removeId,
+            tree: treeFrom,
+        });
         // add it to ...
         await this.add({
             doRequest: false,

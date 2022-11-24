@@ -9,8 +9,8 @@ v-container
         v-col.px-6(cols='12')
             v-row
                 v-col(cols='4') {{$vuetify.lang.t('$vuetify.student')}}
-                v-col(cols='4') {{$vuetify.lang.t('$vuetify.attendance_status')}}
-                v-col(cols='4') {{$vuetify.lang.t('$vuetify.note')}}
+                v-col(cols='3') {{$vuetify.lang.t('$vuetify.attendance_status')}}
+                v-col(cols='5') {{$vuetify.lang.t('$vuetify.note')}}
         v-col(cols='12' v-if='datePicker.fetching') fetching!!
         v-col(cols='12' v-if='!datePicker.fetching')
             v-card.mb-8.px-6(v-for='student, si in selectedDateHistory' :key='si')
@@ -19,7 +19,7 @@ v-container
                     v-col(cols='3').d-flex.align-center.justify-space-between
                         v-tooltip(
                             v-for='state, i in status' :key='i'
-                            :color='state.color' bottom
+                            :color='state.color' bottom open-delay='350'
                         ) 
                             template(v-slot:activator="{ on, attrs }")
                                 v-btn(

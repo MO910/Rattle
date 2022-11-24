@@ -39,7 +39,6 @@ export default {
         users: [],
         breadcrumbs: [],
         groups: null,
-        plans: [],
         plansToTables: [],
         versesPerPage,
         surahAdj,
@@ -88,7 +87,6 @@ export default {
             selectedDate: null,
             fetching: false,
         },
-
         eventForm: {
             dialog: false,
             edit: false,
@@ -104,6 +102,12 @@ export default {
                 maxTo: 1,
                 toAyah: 1,
             },
+        },
+        confirmRemovingPlan: {
+            dialog: false,
+            planId: null,
+            response: null,
+            msg: "",
         },
         calenderEvents: [],
     }),
