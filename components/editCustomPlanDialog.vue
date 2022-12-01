@@ -20,25 +20,15 @@ v-dialog(
                             v-date-picker(:value='eventForm.form.date' @change='changeDate')
                     //- from surah
                     v-col(cols='12')
-                        v-select(
-                            :label="surahD()"
+                        select-surah(
+                            :label="surahD('from')"
                             :value='eventForm.form.fromSurahIndex'
-                            @change='changeSurah($event, "from")'
-                            :items='surahSearchResults'
-                            item-text="name"
-                            item-value="index"
+                            :direction_selected='direction_selected'
+                            type='from'
                         )
-                            template(v-slot:prepend-item)
-                                v-list-item
-                                    v-text-field.d-block(
-                                        v-model="surahSearch"
-                                        name="from surah"
-                                        :label="$vuetify.lang.t('$vuetify.search')"
-                                    )
-                                v-divider
                     //- from ayah
                     v-col.d-flex.justify-start.align-center.text-h6(cols='6')
-                        | {{ayahD()}}
+                        | {{ayahD('from')}}
                     v-col.d-flex.justify-end.align-center(cols='6')
                         inputNumber(
                             model='eventForm.form.fromAyah'
@@ -52,23 +42,13 @@ v-dialog(
                         )
                     //- to surah
                     v-col(cols='12')
-                        v-select(
+                        select-surah(
                             :label="surahD('to')"
                             :value='eventForm.form.toSurahIndex'
-                            @change='changeSurah($event, "to")'
-                            :items='surahSearchResults'
-                            item-text="name"
-                            item-value="index"
+                            :direction_selected='direction_selected'
+                            type='to'
                             :disabled='eventForm.form.fromSurahIndex == null'
                         )
-                            template(v-slot:prepend-item)
-                                v-list-item
-                                    v-text-field.d-block(
-                                        v-model="surahSearch"
-                                        name="to surah"
-                                        :label="$vuetify.lang.t('$vuetify.search')"
-                                    )
-                                v-divider
                     //- from ayah
                     v-col.d-flex.justify-start.align-center.text-h6(cols='6')
                         | {{ayahD('to')}}
@@ -121,7 +101,8 @@ export default {
     props: ["isStudent", "update"],
     mounted() {
         console.log(this.eventForm.edit);
-        // this.fromSurahIndex = this.destructure();
+        // selected surah changed
+        this.$nuxt.$on("change", (...params) => this.changeSurah(...params));
     },
     computed: {
         ...mapState(["eventForm", "surahAdj", "versesPerPage"]),
@@ -155,7 +136,7 @@ export default {
             this.updateModel(["eventForm.form.date", date]);
         },
         // translate
-        surahD(end = "from") {
+        surahD(end) {
             return `${this.$vuetify.lang.t(
                 "$vuetify." + end
             )} ${this.$vuetify.lang.t("$vuetify.surah")}`;

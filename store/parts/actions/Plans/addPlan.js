@@ -10,6 +10,7 @@ export default async function ({ state, commit }, args) {
     delete args.days;
     delete args.group_id;
     delete args.tree;
+    console.log("tree", tree);
     // if (this.$auth.loggedIn && this.$auth.user && !state.user.id) {
     // state.userId = this.$auth.user._id;
     const stringifyArgs = stringify(args);

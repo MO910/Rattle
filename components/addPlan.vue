@@ -238,7 +238,7 @@ export default {
                 working_days: this.days_selected,
                 starting_at: new Date(this.starting_at),
                 tree: this.isStudent
-                    ? ["groups", "floatingStudents"]
+                    ? ["groups", "courses", "floatingStudents"]
                     : ["groups", "courses", "subgroups"],
                 color: this.selectedColor,
             };

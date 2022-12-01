@@ -2,6 +2,7 @@
 v-card(
     :class='entity.color'
     @contextmenu='openContext'
+    @click='ev'
     rounded nuxt :to='subgroupRouter(entity.id)'
     :loading='loading'
 )
@@ -22,7 +23,6 @@ v-card(
             :plan='plan'
             :student_id='entity.id'
             :selectedDate='datePicker.selectedDate'
-            :divider='advantageDivider(i)'
         )
 </template>
 <script>
@@ -84,9 +84,8 @@ export default {
                 return `${entity.first_name} ${entity.parent_name || ""}`;
             return entity?.title;
         },
-        // advantage divider
-        advantageDivider(pi) {
-            return pi + 1 != this.eachDay.length;
+        ev(e) {
+            e.preventDefault();
         },
     },
 };

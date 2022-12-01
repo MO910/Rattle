@@ -64,12 +64,20 @@ v-container
             .text-h5 there is no students in this subgroup. do you want to add one!
             v-btn add students
             v-btn remove subgroup
+    //- floating students
     v-row.mt-10(v-else)
         v-col.px-0(cols='12' v-if='dayExist')
             v-card.mx-5(:loading="datePicker.fetching")
                 template(slot="progress")
                     v-progress-linear(indeterminate)
-                div.py-5.px-10
+                v-card-text(v-for='plan, pi in plansOfDate' :key='pi')
+                    advantage(
+                        v-if='!plan.hide'
+                        :plan='plan'
+                        :student_id='subgroup.id'
+                        :selectedDate='datePicker.selectedDate'
+                    )
+                //- div.py-5.px-10
                     advantage(
                         v-for='plan, pi in plansOfDate'
                         :key='pi'
@@ -77,7 +85,6 @@ v-container
                         :plan='plan'
                         :student_id='subgroup.id'
                         :selectedDate='datePicker.selectedDate'
-                        :divider='advantageDivider(pi)'
                     )
 </template>
 <script>
@@ -98,6 +105,7 @@ export default {
         isStudent: false,
     }),
     async mounted() {
+        console.log("plansOfDate", this.plansOfDate);
         // let plans = generatePlanDays(
         //     this.group,
         //     {
@@ -145,7 +153,7 @@ export default {
                         (s) => s.id == subgroupId
                     );
             this.isStudent = !sub;
-            return sub || student;
+            return student;
         },
         // week days name in the current language
         weekDays() {
@@ -219,6 +227,10 @@ export default {
         async deletePlan(id) {
             this.updateModel(["confirmRemovingPlan.dialog", true]);
             this.updateModel(["confirmRemovingPlan.planId", id]);
+        },
+        // advantage divider unless it is the last one
+        advantageDivider(pi) {
+            return pi + 1 != this.plansOfDate.length;
         },
     },
 };
