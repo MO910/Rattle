@@ -4,8 +4,8 @@ import en from "./lang/en";
 import ar from "./lang/ar";
 //
 const local = "http://localhost:3000",
-    publicHost = "https://rattel.herokuapp.com",
-    host = local;
+    publicHost = "https://rattle-quran.netlify.app",
+    host = publicHost;
 export default {
     // Global page headers: https://go.nuxtjs.dev/config-head
     static: {
