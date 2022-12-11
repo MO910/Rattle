@@ -8,6 +8,7 @@ const local = "http://localhost:3000",
     host = publicHost;
 export default {
     // Global page headers: https://go.nuxtjs.dev/config-head
+    target: "static",
     static: {
         prefix: false,
     },
