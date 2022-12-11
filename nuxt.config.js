@@ -4,7 +4,7 @@ import en from "./lang/en";
 import ar from "./lang/ar";
 //
 const local = "http://localhost:3000",
-    publicHost = "https://rattle-quran.netlify.app",
+    publicHost = "https://rattle-api.onrender.com",
     host = publicHost;
 export default {
     // Global page headers: https://go.nuxtjs.dev/config-head
@@ -133,12 +133,12 @@ export default {
                 },
                 endpoints: {
                     login: {
-                        url: "/api/auth/login",
+                        url: "/api/login",
                         method: "post",
                         propertyName: "token",
                     },
-                    logout: { url: "/api/auth/logout", method: "delete" },
-                    user: { url: "/api/auth/user", method: "get" },
+                    logout: { url: "/api/logout", method: "delete" },
+                    user: { url: "/api/user", method: "get" },
                 },
             },
         },
@@ -154,7 +154,7 @@ export default {
     // Build Configuration: https://go.nuxtjs.dev/config-build
     build: {},
 
-    serverMiddleware: { "/api": "~/api/index.js" },
+    // serverMiddleware: { "/api": "~/api/index.js" },
 
     apollo: {
         clientConfigs: {

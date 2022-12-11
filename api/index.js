@@ -3,8 +3,8 @@ const express = require("express"),
     bodyParser = require("body-parser"),
     authAPIRout = require("./routes/users");
 // GraphQL
-const { graphqlHTTP } = require("express-graphql");
-const schema = require("./graphQl/schema");
+// const { graphqlHTTP } = require("express-graphql");
+// const schema = require("./graphQl/schema");
 // Mongoose Setup
 const mongoose = require("mongoose");
 const uri =
@@ -15,7 +15,7 @@ mongoose
         useUnifiedTopology: true,
     })
     .then(async () => {
-        app.use("/", graphqlHTTP({ schema, graphiql: true })); // here disable graphial = false
+        // app.use("/", graphqlHTTP({ schema, graphiql: true })); // here disable graphial = false
     });
 // bodyParser
 app.use(express.json());
