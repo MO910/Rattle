@@ -75,15 +75,15 @@ export default {
         "@nuxtjs/auth-next",
         // "nuxt-socket-io",
     ],
-    io: {
-        // module options
-        sockets: [
-            {
-                name: "main",
-                url: host,
-            },
-        ],
-    },
+    // io: {
+    //     // module options
+    //     sockets: [
+    //         {
+    //             name: "main",
+    //             url: host,
+    //         },
+    //     ],
+    // },
     // Axios module configuration: https://go.nuxtjs.dev/config-axios
     axios: {
         // Workaround to avoid enforcing hard-coded localhost:3000: https://github.com/nuxt-community/axios-module/issues/308
@@ -134,12 +134,12 @@ export default {
                 },
                 endpoints: {
                     login: {
-                        url: "/api/login",
+                        url: `${host}/api/login`,
                         method: "post",
                         propertyName: "token",
                     },
-                    logout: { url: "/api/logout", method: "delete" },
-                    user: { url: "/api/user", method: "get" },
+                    logout: { url: `${host}/api/logout`, method: "delete" },
+                    user: { url: `${host}/api/user`, method: "get" },
                 },
             },
         },
