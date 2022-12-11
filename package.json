@@ -20,8 +20,6 @@
     "colorthief": "^2.3.2",
     "core-js": "^3.19.3",
     "express": "^4.17.1",
-    "graphql": "^16.0.1",
-    "graphql-tag": "^2.12.6",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.0.12",
     "npm": "^9.1.3",
